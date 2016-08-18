@@ -16,21 +16,21 @@ String message = "Hello world"; //sending a string of chars "Hello world"
 #define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
 
-TheThingsNetwork THETHINGSNETWORK;
+TheThingsNetwork ttu;
 
 void setup() {
   debugSerial.begin(115200);
   loraSerial.begin(57600);
 
   delay(1000);
-  THETHINGSNETWORK.init(loraSerial, debugSerial);
-  THETHINGSNETWORK.reset();
+  ttu.init(loraSerial, debugSerial);
+  ttu.reset();
 
   //the device will configure the LoRa module
-  THETHINGSNETWORK.personalize(devAddr, nwkSKey, appSKey);
+  ttu.personalize(devAddr, nwkSKey, appSKey);
 
   delay(6000);
-  THETHINGSNETWORK.showStatus();
+  ttu.showStatus();
   debugPrintLn("Setup for The Things Network complete");
 
   delay(1000);
@@ -38,6 +38,6 @@ void setup() {
 
 void loop() {
 
-  THETHINGSNETWORK.sendString(message);
+  ttu.sendString(message);
   delay(20000);
 }

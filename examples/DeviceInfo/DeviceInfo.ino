@@ -3,7 +3,7 @@
 #define debugSerial Serial
 #define loraSerial Serial1
 
-TheThingsNetwork THETHINGSNETWORK;
+TheThingsNetwork ttu;
 
 void setup()
 {
@@ -12,14 +12,14 @@ void setup()
 
   delay(3000);
 
-  THETHINGSNETWORK.init(loraSerial, debugSerial);
+  ttu.init(loraSerial, debugSerial);
 }
 
 void loop()
 {
   debugSerial.println("Device Information");
   debugSerial.println();
-  THETHINGSNETWORK.showStatus();
+  ttu.showStatus();
   debugSerial.println();
   debugSerial.println("Use the EUI to register the device for OTAA");
   debugSerial.println("-------------------------------------------");

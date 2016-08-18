@@ -10,7 +10,7 @@ const byte appKey[16] = { <insert AppKey> }; //for example: {0x73, 0x6D, 0x24, 0
 #define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
 
-TheThingsNetwork THETHINGSNETWORK;
+TheThingsNetwork ttu;
 
 void setup()
 {
@@ -18,14 +18,14 @@ void setup()
   loraSerial.begin(57600);
 
   delay(1000);
-  THETHINGSNETWORK.init(loraSerial, debugSerial); //Initializing...
-  THETHINGSNETWORK.reset();
-  if (!THETHINGSNETWORK.join(appEui, appKey)) {
+  ttu.init(loraSerial, debugSerial); //Initializing...
+  ttu.reset();
+  if (!ttu.join(appEui, appKey)) {
     delay(6000);
   }
 
   delay(6000);
-  THETHINGSNETWORK.showStatus();
+  ttu.showStatus();
   debugPrintLn("Setup for The Things Network complete");
 
   delay(1000);
@@ -35,13 +35,13 @@ void loop() {
   // Send a byte
   byte buf[1];
   buf[0] = 20;
-  int downlinkBytes = THETHINGSNETWORK.sendBytes(buf, 1);
+  int downlinkBytes = ttu.sendBytes(buf, 1);
 
   if (downlinkBytes > 0) {
     debugPrintLn("Received " + String(downlinkBytes) + " bytes")
     // Print the received bytes
     for (int i = 0; i < downlinkBytes; i++) {
-      debugPrint(String(THETHINGSNETWORK.downlink[i]) + " ");
+      debugPrint(String(ttu.downlink[i]) + " ");
     }
     debugPrintLn();
   }
