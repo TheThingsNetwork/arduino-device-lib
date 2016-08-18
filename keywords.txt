@@ -1,0 +1,35 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Class (KEYWORD1)
+#######################################
+
+TheThingsNetwork       	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init					KEYWORD2
+reset					KEYWORD2
+personalize				KEYWORD2
+join					KEYWORD2
+sendBytes				KEYWORD2
+sendString				KEYWORD2
+showStatus				KEYWORD2
+
+debugPrintLn			KEYWORD2
+debugPrintLn			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+DEFAULT_WAIT_TIME		LITERAL1
+DEFAULT_FSB				LITERAL1
+DEFAULT_FSB				LITERAL1
+
+PWRIDX_868           	LITERAL1
+PWRIDX_915				LITERAL1
