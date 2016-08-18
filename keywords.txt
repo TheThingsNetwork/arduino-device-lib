@@ -13,7 +13,7 @@ TheThingsNetwork       	KEYWORD1
 #######################################
 
 debugPrintLn			KEYWORD2
-debugPrintLn			KEYWORD2
+debugPrint				KEYWORD2
 
 HEX_CHAR_TO_NIBBLE		KEYWORD2
 HEX_PAIR_TO_BYTE		KEYWORD2
