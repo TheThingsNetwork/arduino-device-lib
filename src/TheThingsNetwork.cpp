@@ -69,7 +69,6 @@ char btohexa_low(unsigned char b) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int waitTime) {
-  String str = "";
   debugPrint(F("Sending: "));
   debugPrint(cmd);
   debugPrint(F(" with "));
