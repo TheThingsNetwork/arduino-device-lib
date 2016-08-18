@@ -41,10 +41,8 @@ String TheThingsNetwork::readValue(String cmd) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, int waitTime) {
-  String str = "";
-  str.concat(F("Sending: "));
-  str.concat(cmd);
-  debugPrintLn(str);
+  debugPrint(F("Sending: "));
+  debugPrintLn(cmd);
 
   modemStream->println(cmd);
 
@@ -70,13 +68,11 @@ char btohexa_low(unsigned char b) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int waitTime) {
-  String str = "";
-  str.concat(F("Sending: "));
-  str.concat(cmd);
-  str.concat(F(" with "));
-  str.concat(length);
-  str.concat(F(" bytes"));
-  debugPrintLn(str);
+  debugPrint(F("Sending: "));
+  debugPrint(cmd);
+  debugPrint(F(" with "));
+  debugPrint(length);
+  debugPrintLn(F(" bytes"));
 
   modemStream->print(cmd + " ");
 
@@ -98,14 +94,12 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   }
 
   model = version.substring(0, version.indexOf(' '));
-  String str = "";
-  str.concat(F("Version is "));
-  str.concat(version);
-  str.concat(F(", model is "));
-  str.concat(model);
-  debugPrintLn(str);
+  debugPrint(F("Version is "));
+  debugPrint(version);
+  debugPrint(F(", model is "));
+  debugPrintLn(model);
 
-  str = "";
+  String str = "";
   str.concat(F("mac set adr "));
   if(adr){
     str.concat(F("on"));
