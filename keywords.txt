@@ -12,6 +12,15 @@ TheThingsNetwork       	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
+debugPrintLn			KEYWORD2
+debugPrintLn			KEYWORD2
+
+HEX_CHAR_TO_NIBBLE		KEYWORD2
+HEX_PAIR_TO_BYTE		KEYWORD2
+
+downlinkPort			KEYWORD2
+downlink				KEYWORD2
+
 init					KEYWORD2
 reset					KEYWORD2
 personalize				KEYWORD2
@@ -20,9 +29,6 @@ sendBytes				KEYWORD2
 sendString				KEYWORD2
 showStatus				KEYWORD2
 
-debugPrintLn			KEYWORD2
-debugPrintLn			KEYWORD2
-
 #######################################
 # Constants (LITERAL1)
 #######################################
@@ -30,6 +36,8 @@ debugPrintLn			KEYWORD2
 DEFAULT_WAIT_TIME		LITERAL1
 DEFAULT_FSB				LITERAL1
 DEFAULT_FSB				LITERAL1
+
+ADR_SUPPORTED			LITERAL1
 
 PWRIDX_868           	LITERAL1
 PWRIDX_915				LITERAL1

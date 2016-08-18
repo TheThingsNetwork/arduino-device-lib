@@ -25,12 +25,14 @@ TheThingsNetwork class features the following [public methods](https://github.co
 
 ```C++
   public:
+    int downlinkPort;
+    byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool join(const byte appEui[8], const byte appKey[16]);
-    void sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    void sendString(String message, int port = 1, bool confirm = false);
+    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
+    int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
 ```
 
