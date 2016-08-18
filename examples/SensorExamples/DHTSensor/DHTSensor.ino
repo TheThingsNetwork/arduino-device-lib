@@ -24,7 +24,7 @@ byte data[4];
 #define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
 
-TheThingsNetwork ttu;
+TheThingsNetwork ttn;
 
 void setup() {
   debugSerial.begin(115200);
@@ -33,18 +33,18 @@ void setup() {
   dht.begin();
 
   delay(1000);
-  ttu.init(loraSerial, debugSerial);
-  ttu.reset();
+  ttn.init(loraSerial, debugSerial);
+  ttn.reset();
 
   //the device will attempt a join every second till the join is successfull
-  while(!ttu.join(appEui, appKey)){
+  while(!ttn.join(appEui, appKey)){
       delay(6000);
   }
 
   digitalWrite(13, HIGH); //turn on LED to confirm join
 
   delay(6000);
-  ttu.showStatus();
+  ttn.showStatus();
   debugPrintLn("Setup for The Things Network complete");
 
   delay(1000);
@@ -65,7 +65,7 @@ void loop() {
   debugPrint("Humidity: ");
   debugPrintLn(humidity);
   //send data
-  ttu.sendBytes(data, sizeof(data));
+  ttn.sendBytes(data, sizeof(data));
 
   delay(20000);
 }
