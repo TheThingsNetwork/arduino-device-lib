@@ -9,17 +9,22 @@
 
 #define DEFAULT_WAIT_TIME 120
 #define DEFAULT_SF 7
-#define DEFAULT_FSB 7
+#define DEFAULT_FSB 2
 
-#ifndef PWRIDX_868
-  #define PWRIDX_868 1
-#endif
-#ifndef PWRIDX_915
-  #define PWRIDX_915 1
-#endif
+// Set ADR off as it is currently not supported by The Things Network
+// The RN2xx3 module slows down to SF12 when no datarate commands are
+// sent by the network, so disabling ADR is a work-around to avoid
+// all the modules slowing down to SF12
+#define ADR_SUPPORTED false
+
+#define PWRIDX_868 1
+#define PWRIDX_915 1
 
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
+
+#define HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
+#define HEX_PAIR_TO_BYTE(h, l) ((HEX_CHAR_TO_NIBBLE(h) << 4) + HEX_CHAR_TO_NIBBLE(l))
 
 class TheThingsNetwork
 {
@@ -37,12 +42,14 @@ class TheThingsNetwork
     bool enableFsbChannels(int fsb);
 
   public:
+    int downlinkPort;
+    byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool join(const byte appEui[8], const byte appKey[16]);
-    void sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    void sendString(String message, int port = 1, bool confirm = false);
+    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
+    int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
 };
 
