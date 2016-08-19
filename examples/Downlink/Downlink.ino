@@ -20,7 +20,9 @@ void setup()
   delay(1000);
   ttn.init(loraSerial, debugSerial); //Initializing...
   ttn.reset();
-  if (!ttn.join(appEui, appKey)) {
+
+  //the device will attempt a join every second till the join is successfull
+  while(!ttn.join(appEui, appKey)){
     delay(6000);
   }
 
