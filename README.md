@@ -10,14 +10,14 @@ At the moment this library requires devices to feature a [Microchip RN2xx3 modul
 
 ## Installation
 
-1. Download the ZIP file of the latest [release on GitHub](https://github.com/TheThingsNetwork/arduino-library/releases).
+1. Download the source code of the [master](https://github.com/TheThingsNetwork/arduino-library/archive/master.zip) or latest [GitHub release](https://github.com/TheThingsNetwork/arduino-library/releases) as ZIP file.
 2. Follow [Importing a .zip Library](https://www.arduino.cc/en/Guide/Libraries#toc4) to install the library using the ZIP file.
-3. Restart the Arduino IDE.
+3. Restart the Arduino IDE to see the library's examples.
 
 **NOTE:** Examples for the library will not be exposed in the *File > Examples > TheThingsNetwork* until after the IDE has restarted.
 
 ## Examples
-The library comes with several [examples](examples) that can be loaded via *File > Eamples > TheThingsNetwork* once you've installed the library and restarted the IDE.
+The library comes with several [examples](examples) that can be found under *File > Eamples > TheThingsNetwork* once you've installed the library and restarted the IDE.
 
 ## API
 
