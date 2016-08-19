@@ -20,9 +20,6 @@
 #define PWRIDX_868 1
 #define PWRIDX_915 1
 
-#define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
-#define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
-
 #define HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define HEX_PAIR_TO_BYTE(h, l) ((HEX_CHAR_TO_NIBBLE(h) << 4) + HEX_CHAR_TO_NIBBLE(l))
 
