@@ -10,8 +10,6 @@ void setup()
   debugSerial.begin(115200);
   loraSerial.begin(57600);
 
-  delay(3000);
-
   ttn.init(loraSerial, debugSerial);
 }
 
@@ -24,5 +22,6 @@ void loop()
   debugSerial.println("Use the EUI to register the device for OTAA");
   debugSerial.println("-------------------------------------------");
   debugSerial.println();
+  
   delay(10000);
 }

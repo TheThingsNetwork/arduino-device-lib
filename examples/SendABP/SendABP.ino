@@ -22,22 +22,18 @@ void setup() {
   debugSerial.begin(115200);
   loraSerial.begin(57600);
 
-  delay(1000);
   ttn.init(loraSerial, debugSerial);
   ttn.reset();
 
   //the device will configure the LoRa module
   ttn.personalize(devAddr, nwkSKey, appSKey);
 
-  delay(6000);
   ttn.showStatus();
   debugPrintLn("Setup for The Things Network complete");
-
-  delay(1000);
 }
 
 void loop() {
-
   ttn.sendString(message);
+  
   delay(20000);
 }

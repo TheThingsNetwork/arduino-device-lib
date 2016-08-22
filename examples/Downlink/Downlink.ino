@@ -17,8 +17,7 @@ void setup()
   debugSerial.begin(115200);
   loraSerial.begin(57600);
 
-  delay(1000);
-  ttn.init(loraSerial, debugSerial); //Initializing...
+  ttn.init(loraSerial, debugSerial);
   ttn.reset();
 
   // the device will attempt a join every 6 seconds till the join is successfull
@@ -26,11 +25,8 @@ void setup()
     delay(6000);
   }
 
-  delay(6000);
   ttn.showStatus();
   debugPrintLn("Setup for The Things Network complete");
-
-  delay(1000);
 }
 
 void loop() {
