@@ -7,9 +7,6 @@ const byte appKey[16] = { <insert AppKey> }; //for example: {0x73, 0x6D, 0x24, 0
 #define debugSerial Serial
 #define loraSerial Serial1
 
-// Set your message to send
-String message = "Hello world"; //sending a string of chars "Hello world"
-
 #define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
 
@@ -34,7 +31,8 @@ void setup() {
 }
 
 void loop() {
-  ttn.sendString(message);
+  byte payload[] = { 0x48, 0x65, 0x6C, 0x6C, 0x6F };
+  ttn.sendBytes(payload, sizeof(payload));
   
   delay(20000);
 }
