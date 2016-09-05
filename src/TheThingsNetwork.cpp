@@ -244,12 +244,12 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16]) {
   return true;
 }
 
-int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
+int TheThingsNetwork::sendBytes(const byte* buffer, int port, bool confirm) {
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
   str.concat(port);
-  if (!sendCommand(str, buffer, length)) {
+  if (!sendCommand(str, buffer, sizeof(buffer))) {
     debugPrintLn(F("Send command failed"));
     return 0;
   }
@@ -285,7 +285,7 @@ int TheThingsNetwork::sendString(String message, int port, bool confirm) {
   byte buf[l + 1];
   message.getBytes(buf, l + 1);
 
-  return sendBytes(buf, l, port, confirm);
+  return sendBytes(buf, port, confirm);
 }
 
 void TheThingsNetwork::showStatus() {
