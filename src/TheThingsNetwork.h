@@ -43,8 +43,8 @@ class TheThingsNetwork
     byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
-    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
-    bool join(const byte appEui[8], const byte appKey[16]);
+    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16], bool reset = true);
+    bool join(const byte appEui[8], const byte appKey[16], bool reset = true);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
