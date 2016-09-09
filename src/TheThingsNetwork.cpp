@@ -312,3 +312,43 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
+
+void TheThingsNetwork::configure_channels()
+{
+   int ch;
+   long int freq = 867100000;
+   String str = "";
+
+   str.concat(F("mac set rx2 3 869525000"));
+   sendCommand(str);
+   str = "";
+   for (ch = 0; ch <= 7; ch++) {
+     if (ch >= 3) {
+       str.concat(F("mac set ch freq "));
+       str.concat(ch);
+       str.concat(F(" "));
+       str.concat(freq);
+       sendCommand(str);
+       str = "";
+       str.concat(F("mac set ch drrange "));
+       str.concat(ch);
+       str.concat(F(" 0 5"));
+       sendCommand(str);
+       str = "";
+       str.concat(F("mac set ch status "));
+       str.concat(ch);
+       str.concat(F(" on"));
+       sendCommand(str);
+       str = "";
+       freq = freq + 200000;
+     }
+     str.concat(F("mac set ch dcycle "));
+     str.concat(ch);
+     str.concat(F(" 799"));
+     sendCommand(str);
+     str = "";
+   }
+   str.concat(F("mac set ch drrange 1 0 6"));
+   sendCommand(str);
+   str = "";
+}
