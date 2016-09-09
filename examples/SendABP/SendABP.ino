@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
   byte payload[] = { 0x48, 0x65, 0x6C, 0x6C, 0x6F };
-  ttn.sendBytes(payload, sizeof(payload));
+  ttn.sendBytes(payload);
   
   delay(20000);
 }

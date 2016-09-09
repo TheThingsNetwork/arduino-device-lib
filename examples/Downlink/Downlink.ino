@@ -33,7 +33,7 @@ void loop() {
   // Send a byte
   byte buf[1];
   buf[0] = 20;
-  int downlinkBytes = ttn.sendBytes(buf, 1);
+  int downlinkBytes = ttn.sendBytes(buf);
 
   if (downlinkBytes > 0) {
     debugPrintLn("Received " + String(downlinkBytes) + " bytes")

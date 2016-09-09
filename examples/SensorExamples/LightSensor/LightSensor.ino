@@ -48,7 +48,7 @@ void loop() {
   debugPrint("Transmitting Light level: ");
   debugPrintLn(light);
   //send data
-  ttn.sendBytes(data, sizeof(data));
+  ttn.sendBytes(data);
 
   delay(20000);
 }

@@ -61,7 +61,7 @@ void loop() {
   debugPrint("Humidity: ");
   debugPrintLn(humidity);
   //send data
-  ttn.sendBytes(data, sizeof(data));
+  ttn.sendBytes(data);
 
   delay(20000);
 }
