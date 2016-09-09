@@ -288,6 +288,11 @@ int TheThingsNetwork::sendString(String message, int port, bool confirm) {
   return sendBytes(buf, l, port, confirm);
 }
 
+int TheThingsNetwork::poll(int port, bool confirm) {
+  byte buffer[] = { 0x01 };
+  return sendBytes(buffer, 1, port, confirm);
+}
+
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
