@@ -327,7 +327,7 @@ void TheThingsNetwork::set_dcycle()
       total_ch += 1;
     str = "";
   }
-  new_dcycle = (100 / total_ch) - 1;
+  new_dcycle = (100 * total_ch) - 1;
   for (ch = 0; ch < total_ch; ch++) {
     str.concat(F("mac set ch dcycle "));
     str.concat(ch);
