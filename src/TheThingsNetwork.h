@@ -37,6 +37,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
+    int sizeofBuffer(const byte* buffer);
 
   public:
     int downlinkPort;
@@ -45,7 +46,7 @@ class TheThingsNetwork
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool join(const byte appEui[8], const byte appKey[16]);
-    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
+    int sendBytes(const byte* buffer, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
 };

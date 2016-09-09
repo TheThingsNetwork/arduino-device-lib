@@ -201,6 +201,15 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
   return true;
 }
 
+int TheThingsNetwork::sizeofBuffer(const byte* buffer){
+  int i = 0;
+  while (*buffer) {
+    *buffer++;
+    i++;
+  }
+  return i;
+}
+
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
@@ -244,7 +253,9 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16]) {
   return true;
 }
 
-int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
+int TheThingsNetwork::sendBytes(const byte* buffer, int port, bool confirm) {
+  int length = sizeofBuffer(buffer);
+  debugPrintLn(String(length));
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
@@ -285,7 +296,7 @@ int TheThingsNetwork::sendString(String message, int port, bool confirm) {
   byte buf[l + 1];
   message.getBytes(buf, l + 1);
 
-  return sendBytes(buf, l, port, confirm);
+  return sendBytes(buf, port, confirm);
 }
 
 void TheThingsNetwork::showStatus() {
