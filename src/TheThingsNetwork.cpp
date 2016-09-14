@@ -219,7 +219,16 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16]) {
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], bool reset, long int nbr_delay, int max_attempts) {
+  
+  static int nbr_attempts;
+
+  if (nbr_attempts++ <= max_attempts)
+     if (TheThingsNetwork::join(appEui, appKey, true, nbr_delay, max_attempts) == true)
+        return (true);
+  delay(nbr_delay);
+  if (reset == true)
+    TheThingsNetwork::reset();  
   String devEui = readValue(F("sys get hweui"));
   sendCommand(F("mac set appeui"), appEui, 8);
   String str = "";
