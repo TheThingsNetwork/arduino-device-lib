@@ -23,12 +23,17 @@
 #define HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define HEX_PAIR_TO_BYTE(h, l) ((HEX_CHAR_TO_NIBBLE(h) << 4) + HEX_CHAR_TO_NIBBLE(l))
 
+typedef unsigned long   fp_ttn_t;
+
+#define TTN_EU868 1
+
 class TheThingsNetwork
 {
   private:
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    fp_ttn_t fp;
 
     String readLine(int waitTime = DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = DEFAULT_WAIT_TIME, String okMessage = "ok");
@@ -41,6 +46,7 @@ class TheThingsNetwork
   public:
     int downlinkPort;
     byte downlink[64];
+    TheThingsNetwork(fp_ttn_t fp);
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
