@@ -251,17 +251,19 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   str.concat(port);
   if (!sendCommand(str, buffer, length)) {
     debugPrintLn(F("Send command failed"));
-    return 0;
+    return -1;
   }
 
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
-    return 0;
+    if (confirm == true)
+      return 0;
+    return -2;
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
-    return 0;
+    return 1;
   }
   if (response.startsWith(F("mac_rx"))) {
     int portEnds = response.indexOf(" ", 7);
@@ -273,11 +275,14 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
-    return downlinkLength;
+    if (confirm == true)
+      return 2;
+    return 1;
   }
 
   debugPrint(F("Unexpected response: "));
   debugPrintLn(response);
+  return -3;
 }
 
 int TheThingsNetwork::sendString(String message, int port, bool confirm) {
