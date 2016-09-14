@@ -251,41 +251,45 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   str.concat(port);
   if (!sendCommand(str, buffer, length)) {
     debugPrintLn(F("Send command failed"));
-    return 0;
+    return (-1);
   }
 
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
-    return 0;
+    return (-2);
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
-    return 0;
+    return (0);
   }
   if (response.startsWith(F("mac_rx"))) {
+    if (TheThingsNetwork::onMessage(response) == 1)
+      return (2);
+    return (1);
+  }
+  debugPrint(F("Unexpected response: "));
+  debugPrintLn(response);
+  return (-3);
+}
+
+int TheThingsNetwork::onMessage(String response)
+{
+   byte downlink[64];
+
+    if (response == "")
+      return (0);
     int portEnds = response.indexOf(" ", 7);
-    this->downlinkPort = response.substring(7, portEnds).toInt();
+    int downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
     int downlinkLength = data.length() / 2;
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
-      this->downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+       downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
-    return downlinkLength;
-  }
-
-  debugPrint(F("Unexpected response: "));
-  debugPrintLn(response);
-}
-
-int TheThingsNetwork::sendString(String message, int port, bool confirm) {
-  int l = message.length();
-  byte buf[l + 1];
-  message.getBytes(buf, l + 1);
-
-  return sendBytes(buf, l, port, confirm);
+    receiveEvent(downlink, downlinkLength, downlinkPort);
+    return (1);
 }
 
 void TheThingsNetwork::showStatus() {
