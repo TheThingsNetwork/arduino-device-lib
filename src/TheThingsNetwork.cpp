@@ -280,14 +280,6 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   debugPrintLn(response);
 }
 
-int TheThingsNetwork::sendString(String message, int port, bool confirm) {
-  int l = message.length();
-  byte buf[l + 1];
-  message.getBytes(buf, l + 1);
-
-  return sendBytes(buf, l, port, confirm);
-}
-
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
