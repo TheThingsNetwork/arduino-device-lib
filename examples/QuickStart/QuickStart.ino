@@ -38,17 +38,23 @@ void setup() {
 void loop() {
   debugPrintLn("-- LOOP");
 
+  // Array of bytes to send
+  byte bytes[5];
+
+  // Use first byte for current LED status
+  bytes[0] = (byte) digitalRead(LED_BUILTIN);
+  debugPrintLn("Current LED: " + String(bytes[0] ? "on" : "off"));
+
   // Get uptime in ms (resets every 50 days)
   uint32_t uptime = millis();
   debugPrintLn("Uptime (ms): " + String(uptime));
 
-  // Encode uptime into 4 bytes
-  byte bytes[4];
-  longToBytes(uptime, bytes);
-  debugPrintLn("Uptime (bytes in hex): " + bytesToHexString(bytes, 4));
+  // Use 4 bytes for uptime, starting at second byte
+  longToBytes(uptime, bytes, 1);
+  debugPrintLn("Uptime (bytes in hex): " + bytesToHexString(bytes, 5));
 
   // Send and check for incoming message size
-  int downlinkSize = ttn.sendBytes(bytes, 4);
+  int downlinkSize = ttn.sendBytes(bytes, 5);
 
   if (downlinkSize > 0) {
     debugPrintLn("Downlink (bytes in hex): " + bytesToHexString(ttn.downlink, downlinkSize));
@@ -60,11 +66,11 @@ void loop() {
       // Check the byte
       switch (ttn.downlink[0]) {
         case 0x00:
-          debugPrintLn("LED: off");
+          debugPrintLn("New LED: off");
           digitalWrite(LED_BUILTIN, LOW);
           break;
         case 0x01:
-          debugPrintLn("LED: on");
+          debugPrintLn("New LED: on");
           digitalWrite(LED_BUILTIN, HIGH);
           break;
       }
@@ -74,11 +80,11 @@ void loop() {
   delay(10000);
 }
 
-void longToBytes(long lng, byte bytes[]) {          
-  bytes[0] = (int) ((lng & 0xFF000000) >> 24 );
-  bytes[1] = (int) ((lng & 0x00FF0000) >> 16 );
-  bytes[2] = (int) ((lng & 0x0000FF00) >> 8  );
-  bytes[3] = (int) ((lng & 0X000000FF)       );
+void longToBytes(long lng, byte bytes[], int start) {          
+  bytes[start + 0] = (int) ((lng & 0xFF000000) >> 24 );
+  bytes[start + 1] = (int) ((lng & 0x00FF0000) >> 16 );
+  bytes[start + 2] = (int) ((lng & 0x0000FF00) >> 8  );
+  bytes[start + 3] = (int) ((lng & 0X000000FF)       );
 }
 
 String bytesToHexString(const byte* bytes, int length) {
