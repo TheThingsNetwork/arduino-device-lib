@@ -312,3 +312,8 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
+
+TheThingsNetwork::TheThingsNetwork(fp_ttn_t fp)
+{
+  this->fp = fp;
+}
