@@ -43,7 +43,7 @@ void loop() {
   debugPrintLn("Uptime (ms): " + String(uptime));
 
   // Encode uptime into 4 bytes
-  unsigned char bytes[4];
+  byte bytes[4];
   longToBytes(uptime, bytes);
   debugPrintLn("Uptime (bytes in hex): " + bytesToHexString(bytes, 4));
 
