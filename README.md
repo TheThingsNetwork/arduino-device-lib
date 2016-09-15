@@ -27,13 +27,14 @@ TheThingsNetwork class features the following [public methods](https://github.co
   public:
     int downlinkPort;
     byte downlink[64];
-    void init(Stream& modemStream, Stream& debugStream);
-    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
-    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
-    bool join(const byte appEui[8], const byte appKey[16]);
-    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    int sendString(String message, int port = 1, bool confirm = false);
-    void showStatus();
+    void init(Stream& modemStream, Stream& debugStream);  /* Initialize The arduino device */
+    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);  /* Resets The arduino device */
+    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]); /* Activate the arduino device with your
+                                                                                                address and keys */
+    bool join(const byte appEui[8], const byte appKey[16]); /* Joins a Network */
+    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false); /* Sends bytes to a network */
+    int sendString(String message, int port = 1, bool confirm = false);  /* Sends a string to a network */
+    void showStatus();  /* Show the status on the debugging serial monitor */
 ```
 
 ## Contributing
