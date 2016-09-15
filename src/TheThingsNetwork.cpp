@@ -203,8 +203,9 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
 
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16], bool reset) {
   
-  if (reset == true)
+  if (reset) {
     TheThingsNetwork::reset();
+  }
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
   sendCommand(F("mac set appskey"), appSKey, 16);
