@@ -227,8 +227,9 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], bool re
      if (TheThingsNetwork::join(appEui, appKey, true, nbr_delay, max_attempts) == true)
         return (true);
   delay(nbr_delay);
-  if (reset == true)
-    TheThingsNetwork::reset();  
+  if (reset) {
+    TheThingsNetwork::reset();
+  }
   String devEui = readValue(F("sys get hweui"));
   sendCommand(F("mac set appeui"), appEui, 8);
   String str = "";
