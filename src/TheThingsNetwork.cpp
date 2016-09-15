@@ -313,7 +313,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
 
-void TheThingsNetwork::setModemSerial(Stream&modemStream, Stream& replaceSerial)
+void TheThingsNetwork::setModemSerial(Stream& modemStream, Stream& replaceSerial)
 {
   this->modemStream = &replaceSerial;
 }

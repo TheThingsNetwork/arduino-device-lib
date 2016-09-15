@@ -47,6 +47,8 @@ class TheThingsNetwork
     bool join(const byte appEui[8], const byte appKey[16]);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
+    void setModemSerial(Stream& modemStream, Stream& replaceSerial);
+    void setDebugSerial(Stream& debugStream, Stream& replaceSerial);
     void showStatus();
 };
 
