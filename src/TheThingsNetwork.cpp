@@ -312,3 +312,10 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
+
+int TheThingsNetwork::poll(int port)
+{
+ byte buf[1];
+ buf[0] = 20;
+ return (TheThingsNetwork::sendBytes(buf, 1, port));
+}
