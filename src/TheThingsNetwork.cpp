@@ -7,9 +7,12 @@
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
-void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
-  this->modemStream = &modemStream;
-  this->debugStream = &debugStream;
+void TheThingsNetwork::init(Stream& modemStream) {
+  this->modemStream = &modemStream; 
+  if (!this->debugStream) {
+    Serial.begin(9600);
+    TheThingsNetwork::setDebugSerial(Serial);
+  }
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
@@ -311,4 +314,14 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+}
+
+void TheThingsNetwork::setModemSerial(Stream& replaceSerial)
+{
+  this->modemStream = &replaceSerial;
+}
+
+void TheThingsNetwork::setDebugSerial(Stream& replaceSerial)
+{
+  this->debugStream = &replaceSerial;
 }
