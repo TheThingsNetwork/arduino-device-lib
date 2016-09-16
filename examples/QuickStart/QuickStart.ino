@@ -36,7 +36,7 @@ void loop() {
 
   // Prepare array of 1 byte to indicate LED status
   byte data[1];
-  data[0] = ((digitalRead(LED_BUILTIN) == HIGH) ? 1 : 0);
+  data[0] = (digitalRead(LED_BUILTIN) == HIGH) ? 1 : 0;
 
   // Send it off and see if we get bytes in response
   int downlinkSize = ttn.sendBytes(data, sizeof(data));
