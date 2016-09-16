@@ -1,9 +1,12 @@
 // Copyright © 2016 The Things Network
 // Use of this source code is governed by the MIT license that can be found in the LICENSE file.
 
-#define DEBUG 1
+
 #include <Arduino.h>
 #include <TheThingsNetwork.h>
+
+#define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
+#define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
 void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   this->modemStream = &modemStream;
