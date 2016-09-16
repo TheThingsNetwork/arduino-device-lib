@@ -7,9 +7,10 @@
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
-void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
+void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream, long int time) {
   this->modemStream = &modemStream;
   this->debugStream = &debugStream;
+  while (!&debugStream && millis() < time);
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
