@@ -201,16 +201,15 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
   return true;
 }
 
-bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16], bool reset) {
+bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
   
-  if (reset) {
+  if (devAddr != NULL && nwkSKey != NULL && appSKey != NULL) {
     TheThingsNetwork::reset();
+    sendCommand(F("mac set devaddr"), devAddr, 4);
+    sendCommand(F("mac set nwkskey"), nwkSKey, 16);
+    sendCommand(F("mac set appskey"), appSKey, 16);
   }
-  sendCommand(F("mac set devaddr"), devAddr, 4);
-  sendCommand(F("mac set nwkskey"), nwkSKey, 16);
-  sendCommand(F("mac set appskey"), appSKey, 16);
   sendCommand(F("mac join abp"));
-
   String response = readLine();
   if (response != F("accepted")) {
     debugPrint(F("Personalize not accepted: "));
