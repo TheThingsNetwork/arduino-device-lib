@@ -224,7 +224,7 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long in
 
   while (nbr_attempts++ != max_attempts) {
     delay(nbr_delay);
-    TheThingsNetwork::reset();
+    reset();
     debugPrint(readValue(F("mac get band")));
     String devEui = readValue(F("sys get hweui"));
     sendCommand(F("mac set appeui"), appEui, 8);
