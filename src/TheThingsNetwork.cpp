@@ -219,13 +219,14 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], bool restart, long int nbr_delay, int max_attempts) {
   int nbr_attempts = 0;
 
   while (nbr_attempts++ != max_attempts) {
     delay(nbr_delay);
-    reset();
-    debugPrint(readValue(F("mac get band")));
+    if (restart) {
+      reset();
+    }
     String devEui = readValue(F("sys get hweui"));
     sendCommand(F("mac set appeui"), appEui, 8);
     String str = "";
