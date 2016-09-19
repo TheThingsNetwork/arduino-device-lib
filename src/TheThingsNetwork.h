@@ -23,15 +23,6 @@
 #define HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define HEX_PAIR_TO_BYTE(h, l) ((HEX_CHAR_TO_NIBBLE(h) << 4) + HEX_CHAR_TO_NIBBLE(l))
 
-#ifdef DEBUG
-#define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
-#define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
-#else
-#define debugPrintLn(...)
-#define debugPrint(...)
-#endif
-
-
 class TheThingsNetwork
 {
   private:
