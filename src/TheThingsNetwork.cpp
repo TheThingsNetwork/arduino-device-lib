@@ -219,40 +219,37 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], bool reset, long int nbr_delay, int max_attempts) {
-  
-  static int nbr_attempts;
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
+  int nbr_attempts = 0;
 
-  if (nbr_attempts++ <= max_attempts)
-     if (TheThingsNetwork::join(appEui, appKey, true, nbr_delay, max_attempts) == true)
-        return (true);
-  delay(nbr_delay);
-  if (reset) {
+  while (nbr_attempts++ != max_attempts) {
+    delay(nbr_delay);
     TheThingsNetwork::reset();
+    debugPrint(readValue(F("mac get band")));
+    String devEui = readValue(F("sys get hweui"));
+    sendCommand(F("mac set appeui"), appEui, 8);
+    String str = "";
+    str.concat(F("mac set deveui "));
+    str.concat(devEui);
+    sendCommand(str);
+    sendCommand(F("mac set appkey"), appKey, 16);
+    if (!sendCommand(F("mac join otaa"))) {
+      debugPrintLn(F("Send join command failed"));
+      continue;
+    }
+    String response = readLine(10000);
+    if (response != F("accepted")) {
+      debugPrint(F("Join not accepted: "));
+      debugPrintLn(response);
+      continue;
+     }
+    debugPrint(F("Join accepted. Status: "));
+    debugPrintLn(readValue(F("mac get status")));
+    return true;
   }
-  String devEui = readValue(F("sys get hweui"));
-  sendCommand(F("mac set appeui"), appEui, 8);
-  String str = "";
-  str.concat(F("mac set deveui "));
-  str.concat(devEui);
-  sendCommand(str);
-  sendCommand(F("mac set appkey"), appKey, 16);
-  if (!sendCommand(F("mac join otaa"))) {
-    debugPrintLn(F("Send join command failed"));
-    return false;
-  }
-
-  String response = readLine(10000);
-  if (response != F("accepted")) {
-    debugPrint(F("Join not accepted: "));
-    debugPrintLn(response);
-    return false;
-  }
-
-  debugPrint(F("Join accepted. Status: "));
-  debugPrintLn(readValue(F("mac get status")));
-  return true;
+  return false;
 }
+
 
 int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
   String str = "";
