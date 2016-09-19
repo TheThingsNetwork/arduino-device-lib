@@ -219,14 +219,40 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], bool restart, long int nbr_delay, int max_attempts) {
+bool TheThingsNetwork::join(long int nbr_delay, int max_attempts) {
   int nbr_attempts = 0;
 
   while (nbr_attempts++ != max_attempts) {
     delay(nbr_delay);
-    if (restart) {
-      reset();
+    String devEui = readValue(F("sys get hweui"));
+    String str = "";
+    str.concat(F("mac set deveui "));
+    str.concat(devEui);
+    sendCommand(str);
+    if (!sendCommand(F("mac join otaa"))) {
+      debugPrintLn(F("Send join command failed"));
+      continue;
     }
+    String response = readLine(10000);
+    if (response != F("accepted")) {
+      debugPrint(F("Join not accepted: "));
+      debugPrintLn(response);
+      continue;
+    }
+    debugPrint(F("Join accepted. Status: "));
+    debugPrintLn(readValue(F("mac get status")));
+    return true;
+  }
+  return false;
+}
+
+
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
+  int nbr_attempts = 0;
+
+  while (nbr_attempts++ != max_attempts) {
+    delay(nbr_delay);
+    reset();
     String devEui = readValue(F("sys get hweui"));
     sendCommand(F("mac set appeui"), appEui, 8);
     String str = "";
