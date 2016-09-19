@@ -250,9 +250,9 @@ bool TheThingsNetwork::join(long int nbr_delay, int max_attempts) {
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
   int nbr_attempts = 0;
 
+  reset();
   while (nbr_attempts++ != max_attempts) {
     delay(nbr_delay);
-    reset();
     String devEui = readValue(F("sys get hweui"));
     sendCommand(F("mac set appeui"), appEui, 8);
     String str = "";
