@@ -25,7 +25,7 @@
 
 typedef unsigned long   fp_ttn_t;
 
-#define TTN_EU868 1
+#define TTN_FP_EU868 1
 
 class TheThingsNetwork
 {
@@ -44,6 +44,13 @@ class TheThingsNetwork
     bool enableFsbChannels(int fsb);
 
   public:
+    TheThingsNetwork(fp_ttn_t *fp)
+    {
+      #ifdef TTN_FP_EU868
+        *fp = 1;
+      #endif
+      this->fp = *fp;
+    }
     int downlinkPort;
     byte downlink[64];
     TheThingsNetwork(fp_ttn_t fp);
