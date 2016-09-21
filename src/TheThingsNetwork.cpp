@@ -312,3 +312,55 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
+
+void TheThingsNetwork::configure_channels(int total_ch) {
+   int ch;
+   long int freq = this->fp;
+   String str = "";
+
+   for (ch = 0; ch < total_ch; ch++) {
+       str.concat(F("mac set ch freq "));
+       str.concat(ch);
+       str.concat(F(" "));
+       str.concat(freq);
+       sendCommand(str);
+       str = "";
+       str.concat(F("mac set ch drrange "));
+       str.concat(ch);
+       str.concat(F(" 0 5"));
+       sendCommand(str);
+       str = "";
+       str.concat(F("mac set ch status "));
+       str.concat(ch);
+       str.concat(F(" on"));
+       sendCommand(str);
+       str = "";
+       freq = freq + 200000;
+   }
+}
+
+void TheThingsNetwork::set_dcycle() {
+  int ch;
+  int total_ch = 0;
+  int new_dcycle = 0;
+  String str = "";
+
+  for (ch = 0; ch < 16; ch++) {
+    str.concat(F("mac get ch status "));
+    str.concat(ch);
+    if (readValue(str) == F("on"))
+      total_ch += 1;
+    str = "";
+  }
+  configure_channels(total_ch);
+  new_dcycle = (100 * total_ch) - 1;
+  for (ch = 0; ch < total_ch; ch++) {
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" "));
+    str.concat(new_dcycle);
+    sendCommand(str);
+    str = "";
+  }
+}
+

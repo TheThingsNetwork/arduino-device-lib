@@ -57,6 +57,8 @@ class TheThingsNetwork
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
+    void configure_channels(int total_ch);
+    void set_dcycle();
 };
 
 #endif
