@@ -297,7 +297,7 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
   debugPrint(F("Battery: "));
-  debugPrint(readValue(F("sys get vdd")));
+  debugPrintLn(readValue(F("sys get vdd")));
   debugPrint(F("AppEUI: "));
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
