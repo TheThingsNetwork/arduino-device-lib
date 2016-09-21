@@ -246,7 +246,6 @@ bool TheThingsNetwork::join(long int nbr_delay, int max_attempts) {
   return false;
 }
 
-
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
   int nbr_attempts = 0;
 
@@ -269,14 +268,13 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long in
       debugPrint(F("Join not accepted: "));
       debugPrintLn(response);
       continue;
-     }
+    }
     debugPrint(F("Join accepted. Status: "));
     debugPrintLn(readValue(F("mac get status")));
     return true;
   }
   return false;
 }
-
 
 int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
   String str = "";
