@@ -44,6 +44,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
     void configure_EU868();
+    void configure_channels();
 
   public:
     int downlinkPort;
@@ -56,7 +57,6 @@ class TheThingsNetwork
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
-    void configure_channels();
 };
 
 #endif

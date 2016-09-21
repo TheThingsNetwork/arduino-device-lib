@@ -10,6 +10,7 @@
 void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   this->modemStream = &modemStream;
   this->debugStream = &debugStream;
+  configure_channels();
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
