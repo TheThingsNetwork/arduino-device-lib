@@ -354,11 +354,11 @@ void TheThingsNetwork::configure_EU868() {
 
 void TheThingsNetwork::configure_channels() {
   switch (this->fp) {
-      case 1:
-         configure_EU868();
-         break;
-      default:
-         debugPrintLn("Invalid frequency plan");
+    case TTN_FP_EU868:
+      configure_EU868();
+      break;
+    default:
+      debugPrintLn("Invalid frequency plan");
   }
 }
 
