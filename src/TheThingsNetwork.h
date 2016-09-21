@@ -44,16 +44,12 @@ class TheThingsNetwork
     bool enableFsbChannels(int fsb);
 
   public:
-    TheThingsNetwork(fp_ttn_t *fp)
+    TheThingsNetwork(fp_ttn_t fp)
     {
-      #ifdef TTN_FP_EU868
-        *fp = 1;
-      #endif
-      this->fp = *fp;
+      this->fp = fp;
     }
     int downlinkPort;
     byte downlink[64];
-    TheThingsNetwork(fp_ttn_t fp);
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
