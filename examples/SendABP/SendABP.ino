@@ -20,7 +20,6 @@ void setup() {
   loraSerial.begin(57600);
 
   ttn.init(loraSerial, debugSerial);
-  ttn.reset();
 
   //the device will configure the LoRa module
   ttn.personalize(devAddr, nwkSKey, appSKey);
