@@ -313,54 +313,55 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
 
-void TheThingsNetwork::configure_channels(int total_ch) {
-   int ch;
-   long int freq = this->fp;
-   String str = "";
-
-   for (ch = 0; ch < total_ch; ch++) {
-       str.concat(F("mac set ch freq "));
-       str.concat(ch);
-       str.concat(F(" "));
-       str.concat(freq);
-       sendCommand(str);
-       str = "";
-       str.concat(F("mac set ch drrange "));
-       str.concat(ch);
-       str.concat(F(" 0 5"));
-       sendCommand(str);
-       str = "";
-       str.concat(F("mac set ch status "));
-       str.concat(ch);
-       str.concat(F(" on"));
-       sendCommand(str);
-       str = "";
-       freq = freq + 200000;
-   }
-}
-
-void TheThingsNetwork::set_dcycle() {
+void TheThingsNetwork::configure_EU868() {
   int ch;
-  int total_ch = 0;
-  int new_dcycle = 0;
+  long int freq = 867100000;
   String str = "";
 
-  for (ch = 0; ch < 16; ch++) {
-    str.concat(F("mac get ch status "));
-    str.concat(ch);
-    if (readValue(str) == F("on"))
-      total_ch += 1;
-    str = "";
-  }
-  configure_channels(total_ch);
-  new_dcycle = (100 * total_ch) - 1;
-  for (ch = 0; ch < total_ch; ch++) {
+  str.concat(F("mac set rx2 3 869525000"));
+  sendCommand(str);
+  str = "";
+  for (ch = 0; ch <= 7; ch++) {
+    if (ch >= 3) {
+      str.concat(F("mac set ch freq "));
+      str.concat(ch);
+      str.concat(F(" "));
+      str.concat(freq);
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch drrange "));
+      str.concat(ch);
+      str.concat(F(" 0 5"));
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch status "));
+      str.concat(ch);
+      str.concat(F(" on"));
+      sendCommand(str);
+      str = "";
+      freq = freq + 200000;
+    }
     str.concat(F("mac set ch dcycle "));
     str.concat(ch);
-    str.concat(F(" "));
-    str.concat(new_dcycle);
+    str.concat(F(" 799"));
     sendCommand(str);
     str = "";
   }
+  str.concat(F("mac set ch drrange 1 0 6"));
+  sendCommand(str);
+  str = "";
 }
 
+void TheThingsNetwork::configure_channels() {
+  switch (this->fp) {
+      case 1:
+         configure_EU868();
+         break;
+      default:
+         debugPrintLn("Invalid frequency plan");
+  }
+}
+
+TheThingsNetwork::TheThingsNetwork(fp_ttn_t fp) {
+  this->fp = fp;
+}

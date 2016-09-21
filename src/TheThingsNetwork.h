@@ -26,6 +26,7 @@
 typedef unsigned long   fp_ttn_t;
 
 #define TTN_FP_EU868 1
+#define TTN_FP_US915 2
 
 class TheThingsNetwork
 {
@@ -44,12 +45,9 @@ class TheThingsNetwork
     bool enableFsbChannels(int fsb);
 
   public:
-    TheThingsNetwork(fp_ttn_t fp)
-    {
-      this->fp = fp;
-    }
     int downlinkPort;
     byte downlink[64];
+    TheThingsNetwork(fp_ttn_t fp);
     void init(Stream& modemStream, Stream& debugStream);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
@@ -57,8 +55,8 @@ class TheThingsNetwork
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
-    void configure_channels(int total_ch);
-    void set_dcycle();
+    void configure_channels();
+    void configure_EU868();
 };
 
 #endif
