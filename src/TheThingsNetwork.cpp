@@ -219,16 +219,16 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(long int nbr_delay, int max_attempts) {
+bool TheThingsNetwork::join(int retries, long int retry_delay) {
   int nbr_attempts = 0;
 
-  while (nbr_attempts++ != max_attempts) {
-    delay(nbr_delay);
-    String devEui = readValue(F("sys get hweui"));
-    String str = "";
-    str.concat(F("mac set deveui "));
-    str.concat(devEui);
-    sendCommand(str);
+  String devEui = readValue(F("sys get hweui"));
+  String str = "";
+  str.concat(F("mac set deveui "));
+  str.concat(devEui);
+  sendCommand(str);
+  while (nbr_attempts++ != retries) {
+    delay(retry_delay);
     if (!sendCommand(F("mac join otaa"))) {
       debugPrintLn(F("Send join command failed"));
       continue;
@@ -246,34 +246,11 @@ bool TheThingsNetwork::join(long int nbr_delay, int max_attempts) {
   return false;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], long int nbr_delay, int max_attempts) {
-  int nbr_attempts = 0;
-
-  reset();
-  while (nbr_attempts++ != max_attempts) {
-    delay(nbr_delay);
-    String devEui = readValue(F("sys get hweui"));
-    sendCommand(F("mac set appeui"), appEui, 8);
-    String str = "";
-    str.concat(F("mac set deveui "));
-    str.concat(devEui);
-    sendCommand(str);
-    sendCommand(F("mac set appkey"), appKey, 16);
-    if (!sendCommand(F("mac join otaa"))) {
-      debugPrintLn(F("Send join command failed"));
-      continue;
-    }
-    String response = readLine(10000);
-    if (response != F("accepted")) {
-      debugPrint(F("Join not accepted: "));
-      debugPrintLn(response);
-      continue;
-    }
-    debugPrint(F("Join accepted. Status: "));
-    debugPrintLn(readValue(F("mac get status")));
-    return true;
-  }
-  return false;
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retry_delay) {
+  reset(); 
+  sendCommand(F("mac set appeui"), appEui, 8);
+  sendCommand(F("mac set appkey"), appKey, 16);
+  return join(retries, retry_delay);
 }
 
 int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
