@@ -29,6 +29,7 @@ class TheThingsNetwork
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    void (* messageCallback)(const byte* buffer, int length, int port);
 
     String readLine(int waitTime = DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = DEFAULT_WAIT_TIME, String okMessage = "ok");
@@ -39,14 +40,14 @@ class TheThingsNetwork
     bool enableFsbChannels(int fsb);
 
   public:
-    int downlinkPort;
-    byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
+    void onMessage(void (*cb)(const byte* buffer, int length, int port));
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool personalize();
     bool join(const byte appEui[8], const byte appKey[16]);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
+    int poll(int port = 1, bool confirm = false);
     void showStatus();
 };
 

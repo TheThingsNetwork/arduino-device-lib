@@ -201,6 +201,11 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
   return true;
 }
 
+void TheThingsNetwork::onMessage(void (*cb)(const byte* buffer, int length, int port))
+{
+  this->messageCallback = cb;
+}
+
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
   reset();
   sendCommand(F("mac set devaddr"), devAddr, 4);
@@ -270,14 +275,17 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   }
   if (response.startsWith(F("mac_rx"))) {
     int portEnds = response.indexOf(" ", 7);
-    this->downlinkPort = response.substring(7, portEnds).toInt();
+    int downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
     int downlinkLength = data.length() / 2;
+    byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
-      this->downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+      downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
+    if (this->messageCallback)
+      this->messageCallback(downlink, downlinkLength, downlinkPort);
     return 2;
   }
 
