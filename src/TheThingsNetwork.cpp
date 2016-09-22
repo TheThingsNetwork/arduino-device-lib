@@ -95,6 +95,11 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   #endif
 
   modemStream->println(F("sys reset"));
+  String devEui = readValue(F("sys get hweui"));
+  String str = "";
+  str.concat(F("mac set deveui "));
+  str.concat(devEui);
+  sendCommand(str);
   String version = readLine(3000);
   if (version == "") {
     debugPrintLn(F("Invalid version"));
@@ -107,7 +112,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   debugPrint(F(", model is "));
   debugPrintLn(model);
 
-  String str = "";
+  str = "";
   str.concat(F("mac set adr "));
   if(adr){
     str.concat(F("on"));
@@ -219,25 +224,26 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   return true;
 }
 
-bool TheThingsNetwork::join(int retries, long int retry_delay) {
+bool TheThingsNetwork::join(int retries, long int retryDelay) {
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
   str.concat(devEui);
   sendCommand(str);
   while (retries != 0) {
-    delay(retry_delay);
     if (retries > 0) {
       retries--;
     }
     if (!sendCommand(F("mac join otaa"))) {
       debugPrintLn(F("Send join command failed"));
+      delay(retryDelay);
       continue;
     }
     String response = readLine(10000);
     if (response != F("accepted")) {
       debugPrint(F("Join not accepted: "));
       debugPrintLn(response);
+      delay(retryDelay);
       continue;
     }
     debugPrint(F("Join accepted. Status: "));
@@ -247,11 +253,11 @@ bool TheThingsNetwork::join(int retries, long int retry_delay) {
   return false;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retry_delay) {
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
   reset(); 
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
-  return join(retries, retry_delay);
+  return join(retries, retryDelay);
 }
 
 int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {

@@ -44,8 +44,8 @@ class TheThingsNetwork
     byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
-    bool join(int retries = -1, long int retry_delay = 10000);
-    bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retry_delay = 10000);
+    bool join(int retries = -1, long int retryDelay = 10000);
+    bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
