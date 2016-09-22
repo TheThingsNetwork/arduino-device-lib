@@ -45,6 +45,7 @@ class TheThingsNetwork
     void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool personalize();
+    bool provision(const byte appEui[8], const byte appKey[16]);
     bool join(const byte appEui[8], const byte appKey[16]);
     int sendBytes(const byte* payload, int length, int port = 1, bool confirm = false);
     int poll(int port = 1, bool confirm = false);
