@@ -18,6 +18,9 @@ void setup() {
 
   ttn.init(loraSerial, debugSerial);
 
+  debugSerial.println("-- STATUS");
+  ttn.showStatus();
+
   debugSerial.println("-- RESET");
   ttn.reset();
 
@@ -26,9 +29,6 @@ void setup() {
   while(!ttn.join(appEui, appKey)){
     delay(10000);
   }
-
-  debugSerial.println("-- STATUS");
-  ttn.showStatus();
 }
 
 void loop() {
