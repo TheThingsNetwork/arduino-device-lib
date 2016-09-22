@@ -37,12 +37,12 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
+    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
 
   public:
     int downlinkPort;
     byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
-    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool join(int retries = -1, long int retry_delay = 10000);
     bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retry_delay = 10000);

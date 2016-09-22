@@ -220,15 +220,16 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 }
 
 bool TheThingsNetwork::join(int retries, long int retry_delay) {
-  int nbr_attempts = 0;
-
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
   str.concat(devEui);
   sendCommand(str);
-  while (nbr_attempts++ != retries) {
+  while (retries != 0) {
     delay(retry_delay);
+    if (retries > 0) {
+      retries--;
+    }
     if (!sendCommand(F("mac join otaa"))) {
       debugPrintLn(F("Send join command failed"));
       continue;
