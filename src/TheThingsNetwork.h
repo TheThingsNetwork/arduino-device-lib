@@ -38,7 +38,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
-    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
+    void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
 
   public:
     void init(Stream& modemStream, Stream& debugStream);
