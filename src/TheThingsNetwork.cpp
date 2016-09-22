@@ -313,11 +313,6 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
-  debugPrint(F("ch 2 US : "));
-  debugPrintLn(readValue(F("mac get ch freq 2")));
-  debugPrint(F("ch 3 US : "));
-  debugPrintLn(readValue(F("mac get ch freq 3")));
-
 }
 
 void TheThingsNetwork::configure_EU868() {
@@ -325,7 +320,6 @@ void TheThingsNetwork::configure_EU868() {
   long int freq = 867100000;
   String str = "";
 
-  debugPrintLn(F("wrong conf"));
   str.concat(F("mac set rx2 3 869525000"));
   sendCommand(str);
   str = "";
@@ -360,14 +354,13 @@ void TheThingsNetwork::configure_EU868() {
   str = "";
 }
 
-void TheThingsNetwork::configure_US915()
-{
+void TheThingsNetwork::configure_US915() {
   int ch;
   long int freq = 903900000;
   String str = "";
 
   
-  for (ch = 4; ch <= 7; ch++) {
+  for (ch = 0; ch <= 7; ch++) {
     str.concat(F("mac set ch drrange "));
     str.concat(ch);
     str.concat(F(" 0 5"));
