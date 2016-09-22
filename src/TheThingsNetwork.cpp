@@ -232,6 +232,13 @@ bool TheThingsNetwork::personalize() {
   return true;
 }
 
+bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
+  sendCommand(F("mac set appeui"), appEui, 8);
+  sendCommand(F("mac set appkey"), appKey, 16);
+  sendCommand(F("mac save"));
+}
+
+
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
   String devEui = readValue(F("sys get hweui"));
   String str = "";
@@ -262,9 +269,8 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
 }
 
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
-  reset(); 
-  sendCommand(F("mac set appeui"), appEui, 8);
-  sendCommand(F("mac set appkey"), appKey, 16);
+  reset();
+  provision(appEui, appKey);
   return join(retries, retryDelay);
 }
 
