@@ -1,14 +1,14 @@
 #include <TheThingsNetwork.h>
 
-#define debugSerial Serial
 #define loraSerial Serial1
+#define debugSerial Serial
 
 TheThingsNetwork ttn;
 
 void setup()
 {
-  debugSerial.begin(9600);
   loraSerial.begin(57600);
+  debugSerial.begin(9600);
 
   ttn.init(loraSerial, debugSerial);
 }
