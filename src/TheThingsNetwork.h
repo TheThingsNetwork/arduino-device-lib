@@ -47,7 +47,6 @@ class TheThingsNetwork
     bool personalize();
     bool join(const byte appEui[8], const byte appKey[16]);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    int sendString(String message, int port = 1, bool confirm = false);
     void showStatus();
 };
 
