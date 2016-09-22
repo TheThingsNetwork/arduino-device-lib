@@ -38,6 +38,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
+    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
 
   public:
     void init(Stream& modemStream, Stream& debugStream);
@@ -45,7 +46,8 @@ class TheThingsNetwork
     void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool personalize();
-    bool join(const byte appEui[8], const byte appKey[16]);
+    bool join(int retries = -1, long int retryDelay = 10000);
+    bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
     int sendBytes(const byte* payload, int length, int port = 1, bool confirm = false);
     int poll(int port = 1, bool confirm = false);
     void showStatus();
