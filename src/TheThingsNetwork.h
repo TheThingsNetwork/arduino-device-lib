@@ -44,6 +44,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
     void configure_EU868();
+    void configure_US915();
     void configure_channels();
 
   public:

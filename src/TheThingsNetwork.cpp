@@ -10,7 +10,7 @@
 void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   this->modemStream = &modemStream;
   this->debugStream = &debugStream;
-  configure_channels();
+  //configure_channels();
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
@@ -242,6 +242,7 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16]) {
 
   debugPrint(F("Join accepted. Status: "));
   debugPrintLn(readValue(F("mac get status")));
+  configure_channels();
   return true;
 }
 
@@ -312,6 +313,11 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+  debugPrint(F("ch 2 US : "));
+  debugPrintLn(readValue(F("mac get ch freq 2")));
+  debugPrint(F("ch 3 US : "));
+  debugPrintLn(readValue(F("mac get ch freq 3")));
+
 }
 
 void TheThingsNetwork::configure_EU868() {
@@ -319,6 +325,7 @@ void TheThingsNetwork::configure_EU868() {
   long int freq = 867100000;
   String str = "";
 
+  debugPrintLn(F("wrong conf"));
   str.concat(F("mac set rx2 3 869525000"));
   sendCommand(str);
   str = "";
@@ -353,10 +360,46 @@ void TheThingsNetwork::configure_EU868() {
   str = "";
 }
 
+void TheThingsNetwork::configure_US915()
+{
+  int ch;
+  long int freq = 903900000;
+  String str = "";
+
+  
+  for (ch = 4; ch <= 7; ch++) {
+    str.concat(F("mac set ch drrange "));
+    str.concat(ch);
+    str.concat(F(" 0 5"));
+    sendCommand(str);
+    str = "";
+    str.concat(F("mac set ch status "));
+    str.concat(ch);
+    str.concat(F(" on"));
+    sendCommand(str);
+    str = "";
+    str.concat(F("mac set ch freq "));
+    str.concat(ch);
+    str.concat(F(" "));
+    str.concat(freq);
+    sendCommand(str);
+    str = "";
+    freq = freq + 200000;
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" 799"));
+    sendCommand(str);
+    str = "";
+  }
+}
+
 void TheThingsNetwork::configure_channels() {
   switch (this->fp) {
     case TTN_FP_EU868:
       configure_EU868();
+      break;
+    case TTN_FP_US915:
+      configure_US915();
       break;
     default:
       debugPrintLn("Invalid frequency plan");
