@@ -7,7 +7,7 @@ TheThingsNetwork ttn;
 
 void setup()
 {
-  debugSerial.begin(115200);
+  debugSerial.begin(9600);
   loraSerial.begin(57600);
 
   ttn.init(loraSerial, debugSerial);

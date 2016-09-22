@@ -31,30 +31,19 @@ void setup() {
 void loop() {
   debugSerial.println("-- LOOP");
 
-  // Prepare payload of 1 byte to indicate LED status
-  byte payload[1];
-  data[0] = (digitalRead(LED_BUILTIN) == HIGH) ? 1 : 0;
-
-  // Send it off
-  ttn.sendBytes(payload, sizeof(payload));
+  // Send single byte to poll for incoming messages
+  ttn.poll();
 
   delay(10000);
 }
 
 void message(const byte* payload, int length, int port) {
   debugSerial.println("-- MESSAGE");
+  debugSerial.println("Received " + String(length) + " bytes on port " + String(port) + ":");
 
-  // Only handle messages of a single byte
-  if (length != 1) {
-    return;
+  for (int i = 0; i < length; i++) {
+    debugSerial.print(" " + String(payload[i]));
   }
 
-  if (payload[0] == 0) {
-    debugSerial.println("LED: off");
-    digitalWrite(LED_BUILTIN, LOW);
-      
-  } else if (payload[0] == 1) {
-    debugSerial.println("LED: on");
-    digitalWrite(LED_BUILTIN, HIGH);
-  }
+  debugSerial.println();
 }

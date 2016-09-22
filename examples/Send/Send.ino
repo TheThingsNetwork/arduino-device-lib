@@ -18,9 +18,6 @@ void setup() {
 
   ttn.init(loraSerial, debugSerial);
 
-  // Set callback for incoming messages
-  ttn.onMessage(message);
-
   debugSerial.println("-- STATUS");
   ttn.showStatus();
 
@@ -39,22 +36,4 @@ void loop() {
   ttn.sendBytes(payload, sizeof(payload));
 
   delay(10000);
-}
-
-void message(const byte* payload, int length, int port) {
-  debugSerial.println("-- MESSAGE");
-
-  // Only handle messages of a single byte
-  if (length != 1) {
-    return;
-  }
-
-  if (payload[0] == 0) {
-    debugSerial.println("LED: off");
-    digitalWrite(LED_BUILTIN, LOW);
-      
-  } else if (payload[0] == 1) {
-    debugSerial.println("LED: on");
-    digitalWrite(LED_BUILTIN, HIGH);
-  }
 }
