@@ -1,21 +1,10 @@
 # API Reference
-
-Include the TheThingsNetwork library:
+Include and instantiate the TheThingsNetwork class.
 
 ```c
 #include <TheThingsNetwork.h>
+ttn TheThingsNetwork
 ```
-
-## Method: reset
-Reset the LoRaWAN module. In most cases you'd call this with no arguments before calling `init()`.
-
-```c
-void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
-```
-
-- `bool adr = true`
-- `int sf = DEFAULT_SF`
-- `int fsb = DEFAULT_FSB`
 
 ## Method: init
 Initialise the library with the streams it should communicate with.
@@ -69,19 +58,18 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Activate the device via OTAA (default).
 
 ```c
-bool join(const byte appEui[8], const byte appKey[16]);
+bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
+bool join(int retries = -1, long int retryDelay = 10000);
 ```
 
 - `const byte appEui[8]`: Application EUI the device is registered to.
 - `const byte appKey[16]`: Application Key assigned to the device.
+- `int retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1` which means infinite.
+- `long int retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
 
-Returns `true` or `false` depending on whether it received confirmation that the activation was successful. You'll probably call this method in a while to retry until it returns true:
+Returns `true` or `false` depending on whether it received confirmation that the activation was successful before the maximum number of attempts.
 
-```c
-while (!ttn.join(appEui, appKey)) {
-  delay(10000);
-}
-```
+Call the method without the first two arguments if the device's LoRa module comes with pre-flashed values.
 
 ## Method: personalize
 Activate the device via ABP.
@@ -111,7 +99,7 @@ int sendBytes(const byte* payload, int length, int port = 1, bool confirm = fals
 - `const byte* payload `: Bytes to send.
 - `int length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `int port = 1`: The port to address. Defaults to `1`.
-- `bool confirm = false`: Whether to ask for confirmation.
+- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`.
 
 Returns a success or error code and logs the related error message: 
 
