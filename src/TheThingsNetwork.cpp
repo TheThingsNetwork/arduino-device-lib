@@ -235,9 +235,8 @@ bool TheThingsNetwork::personalize() {
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
-  sendCommand(F("mac save"));
+  sendCommand(F("mac save")); 
 }
-
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
   String devEui = readValue(F("sys get hweui"));
