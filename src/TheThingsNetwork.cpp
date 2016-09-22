@@ -90,7 +90,7 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
 }
 
 void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
-  #if !ADR_SUPPORTED
+  #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
 
@@ -120,7 +120,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   if (model == F("RN2483")) {
     str = "";
     str.concat(F("mac set pwridx "));
-    str.concat(PWRIDX_868);
+    str.concat(TTN_PWRIDX_868);
     sendCommand(str);
 
     switch (sf) {
@@ -150,7 +150,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   else if (model == F("RN2903")) {
     str = "";
     str.concat(F("mac set pwridx "));
-    str.concat(PWRIDX_915);
+    str.concat(TTN_PWRIDX_915);
     sendCommand(str);
     enableFsbChannels(fsb);
 
@@ -280,7 +280,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     int downlinkLength = data.length() / 2;
     byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
-      downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
