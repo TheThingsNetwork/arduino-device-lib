@@ -90,7 +90,7 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
 }
 
 void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
-  #if !ADR_SUPPORTED
+  #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
 
@@ -125,7 +125,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   if (model == F("RN2483")) {
     str = "";
     str.concat(F("mac set pwridx "));
-    str.concat(PWRIDX_868);
+    str.concat(TTN_PWRIDX_868);
     sendCommand(str);
 
     switch (sf) {
@@ -155,7 +155,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   else if (model == F("RN2903")) {
     str = "";
     str.concat(F("mac set pwridx "));
-    str.concat(PWRIDX_915);
+    str.concat(TTN_PWRIDX_915);
     sendCommand(str);
     enableFsbChannels(fsb);
 
@@ -206,12 +206,21 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
   return true;
 }
 
+void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port))
+{
+  this->messageCallback = cb;
+}
+
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
+  reset();
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
   sendCommand(F("mac set appskey"), appSKey, 16);
-  sendCommand(F("mac join abp"));
+  return personalize();
+}
 
+bool TheThingsNetwork::personalize() {
+  sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
     debugPrint(F("Personalize not accepted: "));
@@ -260,55 +269,56 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int ret
   return join(retries, retryDelay);
 }
 
-int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool confirm) {
+int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
   str.concat(port);
-  if (!sendCommand(str, buffer, length)) {
+  if (!sendCommand(str, payload, length)) {
     debugPrintLn(F("Send command failed"));
-    return 0;
+    return -1;
   }
 
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
-    return 0;
+    return -2;
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
-    return 0;
+    return 1;
   }
   if (response.startsWith(F("mac_rx"))) {
     int portEnds = response.indexOf(" ", 7);
-    this->downlinkPort = response.substring(7, portEnds).toInt();
+    int downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
     int downlinkLength = data.length() / 2;
+    byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
-      this->downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
-    return downlinkLength;
+    if (this->messageCallback)
+      this->messageCallback(downlink, downlinkLength, downlinkPort);
+    return 2;
   }
 
   debugPrint(F("Unexpected response: "));
   debugPrintLn(response);
+  return -10;
 }
 
-int TheThingsNetwork::sendString(String message, int port, bool confirm) {
-  int l = message.length();
-  byte buf[l + 1];
-  message.getBytes(buf, l + 1);
-
-  return sendBytes(buf, l, port, confirm);
+int TheThingsNetwork::poll(int port, bool confirm) {
+  byte payload[] = { 0x00 };
+  return sendBytes(payload, 1, port, confirm);
 }
 
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
   debugPrint(F("Battery: "));
-  debugPrint(readValue(F("sys get vdd")));
+  debugPrintLn(readValue(F("sys get vdd")));
   debugPrint(F("AppEUI: "));
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));

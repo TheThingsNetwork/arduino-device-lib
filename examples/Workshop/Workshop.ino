@@ -20,35 +20,32 @@ const byte appSKey[16] = { ... };
 #define debugSerial Serial
 #define loraSerial Serial1
 
-#define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
-#define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
-
 TheThingsNetwork ttn;
 
 void setup() {
   // Set up the serial interfaces for the debugging serial monitor and LoRa module
-  debugSerial.begin(115200);
+  debugSerial.begin(9600);
   loraSerial.begin(57600);
-  delay(1000);
 
-  // Initialize and reset The Things Uno
+  // Wait a maximum of 10s for Serial Monitor
+  while (!debugSerial && millis() < 10000);
+
+  // Initialize
   ttn.init(loraSerial, debugSerial);
-  ttn.reset();
 
   // Here we activate the device with your address and keys
   ttn.personalize(devAddr, nwkSKey, appSKey);
 
   // Show the status on the debugging serial monitor
   ttn.showStatus();
-  debugPrintLn("Setup for The Things Network complete");
 }
 
 void loop() {
   // Create a buffer with three bytes  
-  byte data[3] = { 0x01, 0x02, 0x03 };
+  byte payload[3] = { 0x01, 0x02, 0x03 };
 
   // Send it to the network
-  ttn.sendBytes(data, sizeof(data));
+  ttn.sendBytes(payload, sizeof(payload));
 
   // Wait 10 seconds
   delay(10000);

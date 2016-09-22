@@ -6,38 +6,31 @@
 # Class (KEYWORD1)
 #######################################
 
-TheThingsNetwork       	KEYWORD1
+TheThingsNetwork        KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-debugPrintLn			KEYWORD2
-debugPrint				KEYWORD2
+TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
+TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 
-HEX_CHAR_TO_NIBBLE		KEYWORD2
-HEX_PAIR_TO_BYTE		KEYWORD2
-
-downlinkPort			KEYWORD2
-downlink				KEYWORD2
-
-init					KEYWORD2
-reset					KEYWORD2
-personalize				KEYWORD2
-join					KEYWORD2
-sendBytes				KEYWORD2
-sendString				KEYWORD2
-showStatus				KEYWORD2
+init                    KEYWORD2
+onMessage               KEYWORD2
+reset                   KEYWORD2
+personalize             KEYWORD2
+join                    KEYWORD2
+sendBytes               KEYWORD2
+poll                    KEYWORD2
+showStatus              KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-DEFAULT_WAIT_TIME		LITERAL1
-DEFAULT_FSB				LITERAL1
-DEFAULT_FSB				LITERAL1
-
-ADR_SUPPORTED			LITERAL1
-
-PWRIDX_868           	LITERAL1
-PWRIDX_915				LITERAL1
+TTN_DEFAULT_WAIT_TIME   KEYWORD2
+TTN_DEFAULT_SF          KEYWORD2
+TTN_DEFAULT_FSB         KEYWORD2
+TTN_ADR_SUPPORTED       KEYWORD2
+TTN_PWRIDX_868          KEYWORD2
+TTN_PWRIDX_915          KEYWORD2

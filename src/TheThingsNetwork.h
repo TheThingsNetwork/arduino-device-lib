@@ -7,21 +7,21 @@
 #include <Arduino.h>
 #include <Stream.h>
 
-#define DEFAULT_WAIT_TIME 120
-#define DEFAULT_SF 7
-#define DEFAULT_FSB 2
+#define TTN_DEFAULT_WAIT_TIME 120
+#define TTN_DEFAULT_SF 7
+#define TTN_DEFAULT_FSB 2
 
 // Set ADR off as it is currently not supported by The Things Network
 // The RN2xx3 module slows down to SF12 when no datarate commands are
 // sent by the network, so disabling ADR is a work-around to avoid
 // all the modules slowing down to SF12
-#define ADR_SUPPORTED false
+#define TTN_ADR_SUPPORTED false
 
-#define PWRIDX_868 1
-#define PWRIDX_915 1
+#define TTN_PWRIDX_868 1
+#define TTN_PWRIDX_915 1
 
-#define HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
-#define HEX_PAIR_TO_BYTE(h, l) ((HEX_CHAR_TO_NIBBLE(h) << 4) + HEX_CHAR_TO_NIBBLE(l))
+#define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
+#define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
 class TheThingsNetwork
 {
@@ -29,25 +29,27 @@ class TheThingsNetwork
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    void (* messageCallback)(const byte* payload, int length, int port);
 
-    String readLine(int waitTime = DEFAULT_WAIT_TIME);
-    bool waitForOK(int waitTime = DEFAULT_WAIT_TIME, String okMessage = "ok");
+    String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
+    bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
     String readValue(String key);
-    bool sendCommand(String cmd, int waitTime = DEFAULT_WAIT_TIME);
-    bool sendCommand(String cmd, String value, int waitTime = DEFAULT_WAIT_TIME);
-    bool sendCommand(String cmd, const byte* buf, int length, int waitTime = DEFAULT_WAIT_TIME);
+    bool sendCommand(String cmd, int waitTime = TTN_DEFAULT_WAIT_TIME);
+    bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
+    bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
 
   public:
-    int downlinkPort;
-    byte downlink[64];
     void init(Stream& modemStream, Stream& debugStream);
+    void onMessage(void (*cb)(const byte* payload, int length, int port));
+    void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
+    bool personalize();
     bool join(int retries = -1, long int retryDelay = 10000);
     bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
-    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    int sendString(String message, int port = 1, bool confirm = false);
+    int sendBytes(const byte* payload, int length, int port = 1, bool confirm = false);
+    int poll(int port = 1, bool confirm = false);
     void showStatus();
 };
 
