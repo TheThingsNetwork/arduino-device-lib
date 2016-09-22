@@ -90,7 +90,7 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
 }
 
 void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
-  #if !ADR_SUPPORTED
+  #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
 
