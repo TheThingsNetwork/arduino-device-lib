@@ -3,7 +3,7 @@ Include and instantiate the TheThingsNetwork class.
 
 ```c
 #include <TheThingsNetwork.h>
-ttn TheThingsNetwork
+TheThingsNetwork ttn
 ```
 
 ## Method: init
