@@ -294,6 +294,11 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   return -10;
 }
 
+int TheThingsNetwork::poll(int port, bool confirm) {
+  byte payload[] = { 0x00 };
+  return sendBytes(payload, 1, port, confirm);
+}
+
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));

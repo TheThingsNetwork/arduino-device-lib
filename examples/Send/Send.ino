@@ -30,7 +30,7 @@ void loop() {
 
   // Prepare payload of 1 byte to indicate LED status
   byte payload[1];
-  data[0] = (digitalRead(LED_BUILTIN) == HIGH) ? 1 : 0;
+  payload[0] = (digitalRead(LED_BUILTIN) == HIGH) ? 1 : 0;
 
   // Send it off
   ttn.sendBytes(payload, sizeof(payload));
