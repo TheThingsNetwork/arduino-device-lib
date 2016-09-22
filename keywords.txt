@@ -26,7 +26,6 @@ reset					KEYWORD2
 personalize				KEYWORD2
 join					KEYWORD2
 sendBytes				KEYWORD2
-sendString				KEYWORD2
 showStatus				KEYWORD2
 
 #######################################

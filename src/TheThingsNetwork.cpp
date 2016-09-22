@@ -202,11 +202,15 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
 }
 
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
+  reset();
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
   sendCommand(F("mac set appskey"), appSKey, 16);
-  sendCommand(F("mac join abp"));
+  return personalize();
+}
 
+bool TheThingsNetwork::personalize() {
+  sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
     debugPrint(F("Personalize not accepted: "));
@@ -218,6 +222,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
   debugPrintLn(readValue(F("mac get status")));
   return true;
 }
+
 
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16]) {
   String devEui = readValue(F("sys get hweui"));
@@ -280,24 +285,11 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   debugPrintLn(response);
 }
 
-int TheThingsNetwork::sendString(String message, int port, bool confirm) {
-  int l = message.length();
-  byte buf[l + 1];
-  message.getBytes(buf, l + 1);
-
-  return sendBytes(buf, l, port, confirm);
-}
-
-int TheThingsNetwork::poll(int port, bool confirm) {
-  byte buffer[] = { 0x01 };
-  return sendBytes(buffer, 1, port, confirm);
-}
-
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
   debugPrint(F("Battery: "));
-  debugPrint(readValue(F("sys get vdd")));
+  debugPrintLn(readValue(F("sys get vdd")));
   debugPrint(F("AppEUI: "));
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
