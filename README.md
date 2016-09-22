@@ -10,7 +10,7 @@ At the moment this library requires devices to feature a [Microchip RN2xx3 modul
 
 ## Installation
 
-1. Download the source code of the [master](https://github.com/TheThingsNetwork/arduino-library/archive/master.zip) or latest [GitHub release](https://github.com/TheThingsNetwork/arduino-library/releases) as ZIP file.
+1. Download the source code of the [master](https://github.com/TheThingsNetwork/arduino-device-lib/archive/master.zip) or latest [GitHub release](https://github.com/TheThingsNetwork/arduino-device-lib/releases) as ZIP file.
 2. Follow [Importing a .zip Library](https://www.arduino.cc/en/Guide/Libraries#toc4) to install the library using the ZIP file.
 3. Restart the Arduino IDE to see the library's examples.
 
@@ -21,7 +21,7 @@ The library comes with several [examples](examples) that can be found under *Fil
 
 ## API
 
-TheThingsNetwork class features the following [public methods](https://github.com/TheThingsNetwork/arduino-library/blob/master/src/TheThingsNetwork.h#L39):
+TheThingsNetwork class features the following [public methods](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/src/TheThingsNetwork.h#L39):
 
 ```C++
   public:
@@ -37,13 +37,13 @@ TheThingsNetwork class features the following [public methods](https://github.co
 
 ## Contributing
 
-Source code for The Things Network is MIT licensed. We encourage users to make contributions on [Github](https://github.com/TheThingsNetwork/arduino-library) and to participate in discussions on [Slack](https://slack.thethingsnetwork.org).
+Source code for The Things Network is MIT licensed. We encourage users to make contributions on [Github](https://github.com/TheThingsNetwork/arduino-device-lib) and to participate in discussions on [Slack](https://slack.thethingsnetwork.org).
 
-If you find bugs or documentation mistakes, please check [open issues](https://github.com/TheThingsNetwork/arduino-library/issues) before [creating a new issue](https://github.com/TheThingsNetwork/arduino-library/issues/new). Please be specific and give a detailed description of the issue. Explain the steps to reproduce the problem. If you're able to fix the issue yourself, please help the community by forking the repository and submitting a pull request with your fix.
+If you find bugs or documentation mistakes, please check [open issues](https://github.com/TheThingsNetwork/arduino-device-lib/issues) before [creating a new issue](https://github.com/TheThingsNetwork/arduino-device-lib/issues/new). Please be specific and give a detailed description of the issue. Explain the steps to reproduce the problem. If you're able to fix the issue yourself, please help the community by forking the repository and submitting a pull request with your fix.
 
 For contributing a feature, please open an issue that explains what you're working on. Work in your own fork of the repository and submit a pull request when you're done.
 
-If you want to contribute, but don't know where to start, you could have a look at issues with the label [*help wanted*](https://github.com/TheThingsNetwork/arduino-library/labels/help%20wanted) or [*difficulty/easy*](https://github.com/TheThingsNetwork/arduino-library/labels/difficulty%2Feasy).
+If you want to contribute, but don't know where to start, you could have a look at issues with the label [*help wanted*](https://github.com/TheThingsNetwork/arduino-device-lib/labels/help%20wanted) or [*difficulty/easy*](https://github.com/TheThingsNetwork/arduino-device-lib/labels/difficulty%2Feasy).
 
 ## License
 
