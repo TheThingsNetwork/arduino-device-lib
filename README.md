@@ -1,49 +1,17 @@
 # The Things Network Arduino Library
 
-[![Slack Status](https://slack.thethingsnetwork.org/badge.svg)](https://slack.thethingsnetwork.org/)
-
-## Introduction
-
-This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Arduino-compatible devices like [The Things Uno](https://shop.thethingsnetwork.com/index.php/product/the-things-uno/) and [Node](https://shop.thethingsnetwork.com/index.php/product/the-things-node/) to communicate with [The Things Network](https://www.thethingsnetwork.org).
+This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Arduino-compatible devices like [The Things Uno](https://shop.thethingsnetwork.com/index.php/product/the-things-uno/) and [Node](https://shop.thethingsnetwork.com/index.php/product/the-things-node/) to communicate via [The Things Network](https://www.thethingsnetwork.org).
 
 At the moment this library requires devices to feature a [Microchip RN2xx3 module](http://www.microchip.com/design-centers/wireless-connectivity/embedded-wireless/lora-technology).
 
 ## Installation
 
-1. Download the source code of the [master](https://github.com/TheThingsNetwork/arduino-device-lib/archive/master.zip) or latest [GitHub release](https://github.com/TheThingsNetwork/arduino-device-lib/releases) as ZIP file.
-2. Follow [Importing a .zip Library](https://www.arduino.cc/en/Guide/Libraries#toc4) to install the library using the ZIP file.
-3. Restart the Arduino IDE to see the library's examples.
+Install the library by [Using the Library Manager](https://www.arduino.cc/en/Guide/Libraries#toc3) or by [Importing the .zip library](https://www.arduino.cc/en/Guide/Libraries#toc4) using either the [master](https://github.com/TheThingsNetwork/arduino-device-lib/archive/master.zip) or one of the [releases](https://github.com/TheThingsNetwork/arduino-device-lib/releases).
 
-**NOTE:** Examples for the library will not be exposed in the *File > Examples > TheThingsNetwork* until after the IDE has restarted.
+## Documentation
+
+A Quick Start and full API Reference can be found in [The Things Network Documentation](https://www.thethingsnetwork.org/docs/arduino/).
 
 ## Examples
-The library comes with several [examples](examples) that can be found under *File > Eamples > TheThingsNetwork* once you've installed the library and restarted the IDE.
 
-## API
-
-TheThingsNetwork class features the following [public methods](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/src/TheThingsNetwork.h#L39):
-
-```C++
-  public:
-    void init(Stream& modemStream, Stream& debugStream);
-    void onMessage(void (*cb)(const byte* buffer, int length, int port));
-    void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
-    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
-    bool join(const byte appEui[8], const byte appKey[16]);
-    int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
-    void showStatus();
-```
-
-## Contributing
-
-Source code for The Things Network is MIT licensed. We encourage users to make contributions on [Github](https://github.com/TheThingsNetwork/arduino-device-lib) and to participate in discussions on [Slack](https://slack.thethingsnetwork.org).
-
-If you find bugs or documentation mistakes, please check [open issues](https://github.com/TheThingsNetwork/arduino-device-lib/issues) before [creating a new issue](https://github.com/TheThingsNetwork/arduino-device-lib/issues/new). Please be specific and give a detailed description of the issue. Explain the steps to reproduce the problem. If you're able to fix the issue yourself, please help the community by forking the repository and submitting a pull request with your fix.
-
-For contributing a feature, please open an issue that explains what you're working on. Work in your own fork of the repository and submit a pull request when you're done.
-
-If you want to contribute, but don't know where to start, you could have a look at issues with the label [*help wanted*](https://github.com/TheThingsNetwork/arduino-device-lib/labels/help%20wanted) or [*difficulty/easy*](https://github.com/TheThingsNetwork/arduino-device-lib/labels/difficulty%2Feasy).
-
-## License
-
-Source code for The Things Network is released under the MIT License, which can be found in the [LICENSE](LICENSE) file. A list of authors can be found in the [AUTHORS](AUTHORS) file.
+The library comes with [examples](examples). After installing the library you will need to restart the Arduino IDE before they can be found under **File > Examples > TheThingsNetwork**.
