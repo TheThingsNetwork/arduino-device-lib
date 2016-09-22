@@ -17,15 +17,15 @@ const byte nwkSKey[16] = { ... };
 // This is used by the network for encryption
 const byte appSKey[16] = { ... };
 
-#define debugSerial Serial
 #define loraSerial Serial1
+#define debugSerial Serial
 
 TheThingsNetwork ttn;
 
 void setup() {
   // Set up the serial interfaces for the debugging serial monitor and LoRa module
-  debugSerial.begin(9600);
   loraSerial.begin(57600);
+  debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);

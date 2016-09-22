@@ -206,8 +206,7 @@ bool TheThingsNetwork::enableFsbChannels(int fsb) {
   return true;
 }
 
-void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port))
-{
+void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port)) {
   this->messageCallback = cb;
 }
 

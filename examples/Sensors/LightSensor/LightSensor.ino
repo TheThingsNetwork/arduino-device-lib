@@ -7,14 +7,14 @@ const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 //define AnalogPin for sensor
 #define LightPin A0
 
-#define debugSerial Serial
 #define loraSerial Serial1
+#define debugSerial Serial
 
 TheThingsNetwork ttn;
 
 void setup() {
-  debugSerial.begin(9600);
   loraSerial.begin(57600);
+  debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);

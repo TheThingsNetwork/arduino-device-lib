@@ -4,14 +4,14 @@
 const byte appEui[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-#define debugSerial Serial
 #define loraSerial Serial1
+#define debugSerial Serial
 
 TheThingsNetwork ttn;
 
 void setup() {
-  debugSerial.begin(9600);
   loraSerial.begin(57600);
+  debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);
