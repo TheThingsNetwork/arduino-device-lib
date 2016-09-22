@@ -269,13 +269,13 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
     return 0;
   }
   if (response.startsWith(F("mac_rx"))) {
-    byte downlink[64];
     int portEnds = response.indexOf(" ", 7);
     int downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
     int downlinkLength = data.length() / 2;
+    byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
-       downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+      downlink[i] = HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));

@@ -18,11 +18,9 @@ debugPrint				KEYWORD2
 HEX_CHAR_TO_NIBBLE		KEYWORD2
 HEX_PAIR_TO_BYTE		KEYWORD2
 
-downlinkPort			KEYWORD2
-downlink				KEYWORD2
-
 init					KEYWORD2
 reset					KEYWORD2
+onMessage				KEYWORD2
 personalize				KEYWORD2
 join					KEYWORD2
 sendBytes				KEYWORD2
