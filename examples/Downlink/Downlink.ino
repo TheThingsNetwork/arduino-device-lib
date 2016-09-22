@@ -30,10 +30,9 @@ void setup()
 }
 
 void loop() {
-  // Send a byte
-  byte buf[1];
-  buf[0] = 20;
-  int downlinkBytes = ttn.sendBytes(buf, 1);
+
+  // Send a byte to poll for messages
+  int downlinkBytes = ttn.poll();
 
   if (downlinkBytes > 0) {
     debugPrintLn("Received " + String(downlinkBytes) + " bytes")
