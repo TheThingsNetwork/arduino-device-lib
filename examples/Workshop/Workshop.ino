@@ -42,10 +42,10 @@ void setup() {
 
 void loop() {
   // Create a buffer with three bytes  
-  byte data[3] = { 0x01, 0x02, 0x03 };
+  byte payload[3] = { 0x01, 0x02, 0x03 };
 
   // Send it to the network
-  ttn.sendBytes(data, sizeof(data));
+  ttn.sendBytes(payload, sizeof(payload));
 
   // Wait 10 seconds
   delay(10000);

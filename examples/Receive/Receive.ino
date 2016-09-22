@@ -39,7 +39,7 @@ void loop() {
 
 void message(const byte* payload, int length, int port) {
   debugSerial.println("-- MESSAGE");
-  debugSerial.println("Received " + String(length) + " bytes on port " + String(port) + ":");
+  debugSerial.print("Received " + String(length) + " bytes on port " + String(port) + ":");
 
   for (int i = 0; i < length; i++) {
     debugSerial.print(" " + String(payload[i]));
