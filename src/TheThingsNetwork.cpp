@@ -257,11 +257,7 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
-    if (confirm == true) {
-      debugPrintLn(F("Time-out"));
-      return 0;
-    }
-    return 1;
+    return -2;
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
@@ -277,7 +273,7 @@ int TheThingsNetwork::sendBytes(const byte* buffer, int length, int port, bool c
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
-    return 1;
+    return 2;
   }
 
   debugPrint(F("Unexpected response: "));
