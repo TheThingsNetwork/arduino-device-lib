@@ -256,6 +256,8 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
     }
     debugPrint(F("Join accepted. Status: "));
     debugPrintLn(readValue(F("mac get status")));
+    debugPrint(F("DevAddr: "));
+    debugPrintLn(readValue(F("mac get devaddr")));
     return true;
   }
   return false;
@@ -322,9 +324,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
   debugPrintLn(readValue(F("mac get deveui")));
-  debugPrint(F("DevAddr: "));
-  debugPrintLn(readValue(F("mac get devaddr")));
-
+  
   if (this->model == F("RN2483")) {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
