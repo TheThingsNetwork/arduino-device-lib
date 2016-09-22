@@ -29,6 +29,7 @@ TheThingsNetwork class features the following [public methods](https://github.co
     void onMessage(void (*cb)(const byte* buffer, int length, int port));
     void reset(bool adr = true, int sf = DEFAULT_SF, int fsb = DEFAULT_FSB);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
+    bool personalize();
     bool join(const byte appEui[8], const byte appKey[16]);
     int sendBytes(const byte* buffer, int length, int port = 1, bool confirm = false);
     void showStatus();
