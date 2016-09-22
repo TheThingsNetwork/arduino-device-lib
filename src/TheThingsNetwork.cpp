@@ -358,8 +358,7 @@ void TheThingsNetwork::configure_US915() {
   int ch;
   long int freq = 903900000;
   String str = "";
-
-  
+ 
   for (ch = 0; ch <= 7; ch++) {
     str.concat(F("mac set ch drrange "));
     str.concat(ch);
