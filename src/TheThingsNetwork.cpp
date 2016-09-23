@@ -384,13 +384,15 @@ void TheThingsNetwork::configure_US915() {
  
   sendCommand(F("radio set freq 904200000"));
   str = "";
-  for (ch = 0; ch <= 7; ch++) {
-    str = "";
-    str.concat(F("mac set ch drrange "));
-    str.concat(ch);
-    str.concat(F(" 0 3"));
-    sendCommand(str);
-    str = "";
+  for (ch = 0; ch <= 71; ch++) {
+    if (ch <= 63) {
+      str = "";
+      str.concat(F("mac set ch drrange "));
+      str.concat(ch);
+      str.concat(F(" 0 3"));
+      sendCommand(str);
+      str = "";
+    }
     str.concat(F("mac set ch status "));
     str.concat(ch);
     str.concat(F(" on"));
