@@ -113,7 +113,6 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   str.concat(devEui);
   sendCommand(str);
 
-
   str = "";
   str.concat(F("mac set adr "));
   if(adr){
@@ -237,8 +236,10 @@ bool TheThingsNetwork::personalize() {
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
-  sendCommand(F("mac save"));
-  return waitForOK();
+  while (!sendCommand(F("mac save"))) {
+    delay(1000);
+  }
+  return waitForOK(10000);
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
