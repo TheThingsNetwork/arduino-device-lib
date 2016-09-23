@@ -18,6 +18,7 @@ TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 init                    KEYWORD2
 onMessage               KEYWORD2
 reset                   KEYWORD2
+provision		KEYWORD2
 personalize             KEYWORD2
 join                    KEYWORD2
 sendBytes               KEYWORD2
