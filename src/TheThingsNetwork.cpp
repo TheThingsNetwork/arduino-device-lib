@@ -236,7 +236,7 @@ bool TheThingsNetwork::personalize() {
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
-  return sendCommand(F("mac save"), 10000);
+  return sendCommand(F("mac save"), 50000);
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
