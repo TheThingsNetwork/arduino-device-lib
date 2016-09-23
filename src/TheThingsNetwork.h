@@ -10,6 +10,7 @@
 #define TTN_DEFAULT_WAIT_TIME 120
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
+#define TTN_RETX 7
 
 // Set ADR off as it is currently not supported by The Things Network
 // The RN2xx3 module slows down to SF12 when no datarate commands are

@@ -278,11 +278,14 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = readLine(10000);
-  if (response == "") {
-    debugPrintLn(F("Time-out"));
-    return -2;
+  String response = "";
+  response.concat(F("mac set retx "));
+  response.concat(TTN_RETX);
+  sendCommand(response);
+  while ((response = readLine(10000)) == "") {
+    delay(1000);
   }
+
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
