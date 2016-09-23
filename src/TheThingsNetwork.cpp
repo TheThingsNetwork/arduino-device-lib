@@ -10,6 +10,10 @@
 void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   this->modemStream = &modemStream;
   this->debugStream = &debugStream;
+  String retries = "";
+  retries.concat(F("mac set retx "));
+  retries.concat(TTN_RETX);
+  sendCommand(retries);
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
@@ -278,14 +282,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = "";
-  response.concat(F("mac set retx "));
-  response.concat(TTN_RETX);
-  sendCommand(response);
-  while ((response = readLine(10000)) == "") {
-    delay(1000);
-  }
-
+  String response = readLine(10000);
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
