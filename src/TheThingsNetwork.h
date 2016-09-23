@@ -23,14 +23,20 @@
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
+typedef unsigned long   fp_ttn_t;
+
+#define TTN_FP_EU868 1
+#define TTN_FP_US915 2
+
 class TheThingsNetwork
 {
   private:
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    fp_ttn_t fp;
     void (* messageCallback)(const byte* payload, int length, int port);
-
+   
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
     String readValue(String key);
@@ -39,8 +45,12 @@ class TheThingsNetwork
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
     void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
+    void configure_EU868();
+    void configure_US915();
+    void configure_channels();
 
   public:
+    TheThingsNetwork(fp_ttn_t fp);
     void init(Stream& modemStream, Stream& debugStream);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
