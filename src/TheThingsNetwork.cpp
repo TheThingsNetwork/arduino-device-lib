@@ -10,6 +10,7 @@
 void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   this->modemStream = &modemStream;
   this->debugStream = &debugStream;
+  configure_channels();
 }
 
 String TheThingsNetwork::readLine(int waitTime) {
@@ -342,4 +343,81 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+}
+
+void TheThingsNetwork::configure_EU868() {
+  int ch;
+  long int freq = 867100000;
+  String str = "";
+
+  str.concat(F("mac set rx2 3 869525000"));
+  sendCommand(str);
+  str = "";
+  for (ch = 0; ch <= 7; ch++) {
+    if (ch >= 3) {
+      str.concat(F("mac set ch freq "));
+      str.concat(ch);
+      str.concat(F(" "));
+      str.concat(freq);
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch drrange "));
+      str.concat(ch);
+      str.concat(F(" 0 5"));
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch status "));
+      str.concat(ch);
+      str.concat(F(" on"));
+      sendCommand(str);
+      str = "";
+      freq = freq + 200000;
+    }
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" 799"));
+    sendCommand(str);
+    str = "";
+  }
+  str.concat(F("mac set ch drrange 1 0 6"));
+  sendCommand(str);
+  str = "";
+}
+
+void TheThingsNetwork::configure_US915() {
+  int ch;
+  String str = "";
+ 
+  sendCommand(F("radio set freq 904200000"));
+  str = "";
+  for (ch = 0; ch <= 7; ch++) {
+    str = "";
+    str.concat(F("mac set ch drrange "));
+    str.concat(ch);
+    str.concat(F(" 0 3"));
+    sendCommand(str);
+    str = "";
+    str.concat(F("mac set ch status "));
+    str.concat(ch);
+    str.concat(F(" on"));
+    sendCommand(str);
+    str = "";
+  }
+}
+
+void TheThingsNetwork::configure_channels() {
+  switch (this->fp) {
+    case TTN_FP_EU868:
+      configure_EU868();
+      break;
+    case TTN_FP_US915:
+      configure_US915();
+      break;
+    default:
+      debugPrintLn("Invalid frequency plan");
+  }
+}
+
+TheThingsNetwork::TheThingsNetwork(fp_ttn_t fp) {
+  this->fp = fp;
 }
