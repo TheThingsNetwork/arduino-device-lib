@@ -119,3 +119,13 @@ Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
 Returns the result of `sendBytes()`.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
+
+## Method: provision
+Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
+
+```c
+bool provision(const byte appEui[8], const appKey[16]);
+```
+
+- `const byte appEui[8]`: Application Identifier for the device.
+- `const byte appKey[16]`: Application Key assigned to the device.

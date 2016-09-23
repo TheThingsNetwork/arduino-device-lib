@@ -95,11 +95,6 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   #endif
 
   modemStream->println(F("sys reset"));
-  String devEui = readValue(F("sys get hweui"));
-  String str = "";
-  str.concat(F("mac set deveui "));
-  str.concat(devEui);
-  sendCommand(str);
   String version = readLine(3000);
   if (version == "") {
     debugPrintLn(F("Invalid version"));
@@ -111,6 +106,12 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
   debugPrint(version);
   debugPrint(F(", model is "));
   debugPrintLn(model);
+
+  String devEui = readValue(F("sys get hweui"));
+  String str = "";
+  str.concat(F("mac set deveui "));
+  str.concat(devEui);
+  sendCommand(str);
 
   str = "";
   str.concat(F("mac set adr "));
@@ -232,6 +233,12 @@ bool TheThingsNetwork::personalize() {
   return true;
 }
 
+bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
+  sendCommand(F("mac set appeui"), appEui, 8);
+  sendCommand(F("mac set appkey"), appKey, 16);
+  return sendCommand(F("mac save"), 50000);
+}
+
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
   String devEui = readValue(F("sys get hweui"));
   String str = "";
@@ -264,9 +271,8 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
 }
 
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
-  reset(); 
-  sendCommand(F("mac set appeui"), appEui, 8);
-  sendCommand(F("mac set appkey"), appKey, 16);
+  reset();
+  provision(appEui, appKey);
   return join(retries, retryDelay);
 }
 
