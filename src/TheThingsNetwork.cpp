@@ -284,9 +284,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
 
   String response = "";
   if (confirm) {
-    while ((response = readLine(10000)) == "") {
-      delay(1000);
-    }
+    while ((response = readLine()) == "");
   }
   else {
     response = readLine(10000);
