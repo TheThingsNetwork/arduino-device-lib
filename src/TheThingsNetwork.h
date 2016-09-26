@@ -45,13 +45,13 @@ class TheThingsNetwork
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
     void reset(bool adr = true);
-    void configure_EU868();
-    void configure_US915();
-    void configure_channels(int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
+    void configure_EU868(int sf);
+    void configure_US915(int sf, int fsb);
+    void configure_channels(int sf, int fsb);
 
   public:
     TheThingsNetwork(fp_ttn_t fp);
-    void init(Stream& modemStream, Stream& debugStream);
+    void init(Stream& modemStream, Stream& debugStream, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
