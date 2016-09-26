@@ -283,8 +283,8 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   }
 
   String response = "";
-  if (confirm == true) {
-    response = readLine(100000);
+  if (confirm) {
+    response = readLine(600000);
   }
   else {
     response = readLine(10000);
