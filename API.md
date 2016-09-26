@@ -7,14 +7,16 @@ TheThingsNetwork ttn
 ```
 
 ## Method: init
-Initialise the library with the streams it should communicate with.
+Initialise the library with the streams it should communicate with also initialise the frequency plan: en-US or EU.
 
 ```c
-void init(Stream& modemStream, Stream& debugStream);
+void init(Stream& modemStream, Stream& debugStream, int sf = 7, int fsb = 2);
 ```
 
 - `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
 - `Stream& debugStream`: Stream for write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
+- `int sf`: enables the data rate with the right value, the bigger it is the lower the data rate is going to be (defaults to `7`).
+- `int fsb`: enable the right channels by comparing their frequency with the fsb (defaults to `2`).
 
 Set the data rates with [`Serial.begin()`](https://www.arduino.cc/en/Serial/Begin) before passing them to `init()`.
 
