@@ -137,6 +137,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 }
 
 bool TheThingsNetwork::personalize() {
+  configure_channels();
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -157,6 +158,7 @@ bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
+  configure_channels();
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
