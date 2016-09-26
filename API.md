@@ -7,7 +7,7 @@ TheThingsNetwork ttn
 ```
 
 ## Method: init
-Initialise the library with the streams it should communicate with.
+Initialize the library with the streams it should communicate with.
 
 ```c
 void init(Stream& modemStream, Stream& debugStream);
