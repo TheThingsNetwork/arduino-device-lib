@@ -7,12 +7,6 @@
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
-void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream, int sf, int fsb) {
-  this->modemStream = &modemStream;
-  this->debugStream = &debugStream;
-  configure_channels(sf, fsb);
-}
-
 String TheThingsNetwork::readLine(int waitTime) {
   unsigned long start = millis();
   while (millis() < start + waitTime) {
@@ -130,26 +124,6 @@ void TheThingsNetwork::reset(bool adr) {
   sendCommand(str);
 }
 
-bool TheThingsNetwork::enableFsbChannels(int fsb) {
-  int chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
-  int chHigh = fsb > 0 ? chLow + 7 : 71;
-  int ch500 = fsb + 63;
-
-  for (int i = 0; i < 72; i++){
-    String str = "";
-    str.concat(F("mac set ch status "));
-    str.concat(i);
-    if (i == ch500 || chLow <= i && i <= chHigh){
-      str.concat(F(" on"));
-    }
-    else{
-      str.concat(F(" off"));
-    }
-    sendCommand(str);
-  }
-  return true;
-}
-
 void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port)) {
   this->messageCallback = cb;
 }
@@ -216,6 +190,7 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
   reset();
   provision(appEui, appKey);
+  configure_channels();
   return join(retries, retryDelay);
 }
 
@@ -363,20 +338,29 @@ void TheThingsNetwork::configure_US915(int sf, int fsb) {
   int ch;
   int dr = -1;
   String str = "";
- 
+  int chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
+  int chHigh = fsb > 0 ? chLow + 7 : 71;
+  int ch500 = fsb + 63;
+
   sendCommand(F("radio set freq 904200000"));
   str = "";
   str.concat(F("mac set pwridx "));
   str.concat(TTN_PWRIDX_915);
   sendCommand(str);
-  enableFsbChannels(fsb);
-  for (ch = 0; ch <= 63; ch++) {
+  for (ch = 0; ch < 72; ch++) {
     str = "";
-    str.concat(F("mac set ch drrange "));
+    str.concat(F("mac set ch status "));
     str.concat(ch);
-    str.concat(F(" 0 3"));
+    (ch == ch500 || ch <= chHigh && ch >= chLow) ? str.concat(F(" on")) : str.concat(F(" off"));
     sendCommand(str);
-    str = "";
+    if (ch < 63) {
+      str = "";
+      str.concat(F("mac set ch drrange "));
+      str.concat(ch);
+      str.concat(F(" 0 3"));
+      sendCommand(str);
+      str = "";
+    }
   }
   switch (sf) {
     case 7:
@@ -417,6 +401,8 @@ void TheThingsNetwork::configure_channels(int sf, int fsb) {
   }
 }
 
-TheThingsNetwork::TheThingsNetwork(fp_ttn_t fp) {
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp) {
+  this->debugStream = &debugStream;
+  this->modemStream = &modemStream;
   this->fp = fp;
 }
