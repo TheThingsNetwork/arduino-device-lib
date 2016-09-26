@@ -44,10 +44,10 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool enableFsbChannels(int fsb);
-    void reset(bool adr = true, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
+    void reset(bool adr = true);
     void configure_EU868();
     void configure_US915();
-    void configure_channels();
+    void configure_channels(int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
 
   public:
     TheThingsNetwork(fp_ttn_t fp);
