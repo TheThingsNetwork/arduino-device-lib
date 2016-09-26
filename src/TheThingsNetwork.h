@@ -32,7 +32,7 @@ class TheThingsNetwork
     String model;
     void (* messageCallback)(const byte* payload, int length, int port);
 
-    String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
+    String readLine(long int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
     String readValue(String key);
     bool sendCommand(String cmd, int waitTime = TTN_DEFAULT_WAIT_TIME);

@@ -16,7 +16,7 @@ void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
   sendCommand(retries);
 }
 
-String TheThingsNetwork::readLine(int waitTime) {
+String TheThingsNetwork::readLine(long int waitTime) {
   unsigned long start = millis();
   while (millis() < start + waitTime) {
     String line = modemStream->readStringUntil('\n');
@@ -282,7 +282,13 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = readLine(10000);
+  String response = "";
+  if (confirm == true) {
+    response = readLine(100000);
+  }
+  else {
+    response = readLine(10000);
+  }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
