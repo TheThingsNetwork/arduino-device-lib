@@ -35,6 +35,8 @@ class TheThingsNetwork
     Stream* debugStream;
     String model;
     fp_ttn_t fp;
+    int sf;
+    int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
    
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
@@ -49,7 +51,7 @@ class TheThingsNetwork
     void configure_channels(int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp);    
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);    
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);

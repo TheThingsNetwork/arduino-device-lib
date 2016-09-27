@@ -137,7 +137,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 }
 
 bool TheThingsNetwork::personalize() {
-  configure_channels();
+  configure_channels(this->sf, this->fsb);
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -158,7 +158,7 @@ bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
-  configure_channels();
+  configure_channels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
@@ -355,7 +355,7 @@ void TheThingsNetwork::configure_US915(int sf, int fsb) {
     str.concat(ch);
     (ch == ch500 || ch <= chHigh && ch >= chLow) ? str.concat(F(" on")) : str.concat(F(" off"));
     sendCommand(str);
-    if (ch < 63) {
+    if (ch < 63 && (ch == ch500 || ch <= chHigh && ch >= chLow)) {
       str = "";
       str.concat(F("mac set ch drrange "));
       str.concat(ch);
@@ -403,8 +403,10 @@ void TheThingsNetwork::configure_channels(int sf, int fsb) {
   }
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp) {
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
   this->fp = fp;
+  this->sf = sf;
+  this->fsb = fsb;
 }
