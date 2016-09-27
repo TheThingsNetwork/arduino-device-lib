@@ -353,15 +353,21 @@ void TheThingsNetwork::configure_US915(int sf, int fsb) {
     str = "";
     str.concat(F("mac set ch status "));
     str.concat(ch);
-    (ch == ch500 || ch <= chHigh && ch >= chLow) ? str.concat(F(" on")) : str.concat(F(" off"));
-    sendCommand(str);
-    if (ch < 63 && (ch == ch500 || ch <= chHigh && ch >= chLow)) {
-      str = "";
-      str.concat(F("mac set ch drrange "));
-      str.concat(ch);
-      str.concat(F(" 0 3"));
+    if (ch == ch500 || ch <= chHigh && ch >= chLow) {
+      str.concat(F(" on"));
       sendCommand(str);
-      str = "";
+      if (ch < 63) {
+        str = "";
+        str.concat(F("mac set ch drrange "));
+        str.concat(ch);
+        str.concat(F(" 0 3"));
+        sendCommand(str);
+        str = "";
+      }
+    }
+    else {
+      str.concat(F(" off"));
+      sendCommand(str);
     }
   }
   switch (sf) {
