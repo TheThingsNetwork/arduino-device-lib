@@ -29,6 +29,7 @@ class TheThingsNetwork
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    float timer;
     void (* messageCallback)(const byte* payload, int length, int port);
 
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
@@ -43,6 +44,7 @@ class TheThingsNetwork
   public:
     void init(Stream& modemStream, Stream& debugStream);
     void showStatus();
+    void showAirTime();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);
     bool join(const byte appEui[8], const byte appKey[16], int retries = -1, long int retryDelay = 10000);
