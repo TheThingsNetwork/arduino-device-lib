@@ -18,7 +18,7 @@
 #define TTN_ADR_SUPPORTED false
 
 #define TTN_PWRIDX_868 1
-#define TTN_PWRIDX_915 1
+#define TTN_PWRIDX_915 5
 
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
