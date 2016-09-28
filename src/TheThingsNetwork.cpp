@@ -277,18 +277,18 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int ret
 }
 
 int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
-  float start = millis();
+  //float start = millis();
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
   str.concat(port);
   if (!sendCommand(str, payload, length)) {
     debugPrintLn(F("Send command failed"));
-    this->timer = this->timer + millis() - start;
+  //  this->timer = this->timer + millis() - start;
     return -1;
   }
   
-  this->timer = this->timer + millis() - start;
+//  this->timer = this->timer + millis() - start;
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
@@ -324,9 +324,20 @@ int TheThingsNetwork::poll(int port, bool confirm) {
   return sendBytes(payload, 1, port, confirm);
 }
 
-void TheThingsNetwork::showAirTime() {
-  debugPrint(F("Air-time: "));
-  debugPrintLn(this->timer / 1000);
+void TheThingsNetwork::airTimeValue() {
+  int payloadSize = 21;
+  int sf = TTN_DEFAULT_SF;
+  int ps = 8;
+  int band = 125;
+
+  float Tsym = pow(2, sf) / band;
+  float Tpreamble = (ps + 4.25) * Tsym;
+  unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * sf + 28 + 16 - 20 * (0))/ (4 * (sf - 2 * 1))) * (4), 0));
+  float Tpayload = payLoadSymbNb * Tsym;
+  float Tpacket = Tpreamble + Tpayload;
+  this->AirTimePerPackets = Tpacket;
+  this->messDay = (floor(30000 / Tpacket));
+  this->messHour = (30000 / 24 / Tpacket);
 }
 
 void TheThingsNetwork::showStatus() {
