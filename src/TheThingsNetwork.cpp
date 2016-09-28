@@ -321,8 +321,8 @@ int TheThingsNetwork::poll(int port, bool confirm) {
   return sendBytes(payload, 1, port, confirm);
 }
 
-void TheThingsNetwork::airTimeValue() {
-  int payloadSize = 21;
+void TheThingsNetwork::airTimeValue(int payloadSize) {
+  payloadSize = 13 + payloadSize;
   int sf = TTN_DEFAULT_SF;
   int ps = 8;
   int band = 125;
@@ -333,8 +333,6 @@ void TheThingsNetwork::airTimeValue() {
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
   this->AirTimePerPackets = Tpacket;
-  this->messDay = (floor(30000 / Tpacket));
-  this->messHour = (30000 / 24 / Tpacket);
 }
 
 void TheThingsNetwork::showStatus() {
