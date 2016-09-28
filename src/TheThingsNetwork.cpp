@@ -277,18 +277,15 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int ret
 }
 
 int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
-  //float start = millis();
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
   str.concat(port);
   if (!sendCommand(str, payload, length)) {
     debugPrintLn(F("Send command failed"));
-  //  this->timer = this->timer + millis() - start;
     return -1;
   }
   
-//  this->timer = this->timer + millis() - start;
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
