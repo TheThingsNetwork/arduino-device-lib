@@ -51,7 +51,7 @@ class TheThingsNetwork
     void configureChannels(int sf, int fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp = TTN_FP_EU868, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);
