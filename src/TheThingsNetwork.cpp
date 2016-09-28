@@ -332,7 +332,7 @@ void TheThingsNetwork::airTimeValue(int payloadSize) {
   unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * sf + 28 + 16 - 20 * (0))/ (4 * (sf - 2 * 1))) * (4), 0));
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
-  this->AirTimePerPackets = Tpacket;
+  this->AirTimePerPackets = (Tpacket / 10);
 }
 
 void TheThingsNetwork::showStatus() {
