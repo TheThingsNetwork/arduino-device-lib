@@ -6,17 +6,15 @@ Include and instantiate the TheThingsNetwork class.
 TheThingsNetwork ttn
 ```
 
-## Method: init
-Initialize the library with the streams it should communicate with.
+##Method: configureChannels
+Initialize the device with a frequency plan (EU868 or US915). It sets the frequencies, data rate, duty cycles of every channels.
 
 ```c
-void init(Stream& modemStream, Stream& debugStream);
+void configureChannels(int sf, int fsb)
 ```
 
-- `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
-- `Stream& debugStream`: Stream for write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
-
-Set the data rates with [`Serial.begin()`](https://www.arduino.cc/en/Serial/Begin) before passing them to `init()`.
+- `int sf`: spreading factor(defaults to 7).
+- `int fsb`: front-side bus(defaults to 2).
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.

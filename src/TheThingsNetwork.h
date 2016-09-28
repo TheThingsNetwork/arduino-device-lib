@@ -48,7 +48,7 @@ class TheThingsNetwork
     void reset(bool adr = true);
     void configure_EU868(int sf);
     void configure_US915(int sf, int fsb);
-    void configure_channels(int sf, int fsb);
+    void configureChannels(int sf, int fsb);
 
   public:
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);    

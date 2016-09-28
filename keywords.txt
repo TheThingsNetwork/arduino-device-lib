@@ -15,7 +15,7 @@ TheThingsNetwork        KEYWORD1
 TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 
-init                    KEYWORD2
+configureChannels       KEYWORD2
 onMessage               KEYWORD2
 reset                   KEYWORD2
 provision		KEYWORD2

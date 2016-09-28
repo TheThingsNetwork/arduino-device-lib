@@ -137,7 +137,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 }
 
 bool TheThingsNetwork::personalize() {
-  configure_channels(this->sf, this->fsb);
+  configureChannels(this->sf, this->fsb);
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -158,7 +158,7 @@ bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
-  configure_channels(this->sf, this->fsb);
+  configureChannels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
@@ -395,7 +395,7 @@ void TheThingsNetwork::configure_US915(int sf, int fsb) {
   }
 }
 
-void TheThingsNetwork::configure_channels(int sf, int fsb) {
+void TheThingsNetwork::configureChannels(int sf, int fsb) {
   switch (this->fp) {
     case TTN_FP_EU868:
       configure_EU868(sf);
