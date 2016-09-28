@@ -10,27 +10,6 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int 
 - `int sf`: spreading factor(defaults to 7).
 - `int fsb`: front-side bus(defaults to 2).
 
-##Method: Configure_US915
-initialize the device with the US915 frequency plan. Sets the data rate and data rate range of every open channels.
-
-```c
-void configure_US915(int sf, int fsb)
-```
-- `int sf`: spreading factor(defaults to 7), it decides which data rate you set.
-- `int fsb`: front-side bus(defaults to 2), it decides which channel should be open and those that shouldn't (71 channels in total).
-
-This frequency plan only works with an RN2903 arduino.
-
-##Method: Configure_EU868
-initialize the device with the EU868 frequency plan. It checks the channel's status and sets the frequencies, data rate, data rate range, duty cycles of the open channels (15 channels in total).
-
-```c
-void configure_EU868(int sf)
-```
-- `int sf`: spreading factor(defaults to 7), it decides which data rate you set.
-
-This frequency plan only works with an RN2483 arduino.
-
 ##Method: configureChannels
 Initialize the device with a frequency plan (EU868 or US915). It sets the frequencies, data rate range, duty cycles of every channels.
 
@@ -38,8 +17,8 @@ Initialize the device with a frequency plan (EU868 or US915). It sets the freque
 void configureChannels(int sf, int fsb)
 ```
 
-- `int sf`: spreading factor(defaults to 7).
-- `int fsb`: front-side bus(defaults to 2).
+- `int sf`: spreading factor(defaults to 7), it decides which data rate you set.
+- `int fsb`: front-side bus(defaults to 2), it decides which channel should be open.
 
 You choose which frequency plan you want by adding it in the constructor's argument, same goes for sf and fsb.
 
