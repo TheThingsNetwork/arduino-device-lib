@@ -46,8 +46,8 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
     void reset(bool adr = true);
-    void configure_EU868(int sf);
-    void configure_US915(int sf, int fsb);
+    void configureEU868(int sf);
+    void configureUS915(int sf, int fsb);
     void configureChannels(int sf, int fsb);
 
   public:

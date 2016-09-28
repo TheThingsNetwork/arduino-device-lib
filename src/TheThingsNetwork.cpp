@@ -264,7 +264,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay2")));
 }
 
-void TheThingsNetwork::configure_EU868(int sf) {
+void TheThingsNetwork::configureEU868(int sf) {
   int ch;
   int dr = -1;
   long int freq = 867100000;
@@ -336,7 +336,7 @@ void TheThingsNetwork::configure_EU868(int sf) {
   }
 }
 
-void TheThingsNetwork::configure_US915(int sf, int fsb) {
+void TheThingsNetwork::configureUS915(int sf, int fsb) {
   int ch;
   int dr = -1;
   String str = "";
@@ -398,10 +398,10 @@ void TheThingsNetwork::configure_US915(int sf, int fsb) {
 void TheThingsNetwork::configureChannels(int sf, int fsb) {
   switch (this->fp) {
     case TTN_FP_EU868:
-      configure_EU868(sf);
+      configureEU868(sf);
       break;
     case TTN_FP_US915:
-      configure_US915(sf, fsb);
+      configureUS915(sf, fsb);
       break;
     default:
       debugPrintLn("Invalid frequency plan");
