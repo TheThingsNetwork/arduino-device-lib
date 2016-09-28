@@ -323,9 +323,19 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 
 void TheThingsNetwork::airTimeValue(int payloadSize) {
   payloadSize = 13 + payloadSize;
-  int sf = TTN_DEFAULT_SF;
+  String str = readValue(F("radio get sf"));
+  int sf;
+  int i = 2;
+  while (str[i] != '\0') {
+    sf = str[i] + 48;
+    sf = sf * 10;
+    i = i + 1;
+  }
+  sf = sf / 10;
   int ps = 8;
   int band = 125;
+
+  debugPrintLn(sf);//readValue(F("radio get sf")));
 
   float Tsym = pow(2, sf) / band;
   float Tpreamble = (ps + 4.25) * Tsym;
