@@ -3,12 +3,12 @@ Include and instantiate the TheThingsNetwork class. The constructor sets the val
 
 ```c
 #include <TheThingsNetwork.h>
-TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb);
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = 7, int fsb = 2);
 ```
 - `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use Serial1 and data rate 57600).
 - `Stream& debugStream`: Stream for write debug logs to (for The Things Node/Uno use Serial and data rate 9600).
-- `int sf`: spreading factor(defaults to 7).
-- `int fsb`: front-side bus(defaults to 2).
+- `int sf = 7`: spreading factor(defaults to 7).
+- `int fsb = 2`: front-side bus(defaults to 2).
 
 ##Method: configureChannels
 Initialize the device with a frequency plan (EU868 or US915). It sets the frequencies, data rate range, duty cycles of every channels.
