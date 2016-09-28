@@ -284,8 +284,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   if (!sendCommand(str, payload, length)) {
     debugPrintLn(F("Send command failed"));
     return -1;
-  }
-  
+  } 
   String response = readLine(10000);
   if (response == "") {
     debugPrintLn(F("Time-out"));
@@ -324,14 +323,9 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 void TheThingsNetwork::airTimeValue(int payloadSize) {
   payloadSize = 13 + payloadSize;
   String str = readValue(F("radio get sf"));
-  int sf;
-  int i = 2;
-  while (str[i] != '\0') {
-    sf = str[i] + 48;
-    sf = sf * 10;
-    i = i + 1;
-  }
-  sf = sf / 10;
+  String sf2 = 2;
+  sf2 = sf2 * sf2;
+int sf = 7;
   int ps = 8;
   int band = 125;
 
@@ -360,6 +354,9 @@ void TheThingsNetwork::showStatus() {
     debugPrintLn(readValue(F("mac get band")));
   }
 
+ debugPrint(F("airtime: "));
+ airTimeValue(1);
+  
   debugPrint(F("Data Rate: "));
   debugPrintLn(readValue(F("mac get dr")));
   debugPrint(F("RX Delay 1: "));
