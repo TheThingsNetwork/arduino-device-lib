@@ -10,7 +10,7 @@ const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn;
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup() {
   loraSerial.begin(57600);
@@ -20,8 +20,6 @@ void setup() {
   while (!debugSerial && millis() < 10000);
 
   pinMode(LightPin, INPUT);
-
-  ttn.init(loraSerial, debugSerial);
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
