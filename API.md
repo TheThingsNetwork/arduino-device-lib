@@ -1,25 +1,19 @@
 # API Reference
 Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
 
+## Class: TheThingsNetwork
+
 ```c
 #include <TheThingsNetwork.h>
+
 TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = 7, int fsb = 2);
 ```
-- `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use Serial1 and data rate 57600).
-- `Stream& debugStream`: Stream for write debug logs to (for The Things Node/Uno use Serial and data rate 9600).
-- `fp_ttn_fp fp`: The frequency plan, TTN_FP_EU868 and TTN_FP_US915, that the device is going to be initialized with.
-- `int sf = 7`: spreading factor(defaults to 7).
-- `int fsb = 2`: front-side bus(defaults to 2).
 
-##Method: configureChannels
-Initialize the device based on a frequency plan (TTN_FP_EU868 or TTN_FP_US915). We establish the status of every channel based on the front-side bus' value and sets the frequency, data rate(which depends on the spreading factor's value), data rate range, duty cycles of every open channels.
-
-```c
-void configureChannels(int sf = 7, int fsb = 2)
-```
-
-- `int sf`: spreading factor(defaults to 7).
-- `int fsb`: front-side bus(defaults to 2).
+- `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
+- `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
+- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
+- `int sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
+- `int fsb = 2`: Optional custom front-side bus. Defaults to `2`.
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.
