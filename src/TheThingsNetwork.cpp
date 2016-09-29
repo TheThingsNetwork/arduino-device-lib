@@ -101,12 +101,6 @@ void TheThingsNetwork::reset(bool adr) {
   debugPrint(version);
   debugPrint(F(", model is "));
   debugPrintLn(model);
-  
-  String devEui = readValue(F("sys get hweui"));
-  String str = "";
-  str.concat(F("mac set deveui "));
-  str.concat(devEui);
-  sendCommand(str);
 
   String devEui = readValue(F("sys get hweui"));
   String str = "";
