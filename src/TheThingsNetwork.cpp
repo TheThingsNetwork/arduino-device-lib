@@ -192,7 +192,6 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
 bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
   reset();
   provision(appEui, appKey);
-  configure_channels();
   return join(retries, retryDelay);
 }
 
