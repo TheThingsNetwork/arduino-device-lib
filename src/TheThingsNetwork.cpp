@@ -320,23 +320,42 @@ int TheThingsNetwork::poll(int port, bool confirm) {
   return sendBytes(payload, 1, port, confirm);
 }
 
-void TheThingsNetwork::airTimeValue(int payloadSize) {
-  payloadSize = 13 + payloadSize;
-  String str = readValue(F("radio get sf"));
-  String sf2 = 2;
-  sf2 = sf2 * sf2;
-int sf = 7;
-  int ps = 8;
-  int band = 125;
+int TheThingsNetwork::getInfo(String message) {
+  int i = 5;
+  int stock = 0;
+  String str;
+  while (i <= 8) {
+    str = "";
+    str.concat(F("4/"));
+    str.concat(i);
+    if (str == message)
+      return (i - 4);
+    i = i + 1;
+  }
+  i = -1;
+  while (message[++i]) {
+    message[i] >= '0' && message[i] <= '9' ? stock = (stock + (message[i] - 48)) * 10 : stock = stock;
+  }
+  stock == 0 && message == F("on") ? stock = 1 : stock = stock / 10;
+  return (stock);
+}
 
-  debugPrintLn(sf);//readValue(F("radio get sf")));
+void TheThingsNetwork::trackAirtime(int payloadSize) {
+  payloadSize = 13 + payloadSize;
+  int sf = getInfo(readValue(F("radio get sf")));
+  int ps = getInfo(readValue(F("radio get prlen")));
+  int band = getInfo(readValue(F("radio get bw")));
+  int header = getInfo(readValue(F("radio get crc")));
+  int cr = getInfo(readValue(F("radio get cr")));
+  int de;
+  sf >= 11 ? de = 1 : de = 0;
 
   float Tsym = pow(2, sf) / band;
   float Tpreamble = (ps + 4.25) * Tsym;
-  unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * sf + 28 + 16 - 20 * (0))/ (4 * (sf - 2 * 1))) * (4), 0));
+  unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * sf + 28 + 16 - 20 * header) / (4 * (sf - 2 * de))) * (cr + 4), 0));
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
-  this->AirTimePerPackets = (Tpacket / 10);
+  this->airtime = (Tpacket / 10);
 }
 
 void TheThingsNetwork::showStatus() {
@@ -353,10 +372,6 @@ void TheThingsNetwork::showStatus() {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
   }
-
- debugPrint(F("airtime: "));
- airTimeValue(1);
-  
   debugPrint(F("Data Rate: "));
   debugPrintLn(readValue(F("mac get dr")));
   debugPrint(F("RX Delay 1: "));

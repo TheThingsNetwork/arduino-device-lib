@@ -32,7 +32,8 @@ class TheThingsNetwork
     float airtime;
     void (* messageCallback)(const byte* payload, int length, int port);
 
-    void airTimeValue(int payloadSize);
+    int getInfo(String str);
+    void trackAirtime(int payloadSize);
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
     String readValue(String key);
