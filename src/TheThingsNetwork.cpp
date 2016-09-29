@@ -199,10 +199,12 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = readLine(10000);
-  if (response == "") {
-    debugPrintLn(F("Time-out"));
-    return -2;
+  String response = "";
+  if (confirm) {
+    while ((response = readLine()) == "");
+  }
+  else {
+    response = readLine(10000);
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
@@ -400,6 +402,10 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
       debugPrintLn("Invalid frequency plan");
       break;
   }
+  String retries = "";
+  retries.concat(F("mac set retx "));
+  retries.concat(TTN_RETX);
+  sendCommand(retries);
 }
 
 TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
