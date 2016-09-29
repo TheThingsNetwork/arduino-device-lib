@@ -7,11 +7,6 @@
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
-void TheThingsNetwork::init(Stream& modemStream, Stream& debugStream) {
-  this->modemStream = &modemStream;
-  this->debugStream = &debugStream;
-}
-
 String TheThingsNetwork::readLine(int waitTime) {
   unsigned long start = millis();
   while (millis() < start + waitTime) {
@@ -89,7 +84,7 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
   return waitForOK(waitTime);
 }
 
-void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
+void TheThingsNetwork::reset(bool adr) {
   #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
@@ -100,7 +95,7 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
     debugPrintLn(F("Invalid version"));
     return;
   }
-
+  
   model = version.substring(0, version.indexOf(' '));
   debugPrint(F("Version is "));
   debugPrint(version);
@@ -121,90 +116,6 @@ void TheThingsNetwork::reset(bool adr, int sf, int fsb) {
     str.concat(F("off"));
   }
   sendCommand(str);
-
-  int dr = -1;
-  if (model == F("RN2483")) {
-    str = "";
-    str.concat(F("mac set pwridx "));
-    str.concat(TTN_PWRIDX_868);
-    sendCommand(str);
-
-    switch (sf) {
-      case 7:
-        dr = 5;
-        break;
-      case 8:
-        dr = 4;
-        break;
-      case 9:
-        dr = 3;
-        break;
-      case 10:
-        dr = 2;
-        break;
-      case 11:
-        dr = 1;
-        break;
-      case 12:
-        dr = 0;
-        break;
-      default:
-        debugPrintLn(F("Invalid SF"))
-        break;
-    }
-  }
-  else if (model == F("RN2903")) {
-    str = "";
-    str.concat(F("mac set pwridx "));
-    str.concat(TTN_PWRIDX_915);
-    sendCommand(str);
-    enableFsbChannels(fsb);
-
-    switch (sf) {
-      case 7:
-        dr = 3;
-        break;
-      case 8:
-        dr = 2;
-        break;
-      case 9:
-        dr = 1;
-        break;
-      case 10:
-        dr = 0;
-        break;
-      default:
-        debugPrintLn(F("Invalid SF"))
-        break;
-    }
-  }
-
-  if (dr > -1){
-    str = "";
-    str.concat(F("mac set dr "));
-    str.concat(dr);
-    sendCommand(str);
-  }
-}
-
-bool TheThingsNetwork::enableFsbChannels(int fsb) {
-  int chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
-  int chHigh = fsb > 0 ? chLow + 7 : 71;
-  int ch500 = fsb + 63;
-
-  for (int i = 0; i < 72; i++){
-    String str = "";
-    str.concat(F("mac set ch status "));
-    str.concat(i);
-    if (i == ch500 || chLow <= i && i <= chHigh){
-      str.concat(F(" on"));
-    }
-    else{
-      str.concat(F(" off"));
-    }
-    sendCommand(str);
-  }
-  return true;
 }
 
 void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port)) {
@@ -220,6 +131,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 }
 
 bool TheThingsNetwork::personalize() {
+  configureChannels(this->sf, this->fsb);
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -240,6 +152,7 @@ bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
+  configureChannels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
   str.concat(F("mac set deveui "));
@@ -342,4 +255,157 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+}
+
+void TheThingsNetwork::configureEU868(int sf) {
+  int ch;
+  int dr = -1;
+  long int freq = 867100000;
+  String str = "";
+
+  str.concat(F("mac set rx2 3 869525000"));
+  sendCommand(str);
+  str = "";
+  for (ch = 0; ch <= 7; ch++) {
+    if (ch >= 3) {
+      str.concat(F("mac set ch freq "));
+      str.concat(ch);
+      str.concat(F(" "));
+      str.concat(freq);
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch drrange "));
+      str.concat(ch);
+      str.concat(F(" 0 5"));
+      sendCommand(str);
+      str = "";
+      str.concat(F("mac set ch status "));
+      str.concat(ch);
+      str.concat(F(" on"));
+      sendCommand(str);
+      str = "";
+      freq = freq + 200000;
+    }
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" 799"));
+    sendCommand(str);
+    str = "";
+  }
+  str.concat(F("mac set ch drrange 1 0 6"));
+  sendCommand(str);
+  str = "";
+  str.concat(F("mac set pwridx "));
+  str.concat(TTN_PWRIDX_868);
+  sendCommand(str);
+  switch (sf) {
+    case 7:
+      dr = 5;
+      break;
+    case 8:
+      dr = 4;
+      break;
+    case 9:
+      dr = 3;
+      break;
+    case 10:
+      dr = 2;
+      break;
+    case 11:
+      dr = 1;
+      break;
+    case 12:
+      dr = 0;
+      break;
+    default:
+      debugPrintLn(F("Invalid SF"))
+      break;
+  }
+  if (dr > -1){
+    str = "";
+    str.concat(F("mac set dr "));
+    str.concat(dr);
+    sendCommand(str);
+  }
+}
+
+void TheThingsNetwork::configureUS915(int sf, int fsb) {
+  int ch;
+  int dr = -1;
+  String str = "";
+  int chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
+  int chHigh = fsb > 0 ? chLow + 7 : 71;
+  int ch500 = fsb + 63;
+
+  sendCommand(F("radio set freq 904200000"));
+  str = "";
+  str.concat(F("mac set pwridx "));
+  str.concat(TTN_PWRIDX_915);
+  sendCommand(str);
+  for (ch = 0; ch < 72; ch++) {
+    str = "";
+    str.concat(F("mac set ch status "));
+    str.concat(ch);
+    if (ch == ch500 || ch <= chHigh && ch >= chLow) {
+      str.concat(F(" on"));
+      sendCommand(str);
+      if (ch < 63) {
+        str = "";
+        str.concat(F("mac set ch drrange "));
+        str.concat(ch);
+        str.concat(F(" 0 3"));
+        sendCommand(str);
+        str = "";
+      }
+    }
+    else {
+      str.concat(F(" off"));
+      sendCommand(str);
+    }
+  }
+  switch (sf) {
+    case 7:
+      dr = 3;
+      break;
+    case 8:
+     dr = 2;
+     break;
+    case 9:
+      dr = 1;
+      break;
+    case 10:
+      dr = 0;
+      break;
+    default:
+      debugPrintLn(F("Invalid SF"))
+      break;
+  }
+  if (dr > -1){
+    str = "";
+    str.concat(F("mac set dr "));
+    str.concat(dr);
+    sendCommand(str);
+  }
+}
+
+void TheThingsNetwork::configureChannels(int sf, int fsb) {
+  switch (this->fp) {
+    case TTN_FP_EU868:
+      configureEU868(sf);
+      break;
+    case TTN_FP_US915:
+      configureUS915(sf, fsb);
+      break;
+    default:
+      debugPrintLn("Invalid frequency plan");
+      break;
+  }
+}
+
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
+  this->debugStream = &debugStream;
+  this->modemStream = &modemStream;
+  this->fp = fp;
+  this->sf = sf;
+  this->fsb = fsb;
 }

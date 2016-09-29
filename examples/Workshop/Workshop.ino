@@ -20,7 +20,7 @@ const byte appSKey[16] = { ... };
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn;
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup() {
   // Set up the serial interfaces for the debugging serial monitor and LoRa module
@@ -29,9 +29,6 @@ void setup() {
 
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);
-
-  // Initialize
-  ttn.init(loraSerial, debugSerial);
 
   // Here we activate the device with your address and keys
   ttn.personalize(devAddr, nwkSKey, appSKey);

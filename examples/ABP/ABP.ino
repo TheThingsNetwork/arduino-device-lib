@@ -8,7 +8,7 @@ const byte appSKey[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn;
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup() {
   loraSerial.begin(57600);
@@ -16,8 +16,6 @@ void setup() {
 
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);
-
-  ttn.init(loraSerial, debugSerial);
 
   debugSerial.println("-- PERSONALIZE");
   ttn.personalize(devAddr, nwkSKey, appSKey);

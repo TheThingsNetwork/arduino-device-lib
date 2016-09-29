@@ -3,14 +3,12 @@
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn;
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup()
 {
   loraSerial.begin(57600);
   debugSerial.begin(9600);
-
-  ttn.init(loraSerial, debugSerial);
 }
 
 void loop()

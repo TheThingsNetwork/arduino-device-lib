@@ -1,22 +1,19 @@
 # API Reference
-Include and instantiate the TheThingsNetwork class.
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+
+## Class: TheThingsNetwork
 
 ```c
 #include <TheThingsNetwork.h>
-TheThingsNetwork ttn
-```
 
-## Method: init
-Initialize the library with the streams it should communicate with.
-
-```c
-void init(Stream& modemStream, Stream& debugStream);
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = 7, int fsb = 2);
 ```
 
 - `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
-- `Stream& debugStream`: Stream for write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
-
-Set the data rates with [`Serial.begin()`](https://www.arduino.cc/en/Serial/Begin) before passing them to `init()`.
+- `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
+- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
+- `int sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
+- `int fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.
