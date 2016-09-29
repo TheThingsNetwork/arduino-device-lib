@@ -13,7 +13,7 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int 
 - `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
 - `int sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
-- `int fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
+- `int fsb = 2`: Optional custom frequency sub-band. Can be `1` to `8`. Defaults to `2`.
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.

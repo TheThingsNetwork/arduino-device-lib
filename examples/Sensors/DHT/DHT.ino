@@ -19,7 +19,7 @@ const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 
 DHT dht(DHTPIN, DHTTYPE);
 
-TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
+TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup() {
   loraSerial.begin(57600);

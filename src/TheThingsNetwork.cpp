@@ -85,10 +85,6 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
 }
 
 void TheThingsNetwork::reset(bool adr) {
-  #if !TTN_ADR_SUPPORTED
-    adr = false;
-  #endif
-
   modemStream->println(F("sys reset"));
   String version = readLine(3000);
   if (version == "") {
