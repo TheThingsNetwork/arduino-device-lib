@@ -15,15 +15,13 @@ TheThingsNetwork        KEYWORD1
 TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
 
-configureChannels       KEYWORD2
+showStatus              KEYWORD2
 onMessage               KEYWORD2
-reset                   KEYWORD2
-provision		KEYWORD2
-personalize             KEYWORD2
+provision				KEYWORD2
 join                    KEYWORD2
+personalize             KEYWORD2
 sendBytes               KEYWORD2
 poll                    KEYWORD2
-showStatus              KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
