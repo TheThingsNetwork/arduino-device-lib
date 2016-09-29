@@ -1,5 +1,5 @@
 # API Reference
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency sub-band and the frequency plan.
 
 ## Class: TheThingsNetwork
 
