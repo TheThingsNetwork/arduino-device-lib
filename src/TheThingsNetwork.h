@@ -23,15 +23,28 @@
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
+
+typedef struct  airtime_s
+{
+  int           sf;
+  int           de;
+  int           ps;
+  int           band;
+  int           header;
+  int           cr;
+}               airtime_t;
+
 class TheThingsNetwork
 {
   private:
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    airtime_t info;
     float airtime;
     void (* messageCallback)(const byte* payload, int length, int port);
 
+    void fillAirtimeInfo();
     int getInfo(String str);
     void trackAirtime(int payloadSize);
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
