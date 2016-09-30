@@ -286,8 +286,10 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   if (!sendCommand(str, payload, length)) {
     debugPrintLn(F("Send command failed"));
     return -1;
-  } 
+  }
+  
   String response = readLine(10000);
+  trackAirtime(length);
   if (response == "") {
     debugPrintLn(F("Time-out"));
     return -2;
@@ -360,7 +362,7 @@ void TheThingsNetwork::trackAirtime(int payloadSize) {
   unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
-  this->airtime = (Tpacket / 10);
+  this->airtime = this->airtime + (Tpacket / 1000);
 }
 
 void TheThingsNetwork::showStatus() {
