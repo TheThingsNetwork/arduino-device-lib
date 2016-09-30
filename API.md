@@ -100,7 +100,6 @@ int sendBytes(const byte* payload, int length, int port = 1, bool confirm = fals
 Returns a success or error code and logs the related error message: 
 
 * `-1`: Send command failed.
-* `-2`: Time-out.
 * `1`: Successful transmission.
 * `2`: Successful transmission. Received \<N> bytes
 * `-10`: Unexpected response: \<Response> 
