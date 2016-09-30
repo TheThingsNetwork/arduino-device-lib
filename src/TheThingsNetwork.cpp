@@ -200,7 +200,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     debugPrintLn(F("Send command failed"));
     return -1;
   }
-
+  
   String response = readLine(10000);
   trackAirtime(length);
   if (response == "") {
@@ -292,7 +292,6 @@ void TheThingsNetwork::showStatus() {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
   }
-
   debugPrint(F("Data Rate: "));
   debugPrintLn(readValue(F("mac get dr")));
   debugPrint(F("RX Delay 1: "));
