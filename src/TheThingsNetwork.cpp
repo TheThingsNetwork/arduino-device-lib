@@ -140,9 +140,9 @@ bool TheThingsNetwork::personalize() {
     return false;
   }
 
+  fillAirtimeInfo();
   debugPrint(F("Personalize accepted. Status: "));
   debugPrintLn(readValue(F("mac get status")));
-  fillAirtimeInfo();
   return true;
 }
 
@@ -202,7 +202,14 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   }
   
   String response = readLine(10000);
+  float i = this->airtime;
   trackAirtime(length);
+  debugPrint(F("Airtime added: "));
+  debugPrint(this->airtime - i);
+  debugPrintLn(F(" s"));
+  debugPrint(F("Total airtime: "));
+  debugPrint(this->airtime);
+  debugPrintLn(F(" s"));
   if (response == "") {
     debugPrintLn(F("Time-out"));
     return -2;
@@ -298,6 +305,9 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+  debugPrint(F("Total airtime: "));
+  debugPrint(this->airtime);
+  debugPrintLn(F(" s"));
 }
 
 void TheThingsNetwork::configureEU868(int sf) {
