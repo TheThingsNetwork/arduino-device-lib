@@ -107,7 +107,7 @@ Returns a success or error code and logs the related error message:
 
 See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Send/Send.ino) example.
 
-Also in sendBytes, Due to TTN's 30 second fair access policy, we update the airtime each time we uplink a message. This airtime is based on a lot of variables but the most important one is the spreading factor, the higher it is the less message you can send in 30 seconds (SF7 around 500 messages, SF12 around 20 messages).
+Also in sendBytes, Due to TTN's 30 second fair access policy, we update the airtime each time we uplink a message. This airtime is based on a lot of variables but the most important one is the spreading factor and the size of the message, the higher it is the less message you can send in 30 seconds (SF7 around 500 messages of 8 bytes, SF12 around 20 messages of 8 bytes).
 
 ## Method: poll
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
