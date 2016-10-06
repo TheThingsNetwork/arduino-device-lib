@@ -15,6 +15,8 @@ void setup() {
   node.onButtonPress(onPress);
   node.onButtonRelease(onRelease);
 
+  node.setColor(TTN_YELLOW);
+
   node.showStatus();
 }
 

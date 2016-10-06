@@ -4,22 +4,22 @@
 #include <Arduino.h>
 #include <TheThingsNode.h>
 
-#define THETHINGSNODE_LDR_INPUT 10
-#define THETHINGSNODE_LDR_GAIN1 12
-#define THETHINGSNODE_LDR_GAIN2 4
-#define THETHINGSNODE_RED_LED 13
-#define THETHINGSNODE_GREEN_LED 5
-#define THETHINGSNODE_BLUE_LED 6
-#define THETHINGSNODE_BUTTON 16
+#define TTN_LDR_INPUT 10
+#define TTN_LDR_GAIN1 12
+#define TTN_LDR_GAIN2 4
+#define TTN_RED_LED 13
+#define TTN_GREEN_LED 5
+#define TTN_BLUE_LED 6
+#define TTN_BUTTON 16
 
-#define THETHINGSNODE_TEMPERATURE_SENSOR_ADDRESS 0x18
+#define TTN_TEMPERATURE_SENSOR_ADDRESS 0x18
 
-Hackscribble_MCP9804 THETHINGSNODE_TEMPERATURE_SENSOR(THETHINGSNODE_TEMPERATURE_SENSOR_ADDRESS);
+Hackscribble_MCP9804 TTN_TEMPERATURE_SENSOR(TTN_TEMPERATURE_SENSOR_ADDRESS);
 
-bool THETHINGSNODE_BUTTON_PRESSED = false;
+bool TTN_BUTTON_PRESSED = false;
 
-void (*THETHINGSNODE_BUTTON_PRESS)(void);
-void (*THETHINGSNODE_BUTTON_RELEASE)(void);
+void (*TTN_BUTTON_PRESS)(void);
+void (*TTN_BUTTON_RELEASE)(void);
 
 /* PUBLIC */
 
@@ -41,148 +41,246 @@ void TheThingsNode::showStatus()
   Serial.println(String(getTemperatureAsInt()));
   Serial.print(F("Temperature as float: "));
   Serial.println(String(getTemperatureAsFloat()));
-  Serial.print(F("Red LED: "));
-  Serial.println(getRedLED() ? F("on") : F("off"));
-  Serial.print(F("Green LED: "));
-  Serial.println(getGreenLED() ? F("on") : F("off"));
-  Serial.print(F("Blue LED: "));
-  Serial.println(getBlueLED() ? F("on") : F("off"));
+  Serial.print(F("Color: "));
+  Serial.println(colorToString(getColor()));
 }
 
 uint16_t TheThingsNode::getLight()
 {
-  return analogRead(THETHINGSNODE_LDR_INPUT);
+  return analogRead(TTN_LDR_INPUT);
 }
 
 void TheThingsNode::configLight(int gain)
 {
-  switch(gain)
+  switch (gain)
   {
     case 0:
-      digitalWrite(THETHINGSNODE_LDR_GAIN1, LOW);
-      digitalWrite(THETHINGSNODE_LDR_GAIN2, LOW);
+      digitalWrite(TTN_LDR_GAIN1, LOW);
+      digitalWrite(TTN_LDR_GAIN2, LOW);
     break;
     case 1:
-      digitalWrite(THETHINGSNODE_LDR_GAIN1, HIGH);
-      digitalWrite(THETHINGSNODE_LDR_GAIN2, LOW);
+      digitalWrite(TTN_LDR_GAIN1, HIGH);
+      digitalWrite(TTN_LDR_GAIN2, LOW);
     break;
     case 2:
-      digitalWrite(THETHINGSNODE_LDR_GAIN1, LOW);
-      digitalWrite(THETHINGSNODE_LDR_GAIN2, HIGH);
+      digitalWrite(TTN_LDR_GAIN1, LOW);
+      digitalWrite(TTN_LDR_GAIN2, HIGH);
     break;
     case 3:
-      digitalWrite(THETHINGSNODE_LDR_GAIN1, HIGH);
-      digitalWrite(THETHINGSNODE_LDR_GAIN2, HIGH);
+      digitalWrite(TTN_LDR_GAIN1, HIGH);
+      digitalWrite(TTN_LDR_GAIN2, HIGH);
     break;
   }
 }
 
 int8_t TheThingsNode::getTemperatureAsInt()
 {
-  return THETHINGSNODE_TEMPERATURE_SENSOR.getTAInteger();
+  return TTN_TEMPERATURE_SENSOR.getTAInteger();
 }
 
 float TheThingsNode::getTemperatureAsFloat()
 {
-  return THETHINGSNODE_TEMPERATURE_SENSOR.getTAFloat();
+  return TTN_TEMPERATURE_SENSOR.getTAFloat();
 }
 
-bool TheThingsNode::getRedLED()
+bool TheThingsNode::getRed()
 {
-  return (digitalRead(THETHINGSNODE_RED_LED) == LOW);
+  return (digitalRead(TTN_RED_LED) == LOW);
 }
 
-bool TheThingsNode::getGreenLED()
+bool TheThingsNode::getGreen()
 {
-  return (digitalRead(THETHINGSNODE_GREEN_LED) == LOW);
+  return (digitalRead(TTN_GREEN_LED) == LOW);
 }
 
-bool TheThingsNode::getBlueLED()
+bool TheThingsNode::getBlue()
 {
-  return (digitalRead(THETHINGSNODE_BLUE_LED) == LOW);
+  return (digitalRead(TTN_BLUE_LED) == LOW);
 }
 
-void TheThingsNode::setLED(bool red, bool green, bool blue)
+TTN_COLOR TheThingsNode::getColor()
 {
-  setRedLED(red);
-  setGreenLED(green);
-  setBlueLED(blue);
+  bool red = getRed();
+  bool green = getGreen();
+  bool blue = getBlue();
+
+  if (red && green && blue)
+  {
+    return TTN_WHITE;
+  }
+  else if (red && green)
+  {
+    return TTN_YELLOW;
+  }
+  else if (red && blue)
+  {
+    return TTN_MAGENTA;
+  }
+  else if (green && blue)
+  {
+    return TTN_CYAN;
+  }
+  else if (red)
+  {
+    return TTN_RED;
+  }
+  else if (green)
+  {
+    return TTN_GREEN;
+  }
+  else if (blue)
+  {
+    return TTN_BLUE;
+  }
+  else
+  {
+    return TTN_BLACK;
+  }
 }
 
-void TheThingsNode::setRedLED(bool on)
+String TheThingsNode::colorToString(TTN_COLOR color)
 {
-  digitalWrite(THETHINGSNODE_RED_LED, on ? LOW : HIGH);
+  switch (color)
+  {
+    case TTN_RED:
+      return String("Red");
+      break;
+    case TTN_GREEN:
+      return String("Green");
+      break;
+    case TTN_BLUE:
+      return String("Blue");
+      break;
+    case TTN_YELLOW:
+      return String("Yellow");
+      break;
+    case TTN_CYAN:
+      return String("Cyan");
+      break;
+    case TTN_MAGENTA:
+      return String("Magenta");
+      break;
+    case TTN_WHITE:
+      return String("White");
+      break;
+    case TTN_BLACK:
+      return String("Black");
+      break;
+  }
 }
 
-void TheThingsNode::setGreenLED(bool on)
+void TheThingsNode::setRGB(bool red, bool green, bool blue)
 {
-  digitalWrite(THETHINGSNODE_GREEN_LED, on ? LOW : HIGH);
+  setRed(red);
+  setGreen(green);
+  setBlue(blue);
 }
 
-void TheThingsNode::setBlueLED(bool on)
+void TheThingsNode::setRed(bool on)
 {
-  digitalWrite(THETHINGSNODE_BLUE_LED, on ? LOW : HIGH);
+  digitalWrite(TTN_RED_LED, on ? LOW : HIGH);
+}
+
+void TheThingsNode::setGreen(bool on)
+{
+  digitalWrite(TTN_GREEN_LED, on ? LOW : HIGH);
+}
+
+void TheThingsNode::setBlue(bool on)
+{
+  digitalWrite(TTN_BLUE_LED, on ? LOW : HIGH);
+}
+
+void TheThingsNode::setColor(TTN_COLOR color)
+{
+  switch (color)
+  {
+    case TTN_RED:
+      setRGB(true, false, false);
+      break;
+    case TTN_GREEN:
+      setRGB(false, true, false);
+      break;
+    case TTN_BLUE:
+      setRGB(false, false, true);
+      break;
+    case TTN_YELLOW:
+      setRGB(true, true, false);
+      break;
+    case TTN_CYAN:
+      setRGB(false, true, true);
+      break;
+    case TTN_MAGENTA:
+      setRGB(true, false, true);
+      break;
+    case TTN_WHITE:
+      setRGB(true, true, true);
+      break;
+    case TTN_BLACK:
+      setRGB(false, false, false);
+      break;
+  }
 }
 
 void TheThingsNode::onButtonPress(void (*callback)(void))
 {
-  THETHINGSNODE_BUTTON_PRESS = callback;
+  TTN_BUTTON_PRESS = callback;
 }
 
 void TheThingsNode::onButtonRelease(void (*callback)(void))
 {
-  THETHINGSNODE_BUTTON_RELEASE = callback;
+  TTN_BUTTON_RELEASE = callback;
 }
 
 /* PRIVATE */
 
 void TheThingsNode::initLight()
 { 
-  pinMode(THETHINGSNODE_LDR_GAIN1, OUTPUT);
-  pinMode(THETHINGSNODE_LDR_GAIN2, OUTPUT);
+  pinMode(TTN_LDR_GAIN1, OUTPUT);
+  pinMode(TTN_LDR_GAIN2, OUTPUT);
 
-  digitalWrite(THETHINGSNODE_LDR_GAIN1, LOW);
-  digitalWrite(THETHINGSNODE_LDR_GAIN2, LOW);
+  digitalWrite(TTN_LDR_GAIN1, LOW);
+  digitalWrite(TTN_LDR_GAIN2, LOW);
 
   configLight(1);
 }
 
 void TheThingsNode::initTemperature()
 { 
-  // THETHINGSNODE_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
+  // TTN_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
 }
 
 void TheThingsNode::initLED()
 {
-  pinMode(THETHINGSNODE_RED_LED, OUTPUT);
-  pinMode(THETHINGSNODE_GREEN_LED, OUTPUT);
-  pinMode(THETHINGSNODE_BLUE_LED, OUTPUT);
+  pinMode(TTN_RED_LED, OUTPUT);
+  pinMode(TTN_GREEN_LED, OUTPUT);
+  pinMode(TTN_BLUE_LED, OUTPUT);
 }
 
-void THETHINGSNODE_BUTTON_CALLBACK()
+void TTN_BUTTON_CALLBACK()
 {
-  uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(THETHINGSNODE_BUTTON));
+  uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_BUTTON));
 
   if (trigger == RISING)
   {
-    if (THETHINGSNODE_BUTTON_RELEASE)
+    if (TTN_BUTTON_RELEASE)
     {
-      THETHINGSNODE_BUTTON_RELEASE();
+      TTN_BUTTON_RELEASE();
     }
   }
   else if(trigger == FALLING)
   {
-    if (THETHINGSNODE_BUTTON_PRESS)
+    if (TTN_BUTTON_PRESS)
     {
-      THETHINGSNODE_BUTTON_PRESS();
+      TTN_BUTTON_PRESS();
     }
   }
 }
 
 void TheThingsNode::initButton()
 {
-  pinMode(THETHINGSNODE_BUTTON, INPUT);
-  digitalWrite(THETHINGSNODE_BUTTON, HIGH);
+  pinMode(TTN_BUTTON, INPUT);
+  digitalWrite(TTN_BUTTON, HIGH);
 
-  attachPCINT(digitalPinToPCINT(THETHINGSNODE_BUTTON), THETHINGSNODE_BUTTON_CALLBACK, CHANGE);
+  attachPCINT(digitalPinToPCINT(TTN_BUTTON), TTN_BUTTON_CALLBACK, CHANGE);
 }

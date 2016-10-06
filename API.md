@@ -200,32 +200,97 @@ void onButtonRelease(void(*callback)(void));
 
 - `void(*callback)(void)`: Function to be called, with no arguments nor return value.
 
-### Method: getRedLED
+### Method: getRed
 Returns `true` if the red LED is currently on.
 
 ```c
-bool getRedLED();
+bool getRed();
 ```
 
-### Method: getGreenLED
+### Method: getGreen
 Returns `true` if the green LED is currently on.
 
 ```c
-bool getGreenLED();
+bool getGreen();
 ```
 
-### Method: getBlueLED
+### Method: getBlue
 Returns `true if the blue LED is currently on.
 
 ```c
-bool getBlueLED();
+bool getBlue();
 ```
 
-### Method: setLED
+### Method: getColor
+Returns the current color of the LED.
+
+```c
+TTN_COLOR getColor();
+```
+
+Returns one of:
+
+- `TTN_RED`
+- `TTN_GREEN`
+- `TTN_BLUE`
+- `TTN_YELLOW`: Red and green
+- `TTN_CYAN`: Green and blue
+- `TTN_MAGENTA`: Red and blue
+- `TTN_WHITE`: Red, green and blue
+- `TTN_BLACK`: None
+
+### Method: colorToString
+Returns a string for the color passed to it.
+
+```c
+String colorToString(TTN_COLOR color);
+```
+
+- `TTN_COLOR color`: Color to return a string for.
+
+Returns one of:
+
+- `"Red"`: `TTN_RED`
+- `"Green"`: `TTN_GREEN`
+- `"Blue"`: `TTN_BLUE`
+- `"Yellow"`: `TTN_YELLOW`
+- `"Cyan"`: `TTN_CYAN`
+- `"Magenta"`: `TTN_MAGENTA`
+- `"White"`: `TTN_WHITE`
+- `"Black"`: `TTN_BLACK`
+
+### Method: setRed
+Turn the red LED on or off.
+
+```c
+void setRed(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the red LED on. Defaults to `true`.
+
+### Method: setGreen
+Turn the red LED on or off.
+
+```c
+void setGreen(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the green LED on. Defaults to `true`.
+
+### Method: setBlue
+Turn the red LED on or off.
+
+```c
+void setBlue(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the blue LED on. Defaults to `true`.
+
+### Method: setRGB
 Turn one or more LEDs on or off.
 
 ```c
-void setLED(bool red = false, bool green = false, bool blue = false);
+void setRGB(bool red = false, bool green = false, bool blue = false);
 ```
 
 - `bool red = false`: Set to `true` to turn the red LED on. Defaults to `false`.
@@ -234,29 +299,19 @@ void setLED(bool red = false, bool green = false, bool blue = false);
 
 > You can combine colors to [create additives](https://en.wikipedia.org/wiki/RGB_color_model#Additive_primary_colors), e.g. red plus green makes yellow.
 
-### Method: setRedLED
-Turn the red LED on or off.
+### Method: setColor
+Combine one or more LEDs to get a primary or [additive color](https://en.wikipedia.org/wiki/RGB_color_model#Additive_primary_colors).
 
 ```c
-void setRedLED(bool on = true);
+setColor(TTN_COLOR color);
 ```
 
-- `bool on = true`: Set to `true` to turn the red LED on. Defaults to `true`.
-
-### Method: setGreenLED
-Turn the red LED on or off.
-
-```c
-void setGreenLED(bool on = true);
-```
-
-- `bool on = true`: Set to `true` to turn the green LED on. Defaults to `true`.
-
-### Method: setBlueLED
-Turn the red LED on or off.
-
-```c
-void setBlueLED(bool on = true);
-```
-
-- `bool on = true`: Set to `true` to turn the blue LED on. Defaults to `true`.
+- `TTN_COLOR color`: Set to one of:
+  - `TTN_RED`
+  - `TTN_GREEN`
+  - `TTN_BLUE`
+  - `TTN_YELLOW`: Red and green
+  - `TTN_CYAN`: Green and blue
+  - `TTN_MAGENTA`: Red and blue
+  - `TTN_WHITE`: Red, green and blue
+  - `TTN_BLACK`: None

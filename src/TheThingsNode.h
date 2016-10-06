@@ -9,6 +9,18 @@
 #include <Hackscribble_MCP9804.h>
 #include <PinChangeInterrupt.h>
 
+enum TTN_COLOR: byte
+{
+  TTN_RED,
+  TTN_GREEN,
+  TTN_BLUE,
+  TTN_YELLOW,
+  TTN_CYAN,
+  TTN_MAGENTA,
+  TTN_WHITE,
+  TTN_BLACK
+};
+
 class TheThingsNode
 {
   private:
@@ -33,13 +45,16 @@ class TheThingsNode
     void onButtonPress(void(*callback)(void));
     void onButtonRelease(void(*callback)(void));
 
-    bool getRedLED();
-    bool getGreenLED();
-    bool getBlueLED();
-    void setLED(bool red = false, bool green = false, bool blue = false);
-    void setRedLED(bool on = true);
-    void setGreenLED(bool on = true);
-    void setBlueLED(bool on = true);
+    bool getRed();
+    bool getGreen();
+    bool getBlue();
+    TTN_COLOR getColor();
+    String colorToString(TTN_COLOR color);
+    void setRGB(bool red = false, bool green = false, bool blue = false);
+    void setRed(bool on = true);
+    void setGreen(bool on = true);
+    void setBlue(bool on = true);
+    void setColor(TTN_COLOR color);
 };
 
 #endif
