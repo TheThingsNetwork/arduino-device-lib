@@ -1,7 +1,9 @@
 # API Reference
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
 
 ## Class: TheThingsNetwork
+Include and instantiate the TheThingsNetwork class to communicate over The Things Network.
+
+The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
 
 ```c
 #include <TheThingsNetwork.h>
@@ -15,7 +17,7 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int 
 - `int sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
 - `int fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
 
-## Method: showStatus
+### Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.
 
 ```c
@@ -37,7 +39,7 @@ RX Delay 2: 2000
 
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
-## Method: onMessage
+### Method: onMessage
 Sets a function which will be called to process incoming messages.
 
 ```c
@@ -50,7 +52,7 @@ void onMessage(void (*cb)(const byte* payload, int length, int port));
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
-## Method: join
+### Method: join
 Activate the device via OTAA (default).
 
 ```c
@@ -67,7 +69,7 @@ Returns `true` or `false` depending on whether it received confirmation that the
 
 Call the method without the first two arguments if the device's LoRa module comes with pre-flashed values.
 
-## Method: personalize
+### Method: personalize
 Activate the device via ABP.
 
 ```c
@@ -85,7 +87,7 @@ Call the method with no arguments if the device's LoRa module comes with pre-fla
 
 See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/ABP/ABP.ino) example.
 
-## Method: sendBytes
+### Method: sendBytes
 Send a message to the application using raw bytes.
 
 ```c
@@ -107,7 +109,7 @@ Returns a success or error code and logs the related error message:
 
 See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Send/Send.ino) example.
 
-## Method: poll
+### Method: poll
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
 
 - `int port = 1`: The port to address. Defaults to `1`.
@@ -117,7 +119,7 @@ Returns the result of `sendBytes()`.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
-## Method: provision
+### Method: provision
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
@@ -126,3 +128,135 @@ bool provision(const byte appEui[8], const appKey[16]);
 
 - `const byte appEui[8]`: Application Identifier for the device.
 - `const byte appKey[16]`: Application Key assigned to the device.
+
+## Class: TheThingsNode
+Include and instantiate the TheThingsNode class to read sensor values from The Things Node.
+
+```c
+#include <TheThingsNode.h>
+
+TheThingsNode node;
+```
+
+### Method: showStatus
+Writes information about the device to `Serial`.
+
+```c
+void showStatus();
+```
+
+Will write something like:
+
+```bash
+Light: 59
+Temperature as int: 24
+Temperature as float: 23.75
+Red LED: on
+Green LED: on
+Blue LED: on
+```
+
+### Method: getLight
+Get the current value of the light sensor.
+
+```c
+uint16_t getLight();
+```
+
+### Method: configLight
+**TODO**
+
+```c
+void configLight(int gain);
+```
+
+### Method: getTemperatureAsInt
+Get the current value of the temperature sensor, rounded to an int of 1 byte.
+
+```c
+int8_t getTemperatureAsInt();
+```
+
+### Method: getTemperatureAsFloat
+Get the current value of the temperature sensor as float of 4 bytes.
+
+```c
+float getTemperatureAsFloat();
+```
+
+### Method: onButtonPress
+Register a function (with no args nor return value) to be called when the button is pressed down.
+
+```c
+void onButtonPress(void(*callback)(void));
+```
+
+### Method: onButtonRelease
+Register a function to be called when the button is released.
+
+```c
+void onButtonRelease(void(*callback)(void));
+```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+
+### Method: getRedLED
+Returns `true` if the red LED is currently on.
+
+```c
+bool getRedLED();
+```
+
+### Method: getGreenLED
+Returns `true` if the green LED is currently on.
+
+```c
+bool getGreenLED();
+```
+
+### Method: getBlueLED
+Returns `true if the blue LED is currently on.
+
+```c
+bool getBlueLED();
+```
+
+### Method: setLED
+Turn one or more LEDs on or off.
+
+```c
+void setLED(bool red = false, bool green = false, bool blue = false);
+```
+
+- `bool red = false`: Set to `true` to turn the red LED on. Defaults to `false`.
+- `bool green = false`: Set to `true` to turn the green LED on. Defaults to `false`.
+- `bool blue = false`: Set to `true` to turn the blue LED on. Defaults to `false`.
+
+> You can combine colors to [create additives](https://en.wikipedia.org/wiki/RGB_color_model#Additive_primary_colors), e.g. red plus green makes yellow.
+
+### Method: setRedLED
+Turn the red LED on or off.
+
+```c
+void setRedLED(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the red LED on. Defaults to `true`.
+
+### Method: setGreenLED
+Turn the red LED on or off.
+
+```c
+void setGreenLED(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the green LED on. Defaults to `true`.
+
+### Method: setBlueLED
+Turn the red LED on or off.
+
+```c
+void setBlueLED(bool on = true);
+```
+
+- `bool on = true`: Set to `true` to turn the blue LED on. Defaults to `true`.
