@@ -23,15 +23,6 @@ enum TTN_COLOR: byte
 
 class TheThingsNode
 {
-  private:
-    void(*onButtonPressCallback)(void);
-    void(*onButtonReleaseCallback)(void);
-
-    void initLight();
-    void initTemperature();
-    void initLED();
-    void initButton();
-
   public:
     TheThingsNode(); 
     void showStatus();
@@ -57,6 +48,17 @@ class TheThingsNode
     void setColor(TTN_COLOR color);
 
     bool getUSB();
+    uint16_t getBattery();
+
+  private:
+    void(*onButtonPressCallback)(void);
+    void(*onButtonReleaseCallback)(void);
+
+    void initLight();
+    void initTemperature();
+    void initLED();
+    void initButton();
+    void initBattery();
 };
 
 #endif

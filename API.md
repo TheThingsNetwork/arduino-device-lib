@@ -149,10 +149,11 @@ Will write something like:
 
 ```bash
 Light: 59
-Temperature as int: 24
-Temperature as float: 23.75
+Temperature as int: 24 C
+Temperature as float: 23.75 C
 Color: Yellow
 USB: Yes
+Battery: 4750 MV
 ```
 
 ### Method: getLight
@@ -170,14 +171,14 @@ void configLight(int gain);
 ```
 
 ### Method: getTemperatureAsInt
-Get the current value of the temperature sensor, rounded to an int of 1 byte.
+Get the current value of the temperature sensor in Celsius, rounded to a signed int of 1 byte.
 
 ```c
 int8_t getTemperatureAsInt();
 ```
 
 ### Method: getTemperatureAsFloat
-Get the current value of the temperature sensor as float of 4 bytes.
+Get the current value of the temperature sensor in Celsius as signed float of 4 bytes.
 
 ```c
 float getTemperatureAsFloat();
@@ -317,3 +318,14 @@ setColor(TTN_COLOR color);
 
 ### Method: getUSB
 Returns `true` if the device is connected via USB.
+
+```c
+bool getUSB();
+```
+
+### Method: getBattery
+Returns the battery level in micro voltage as a unsigned integer of 2 bytes.
+
+```c
+uint16_t getBattery();
+```

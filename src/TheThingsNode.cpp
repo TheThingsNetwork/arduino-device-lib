@@ -11,7 +11,8 @@
 #define TTN_GREEN_LED 5
 #define TTN_BLUE_LED 6
 #define TTN_BUTTON 16
-
+#define TTN_VBAT_MEAS_EN A2
+#define TTN_VBAT_MEAS 1
 #define TTN_TEMPERATURE_SENSOR_ADDRESS 0x18
 
 Hackscribble_MCP9804 TTN_TEMPERATURE_SENSOR(TTN_TEMPERATURE_SENSOR_ADDRESS);
@@ -31,6 +32,7 @@ TheThingsNode::TheThingsNode()
   initTemperature();
   initLED();
   initButton();
+  initBattery();
 }
 
 void TheThingsNode::showStatus()
@@ -38,13 +40,15 @@ void TheThingsNode::showStatus()
   Serial.print(F("Light: "));
   Serial.println(String(getLight()));
   Serial.print(F("Temperature as int: "));
-  Serial.println(String(getTemperatureAsInt()));
+  Serial.println(String(getTemperatureAsInt()) + F(" C"));
   Serial.print(F("Temperature as float: "));
-  Serial.println(String(getTemperatureAsFloat()));
+  Serial.println(String(getTemperatureAsFloat()) + F(" C"));
   Serial.print(F("Color: "));
   Serial.println(colorToString(getColor()));
   Serial.print(F("USB: "));
   Serial.println(getUSB() ? F("Yes") : F("No"));
+  Serial.print(F("Battery: "));
+  Serial.println(String(getBattery()) + F(" MV"));
 }
 
 uint16_t TheThingsNode::getLight()
@@ -239,6 +243,15 @@ bool TheThingsNode::getUSB()
   return USBSTA&(1<<VBUS);
 }
 
+uint16_t TheThingsNode::getBattery()
+{
+  digitalWrite(TTN_VBAT_MEAS_EN, LOW);
+  uint16_t val = analogRead(TTN_VBAT_MEAS);
+  digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
+  uint16_t batteryVoltage = map(val,0,1024,0,3300) * 2; // *2 for voltage divider
+  return batteryVoltage;
+}
+
 /* PRIVATE */
 
 void TheThingsNode::initLight()
@@ -290,4 +303,10 @@ void TheThingsNode::initButton()
   digitalWrite(TTN_BUTTON, HIGH);
 
   attachPCINT(digitalPinToPCINT(TTN_BUTTON), TTN_BUTTON_CALLBACK, CHANGE);
+}
+
+void TheThingsNode::initBattery()
+{
+  pinMode(TTN_VBAT_MEAS_EN, OUTPUT);
+  digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
 }
