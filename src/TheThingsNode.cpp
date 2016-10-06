@@ -43,6 +43,8 @@ void TheThingsNode::showStatus()
   Serial.println(String(getTemperatureAsFloat()));
   Serial.print(F("Color: "));
   Serial.println(colorToString(getColor()));
+  Serial.print(F("USB: "));
+  Serial.println(getUSB() ? F("Yes") : F("No"));
 }
 
 uint16_t TheThingsNode::getLight()
@@ -230,6 +232,11 @@ void TheThingsNode::onButtonPress(void (*callback)(void))
 void TheThingsNode::onButtonRelease(void (*callback)(void))
 {
   TTN_BUTTON_RELEASE = callback;
+}
+
+bool TheThingsNode::getUSB()
+{
+  return USBSTA&(1<<VBUS);
 }
 
 /* PRIVATE */

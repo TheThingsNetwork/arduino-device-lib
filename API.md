@@ -151,9 +151,8 @@ Will write something like:
 Light: 59
 Temperature as int: 24
 Temperature as float: 23.75
-Red LED: on
-Green LED: on
-Blue LED: on
+Color: Yellow
+USB: Yes
 ```
 
 ### Method: getLight
@@ -315,3 +314,6 @@ setColor(TTN_COLOR color);
   - `TTN_MAGENTA`: Red and blue
   - `TTN_WHITE`: Red, green and blue
   - `TTN_BLACK`: None
+
+### Method: getUSB
+Returns `true` if the device is connected via USB.

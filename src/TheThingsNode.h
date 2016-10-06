@@ -55,6 +55,8 @@ class TheThingsNode
     void setGreen(bool on = true);
     void setBlue(bool on = true);
     void setColor(TTN_COLOR color);
+
+    bool getUSB();
 };
 
 #endif
