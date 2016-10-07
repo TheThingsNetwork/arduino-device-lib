@@ -163,11 +163,11 @@ Get the current value of the light sensor.
 uint16_t getLight();
 ```
 
-### Method: configLight
+### Method: setLight
 **TODO**
 
 ```c
-void configLight(int gain);
+void setLight(int gain);
 ```
 
 ### Method: getTemperatureAsInt
@@ -184,12 +184,39 @@ Get the current value of the temperature sensor in Celsius as signed float of 4 
 float getTemperatureAsFloat();
 ```
 
+### Method: onMotionStart
+Register a function (with no args nor return value) to be called when motion starts.
+
+```c
+void onMotionStart(void(*callback)(void));
+```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+
+### Method: onMotionStop
+Register a function to be called when motions stops.
+
+```c
+void onMotionStop(void(*callback)(void));
+```
+
 ### Method: onButtonPress
 Register a function (with no args nor return value) to be called when the button is pressed down.
 
 ```c
 void onButtonPress(void(*callback)(void));
 ```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+
+### Method: setMotion
+Enable or disable the motion sensor. The sensor will be enabled automatically by `onMotionStart()` and `onMotionStop()`. You also do not need to call these methods again after re-enabling the sensor.
+
+```c
+void setMotion(bool enabled = true);
+```
+
+- `bool enabled = true`: Set to `false` to disable the motion sensor. Defaults to `true`.
 
 ### Method: onButtonRelease
 Register a function to be called when the button is released.

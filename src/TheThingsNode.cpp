@@ -14,13 +14,90 @@
 #define TTN_VBAT_MEAS_EN A2
 #define TTN_VBAT_MEAS 1
 #define TTN_TEMPERATURE_SENSOR_ADDRESS 0x18
+#define TTN_ACCELEROMETER_INT2 9
+
+#define TTN_ADDR_ACC 0x1D
+#define TTN_DR 5  //active data rate
+#define TTN_SR 3  //sleep data rate
+#define TTN_SC 4 //sleep delay
+#define TTN_MT  4 //0.063g/LSB
+#define TTN_MDC 2 //Debounce delay in samples
+#define TTN_SYSMOD 0x0B
+#define TTN_FF_MT_CFG 0x15
+#define TTN_FF_MT_SRC 0x16
+#define TTN_FF_MT_THS 0x17
+#define TTN_FF_MT_COUNT 0x18
+#define TTN_TRANSIENT_CFG 0x1D
+#define TTN_TRANSIENT_SRC 0x1E
+#define TTN_TRANSIENT_THS 0x1F
+#define TTN_TRANSIENT_COUNT 0x20
+#define TTN_ASLP_CNT 0x29
+#define TTN_CTRL_REG1 0x2A
+#define TTN_CTRL_REG2 0x2B
+#define TTN_CTRL_REG3 0x2C
+#define TTN_CTRL_REG4 0x2D
+#define TTN_CTRL_REG5 0x2E
 
 Hackscribble_MCP9804 TTN_TEMPERATURE_SENSOR(TTN_TEMPERATURE_SENSOR_ADDRESS);
 
-bool TTN_BUTTON_PRESSED = false;
-
+void (*TTN_MOTION_START)(void);
+void (*TTN_MOTION_STOP)(void);
 void (*TTN_BUTTON_PRESS)(void);
 void (*TTN_BUTTON_RELEASE)(void);
+
+void TTN_MOTION_CALLBACK()
+{
+  static bool inMotion = false;
+
+  uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
+
+  if (trigger == RISING)
+  {
+    // prevent multiple starts
+    if (inMotion)
+    {
+      return;
+    }
+    inMotion = true;
+    if (TTN_MOTION_START)
+    {
+      TTN_MOTION_START();
+    }
+  }
+  else if(trigger == FALLING)
+  {
+    // prevent multiple ends and initial FALLING after init
+    if (!inMotion)
+    {
+      return;
+    }
+    inMotion = false;
+    if (TTN_MOTION_STOP)
+    {
+      TTN_MOTION_STOP();
+    }
+  }
+}
+
+void TTN_BUTTON_CALLBACK()
+{
+  uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_BUTTON));
+
+  if (trigger == RISING)
+  {
+    if (TTN_BUTTON_RELEASE)
+    {
+      TTN_BUTTON_RELEASE();
+    }
+  }
+  else if(trigger == FALLING)
+  {
+    if (TTN_BUTTON_PRESS)
+    {
+      TTN_BUTTON_PRESS();
+    }
+  }
+}
 
 /* PUBLIC */
 
@@ -30,8 +107,8 @@ TheThingsNode::TheThingsNode()
 
   initLight();
   initTemperature();
-  initLED();
   initButton();
+  initLED();
   initBattery();
 }
 
@@ -56,7 +133,7 @@ uint16_t TheThingsNode::getLight()
   return analogRead(TTN_LDR_INPUT);
 }
 
-void TheThingsNode::configLight(int gain)
+void TheThingsNode::setLight(int gain)
 {
   switch (gain)
   {
@@ -87,6 +164,69 @@ int8_t TheThingsNode::getTemperatureAsInt()
 float TheThingsNode::getTemperatureAsFloat()
 {
   return TTN_TEMPERATURE_SENSOR.getTAFloat();
+}
+
+void TheThingsNode::onMotionStart(void (*callback)(void))
+{
+  setMotion(true);
+
+  TTN_MOTION_START = callback;
+}
+
+void TheThingsNode::onMotionStop(void (*callback)(void))
+{
+  setMotion(true);
+
+  TTN_MOTION_STOP = callback;
+}
+
+void TheThingsNode::setMotion(bool enabled)
+{
+  if (this->motionEnabled == enabled)
+  {
+    return;
+  }
+
+  this->motionEnabled = enabled;
+
+  if (enabled)
+  {
+    //http://arduino.stackexchange.com/questions/1475/setting-up-the-mma8452-to-trigger-interrupt describes motion interrupt setup for low power
+    uint8_t intsrc;
+
+    writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //DR and SR defined data rate and sleep rate
+    writeMotion(TTN_CTRL_REG2, 0x1F);  //LP mode in sleep and active, autosleep on
+    writeMotion(TTN_ASLP_CNT, TTN_SC);  //defined sleep count
+    writeMotion(TTN_CTRL_REG3, 0x42); //Transient interrupt
+    writeMotion(TTN_CTRL_REG4, 0x20); //Transient interrupt source on
+    writeMotion(TTN_CTRL_REG5, 0x20); //Transient to pin INT1, the rest to INT2
+
+    writeMotion(TTN_TRANSIENT_CFG, 0x0E); //Flag latch disabled, motion on all axes
+    writeMotion(TTN_TRANSIENT_THS, TTN_MT); //Motion threshold, debounce in inc/dec mode
+    writeMotion(TTN_TRANSIENT_COUNT, TTN_MDC);  //Motion delay
+
+    writeMotion(TTN_CTRL_REG1, (0x01 | TTN_DR << 3) | TTN_SR << 6); //Put ACC in active mode
+    delay(300);
+    readMotion(TTN_TRANSIENT_SRC);
+
+    attachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2), TTN_MOTION_CALLBACK, CHANGE);
+  }
+  else
+  {
+    detachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
+
+    writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //Put ACC in standby mode
+  }
+}
+
+void TheThingsNode::onButtonPress(void (*callback)(void))
+{
+  TTN_BUTTON_PRESS = callback;
+}
+
+void TheThingsNode::onButtonRelease(void (*callback)(void))
+{
+  TTN_BUTTON_RELEASE = callback;
 }
 
 bool TheThingsNode::getRed()
@@ -228,21 +368,6 @@ void TheThingsNode::setColor(TTN_COLOR color)
   }
 }
 
-void TheThingsNode::onButtonPress(void (*callback)(void))
-{
-  TTN_BUTTON_PRESS = callback;
-}
-
-void TheThingsNode::onButtonRelease(void (*callback)(void))
-{
-  TTN_BUTTON_RELEASE = callback;
-}
-
-bool TheThingsNode::getUSB()
-{
-  return USBSTA&(1<<VBUS);
-}
-
 uint16_t TheThingsNode::getBattery()
 {
   digitalWrite(TTN_VBAT_MEAS_EN, LOW);
@@ -250,6 +375,11 @@ uint16_t TheThingsNode::getBattery()
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
   uint16_t batteryVoltage = map(val,0,1024,0,3300) * 2; // *2 for voltage divider
   return batteryVoltage;
+}
+
+bool TheThingsNode::getUSB()
+{
+  return USBSTA&(1<<VBUS);
 }
 
 /* PRIVATE */
@@ -262,39 +392,12 @@ void TheThingsNode::initLight()
   digitalWrite(TTN_LDR_GAIN1, LOW);
   digitalWrite(TTN_LDR_GAIN2, LOW);
 
-  configLight(1);
+  setLight(1);
 }
 
 void TheThingsNode::initTemperature()
 { 
   // TTN_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
-}
-
-void TheThingsNode::initLED()
-{
-  pinMode(TTN_RED_LED, OUTPUT);
-  pinMode(TTN_GREEN_LED, OUTPUT);
-  pinMode(TTN_BLUE_LED, OUTPUT);
-}
-
-void TTN_BUTTON_CALLBACK()
-{
-  uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_BUTTON));
-
-  if (trigger == RISING)
-  {
-    if (TTN_BUTTON_RELEASE)
-    {
-      TTN_BUTTON_RELEASE();
-    }
-  }
-  else if(trigger == FALLING)
-  {
-    if (TTN_BUTTON_PRESS)
-    {
-      TTN_BUTTON_PRESS();
-    }
-  }
 }
 
 void TheThingsNode::initButton()
@@ -305,8 +408,34 @@ void TheThingsNode::initButton()
   attachPCINT(digitalPinToPCINT(TTN_BUTTON), TTN_BUTTON_CALLBACK, CHANGE);
 }
 
+void TheThingsNode::initLED()
+{
+  pinMode(TTN_RED_LED, OUTPUT);
+  pinMode(TTN_GREEN_LED, OUTPUT);
+  pinMode(TTN_BLUE_LED, OUTPUT);
+}
+
 void TheThingsNode::initBattery()
 {
   pinMode(TTN_VBAT_MEAS_EN, OUTPUT);
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
+}
+
+void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652
+{
+  Wire.beginTransmission(TTN_ADDR_ACC);
+  Wire.write(REG_ADDRESS);
+  Wire.write(DATA);
+  Wire.endTransmission();
+}
+
+uint8_t TheThingsNode::readMotion(unsigned char REG_ADDRESS)
+{
+  uint8_t resp;
+  Wire.beginTransmission(TTN_ADDR_ACC);
+  Wire.write(REG_ADDRESS);
+  Wire.endTransmission(false);
+  Wire.requestFrom(TTN_ADDR_ACC, 1);
+  resp = Wire.read();
+  return resp;
 }

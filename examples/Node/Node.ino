@@ -12,8 +12,11 @@ void setup() {
 
   debugSerial.println("-- SETUP");
   
-  node.onButtonPress(onPress);
-  node.onButtonRelease(onRelease);
+  node.onMotionStart(onMotionStart);
+  node.onMotionStop(onMotionStop);
+  
+  node.onButtonPress(onButtonPress);
+  node.onButtonRelease(onButtonRelease);
 
   node.setColor(TTN_YELLOW);
 
@@ -28,10 +31,18 @@ void loop() {
   delay(5000);
 }
 
-void onPress() {
-  debugSerial.println("-- PRESS");
+void onMotionStart() {
+  debugSerial.println("-- MOTION START");
 }
 
-void onRelease() {
-  debugSerial.println("-- RELEASE");
+void onMotionStop() {
+  debugSerial.println("-- MOTION STOP");
+}
+
+void onButtonPress() {
+  debugSerial.println("-- BUTTON PRESS");
+}
+
+void onButtonRelease() {
+  debugSerial.println("-- BUTTON RELEASE");
 }

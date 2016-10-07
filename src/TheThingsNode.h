@@ -28,10 +28,14 @@ class TheThingsNode
     void showStatus();
 
     uint16_t getLight();
-    void configLight(int gain);
+    void setLight(int gain);
 
     int8_t getTemperatureAsInt();
     float getTemperatureAsFloat();
+
+    void onMotionStart(void(*callback)(void));
+    void onMotionStop(void(*callback)(void));
+    void setMotion(bool enabled = true);
 
     void onButtonPress(void(*callback)(void));
     void onButtonRelease(void(*callback)(void));
@@ -51,14 +55,16 @@ class TheThingsNode
     uint16_t getBattery();
 
   private:
-    void(*onButtonPressCallback)(void);
-    void(*onButtonReleaseCallback)(void);
+    bool motionEnabled = false;
 
     void initLight();
     void initTemperature();
-    void initLED();
     void initButton();
+    void initLED();
     void initBattery();
+
+    void writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA);
+    uint8_t readMotion(unsigned char REG_ADDRESS);
 };
 
 #endif
