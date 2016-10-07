@@ -1,5 +1,5 @@
 # API Reference
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency sub-band and the frequency plan.
 
 ## Class: TheThingsNetwork
 
@@ -13,7 +13,7 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int 
 - `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
 - `int sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
-- `int fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
+- `int fsb = 2`: Optional custom frequency sub-band. Can be `1` to `8`. Defaults to `2`.
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.
@@ -100,7 +100,6 @@ int sendBytes(const byte* payload, int length, int port = 1, bool confirm = fals
 Returns a success or error code and logs the related error message: 
 
 * `-1`: Send command failed.
-* `-2`: Time-out.
 * `1`: Successful transmission.
 * `2`: Successful transmission. Received \<N> bytes
 * `-10`: Unexpected response: \<Response> 
