@@ -14,6 +14,7 @@
 #define TTN_VBAT_MEAS_EN A2
 #define TTN_VBAT_MEAS 1
 #define TTN_TEMPERATURE_SENSOR_ADDRESS 0x18
+#define TTN_TEMPERATURE_ALERT 14
 #define TTN_ACCELEROMETER_INT2 9
 
 #define TTN_ADDR_ACC 0x1D
@@ -40,6 +41,7 @@
 
 Hackscribble_MCP9804 TTN_TEMPERATURE_SENSOR(TTN_TEMPERATURE_SENSOR_ADDRESS);
 
+void (*TTN_TEMPERATURE)(void);
 void (*TTN_MOTION_START)(void);
 void (*TTN_MOTION_STOP)(void);
 void (*TTN_BUTTON_PRESS)(void);
@@ -76,6 +78,14 @@ void TTN_MOTION_CALLBACK()
     {
       TTN_MOTION_STOP();
     }
+  }
+}
+
+void TTN_TEMPERATURE_CALLBACK()
+{
+  if (TTN_TEMPERATURE)
+  {
+    TTN_TEMPERATURE();
   }
 }
 
@@ -159,30 +169,87 @@ void TheThingsNode::setLight(int gain)
 
 int8_t TheThingsNode::getTemperatureAsInt()
 {
-  enableTemperature();
+  enableTemperature(true);
   int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
-  disableTemperature();
+  enableTemperature(this->temperatureAlert == true);
   return value;
 }
 
 float TheThingsNode::getTemperatureAsFloat()
 {
-  enableTemperature();
+  enableTemperature(true);
   int8_t value = TTN_TEMPERATURE_SENSOR.getTAFloat();
-  disableTemperature();
+  enableTemperature(this->temperatureAlert == true);
   return value;
+}
+
+void TheThingsNode::onTemperature(void (*callback)(void), int8_t lower, int8_t upper, int8_t critical, MCP9804_Hysteresis hysteresis)
+{
+  enableTemperature(true);
+
+  TTN_TEMPERATURE_SENSOR.setTLOWER(lower);
+  TTN_TEMPERATURE_SENSOR.setTUPPER(upper);
+  TTN_TEMPERATURE_SENSOR.setTCRIT(critical);
+  TTN_TEMPERATURE_SENSOR.setHysteresis(hysteresis);
+
+  TTN_TEMPERATURE_SENSOR.configureAlert();
+
+  TTN_TEMPERATURE = callback;
+
+  if (!this->temperatureAlert)
+  {
+    // From testing, it appears that if Ta is already out of range of the defined thresholds at startup, the Alert output is not activated.
+    int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
+    Serial.println(value);
+    if ((value < TTN_TEMPERATURE_SENSOR.getTLOWER()) || (value > TTN_TEMPERATURE_SENSOR.getTUPPER()) || (value > TTN_TEMPERATURE_SENSOR.getTCRIT()))
+    {
+      TTN_TEMPERATURE_CALLBACK();
+    }
+
+    attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
+  }
+
+  this->temperatureAlert = true;
+}
+
+void TheThingsNode::configTemperature(bool enabled, MCP9804_Resolution resolution)
+{
+  TTN_TEMPERATURE_SENSOR.setResolution(resolution);
+
+  if (this->temperatureAlert == enabled)
+  {
+    return;
+  }
+
+  enableTemperature(enabled);
+
+  if (this->temperatureAlert)
+  {
+    if (enabled)
+    {
+      attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
+    }
+    else
+    {
+      // no need to detach if temperatureAlert is undefined
+      if (this->temperatureAlert == true)
+      {
+        detachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT));
+      }
+    }
+  }
 }
 
 void TheThingsNode::onMotionStart(void (*callback)(void))
 {
-  setMotion(true);
+  configMotion(true);
 
   TTN_MOTION_START = callback;
 }
 
 void TheThingsNode::onMotionStop(void (*callback)(void))
 {
-  setMotion(true);
+  configMotion(true);
 
   TTN_MOTION_STOP = callback;
 }
@@ -192,7 +259,7 @@ bool TheThingsNode::isMoving()
   return TTN_MOTION_MOVING;
 }
 
-void TheThingsNode::setMotion(bool enabled)
+void TheThingsNode::configMotion(bool enabled)
 {
   if (this->motionEnabled == enabled)
   {
@@ -411,11 +478,6 @@ void TheThingsNode::initLight()
   setLight(1);
 }
 
-void TheThingsNode::initTemperature()
-{
-  TTN_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
-}
-
 void TheThingsNode::initButton()
 {
   pinMode(TTN_BUTTON, INPUT);
@@ -437,39 +499,28 @@ void TheThingsNode::initBattery()
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
 }
 
-void TheThingsNode::enableTemperature()
+void TheThingsNode::enableTemperature(bool enabled)
 {
-  if (this->temperatureEnabled == true)
+  if (this->temperatureEnabled == enabled)
   {
     return;
   }
 
-  // currently unitialized
-  if (this->temperatureEnabled != false)
+  if (enabled)
   {
-    initTemperature();
+    uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+    configurationRegister &= ~0x100;
+    TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
+    delay(255);
+  }
+  else
+  {
+    uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+    configurationRegister |= 0x100;
+    TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
   }
 
-  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-  configurationRegister &= ~0x100;
-  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
-  delay(255);
-
-  this->temperatureEnabled = true;
-}
-
-void TheThingsNode::disableTemperature()
-{
-  if (!this->temperatureEnabled == false)
-  {
-    return;
-  }
-
-  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-  configurationRegister |= 0x100;
-  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
-
-  this->temperatureEnabled = false;
+  this->temperatureEnabled = enabled;
 }
 
 void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652

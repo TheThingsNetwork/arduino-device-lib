@@ -184,8 +184,41 @@ Get the current value of the temperature sensor in Celsius as signed float of 4 
 float getTemperatureAsFloat();
 ```
 
+### Method: onTemperature
+Register a function to be called when temperature exceeds bounds. This will automatically enable the temperature sensor.
+
+```c
+void onTemperature(void(*callback)(void), int8_t lower = 0, int8_t upper = 40, int8_t critical = 55, MCP9804_Hysteresis hysteresis = H_DEGREES_0_0);
+```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+- `int8_t lower = 0`: Call function when temperature in Celsius is lower. Defaults to `0`.
+- `int8_t upper = 40`: Call function when temperature in Celsius is higher. Defaults to `40`.
+- `int8_t critical = 0`: Call function when temperature in Celsius is higher. Defaults to `55`, above which you run the risk of battery failure.
+- `MCP9804_Hysteresis hysteresis = H_DEGREES_0_0`: Set the margin for the bounds, before an alert is triggered. One of:
+    - `H_DEGREES_0_0` (default)
+    - `H_DEGREES_1_5`
+    - `H_DEGREES_3_0`
+    - `H_DEGREES_6_0`
+
+  See the sensor's [data sheet, section 5.1.1](http://ww1.microchip.com/downloads/en/DeviceDoc/22203C.pdf) for more details.
+
+### Method: configTemperature
+Enable or disable temperature alerts and configure the resolution of the sensor. The sensor will be enabled automatically by `onTemperature()`. You also do not need to call `onTemperature()` again after re-enabling the sensor.
+
+```c
+void configTemperature(bool enabled = false, MCP9804_Resolution resolution = R_DEGREES_0_0625);
+```
+
+- `bool enabled`: Enable or disable the sensor.
+- `MCP9804_Resolution hysteresis = H_DEGREES_0_0`: Set the margin for the bounds, before an alert is triggered. One of:
+    - `R_DEGREES_0_5000`
+    - `R_DEGREES_0_2500`
+    - `R_DEGREES_0_1250`
+    - `R_DEGREES_0_0625` (default)
+
 ### Method: onMotionStart
-Register a function (with no args nor return value) to be called when motion starts.
+Register a function to be called when motion starts. This will automatically enable the motion sensor.
 
 ```c
 void onMotionStart(void(*callback)(void));
@@ -194,26 +227,28 @@ void onMotionStart(void(*callback)(void));
 - `void(*callback)(void)`: Function to be called, with no arguments nor return value.
 
 ### Method: onMotionStop
-Register a function to be called when motions stops.
+Register a function to be called when motions stops. This will automatically enable the motion sensor.
 
 ```c
 void onMotionStop(void(*callback)(void));
 ```
 
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+
 ### Method: isMoving
 Returns `true` if the device is currently moving. Requires the sensor to be enabled via `onMotionStart()`, `onMotionStop()` or `setMotion()`.
 
-### Method: setMotion
+### Method: configMotion
 Enable or disable the motion sensor. The sensor will be enabled automatically by `onMotionStart()` and `onMotionStop()`. You also do not need to call these methods again after re-enabling the sensor.
 
 ```c
-void setMotion(bool enabled = true);
+void configMotion(bool enabled);
 ```
 
-- `bool enabled = true`: Set to `false` to disable the motion sensor. Defaults to `true`.
+- `bool enabled`: Enable or disable the sensor.
 
 ### Method: onButtonPress
-Register a function (with no args nor return value) to be called when the button is pressed down.
+Register a function to be called when the button is pressed down.
 
 ```c
 void onButtonPress(void(*callback)(void));

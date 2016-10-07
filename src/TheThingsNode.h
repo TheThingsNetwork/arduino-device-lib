@@ -32,11 +32,13 @@ class TheThingsNode
 
     int8_t getTemperatureAsInt();
     float getTemperatureAsFloat();
+    void onTemperature(void(*callback)(void), int8_t lower = 0, int8_t upper = 40, int8_t critical = 55, MCP9804_Hysteresis hysteresis = H_DEGREES_0_0);
+    void configTemperature(bool enabled, MCP9804_Resolution resolution = R_DEGREES_0_0625);
 
     void onMotionStart(void(*callback)(void));
     void onMotionStop(void(*callback)(void));
     bool isMoving();
-    void setMotion(bool enabled = true);
+    void configMotion(bool enabled);
 
     void onButtonPress(void(*callback)(void));
     void onButtonRelease(void(*callback)(void));
@@ -57,17 +59,15 @@ class TheThingsNode
 
   private:
     bool temperatureEnabled;
+    bool temperatureAlert;
     bool motionEnabled;
 
     void initLight();
-    void initTemperature();
     void initButton();
     void initLED();
     void initBattery();
 
-    void enableTemperature();
-    void disableTemperature();
-
+    void enableTemperature(bool enabled);
     void writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA);
     uint8_t readMotion(unsigned char REG_ADDRESS);
 };

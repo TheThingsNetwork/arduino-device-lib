@@ -11,6 +11,8 @@ void setup() {
   while (!debugSerial && millis() < 10000);
 
   debugSerial.println("-- SETUP");
+
+  node.onTemperature(onTemperature, 10, 23);
   
   node.onMotionStart(onMotionStart);
   node.onMotionStop(onMotionStop);
@@ -29,6 +31,10 @@ void loop() {
   node.showStatus();
   
   delay(5000);
+}
+
+void onTemperature() {
+  debugSerial.println("-- TEMPERATURE");
 }
 
 void onMotionStart() {
