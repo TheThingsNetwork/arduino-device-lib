@@ -35,6 +35,7 @@ class TheThingsNode
 
     void onMotionStart(void(*callback)(void));
     void onMotionStop(void(*callback)(void));
+    bool isMoving();
     void setMotion(bool enabled = true);
 
     void onButtonPress(void(*callback)(void));

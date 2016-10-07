@@ -45,20 +45,20 @@ void (*TTN_MOTION_STOP)(void);
 void (*TTN_BUTTON_PRESS)(void);
 void (*TTN_BUTTON_RELEASE)(void);
 
+bool TTN_MOTION_MOVING = false;
+
 void TTN_MOTION_CALLBACK()
 {
-  static bool inMotion = false;
-
   uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
 
   if (trigger == RISING)
   {
     // prevent multiple starts
-    if (inMotion)
+    if (TTN_MOTION_MOVING)
     {
       return;
     }
-    inMotion = true;
+    TTN_MOTION_MOVING = true;
     if (TTN_MOTION_START)
     {
       TTN_MOTION_START();
@@ -67,11 +67,11 @@ void TTN_MOTION_CALLBACK()
   else if(trigger == FALLING)
   {
     // prevent multiple ends and initial FALLING after init
-    if (!inMotion)
+    if (!TTN_MOTION_MOVING)
     {
       return;
     }
-    inMotion = false;
+    TTN_MOTION_MOVING = false;
     if (TTN_MOTION_STOP)
     {
       TTN_MOTION_STOP();
@@ -120,11 +120,13 @@ void TheThingsNode::showStatus()
   Serial.println(String(getTemperatureAsInt()) + F(" C"));
   Serial.print(F("Temperature as float: "));
   Serial.println(String(getTemperatureAsFloat()) + F(" C"));
+  Serial.print(F("Moving: "));
+  Serial.println(isMoving() ? F("Yes") : F("No"));
   Serial.print(F("Color: "));
   Serial.println(colorToString(getColor()));
-  Serial.print(F("USB: "));
+  Serial.print(F("USB connected: "));
   Serial.println(getUSB() ? F("Yes") : F("No"));
-  Serial.print(F("Battery: "));
+  Serial.print(F("Battery voltage: "));
   Serial.println(String(getBattery()) + F(" MV"));
 }
 
@@ -178,6 +180,11 @@ void TheThingsNode::onMotionStop(void (*callback)(void))
   setMotion(true);
 
   TTN_MOTION_STOP = callback;
+}
+
+bool TheThingsNode::isMoving()
+{
+  return TTN_MOTION_MOVING;
 }
 
 void TheThingsNode::setMotion(bool enabled)

@@ -200,14 +200,8 @@ Register a function to be called when motions stops.
 void onMotionStop(void(*callback)(void));
 ```
 
-### Method: onButtonPress
-Register a function (with no args nor return value) to be called when the button is pressed down.
-
-```c
-void onButtonPress(void(*callback)(void));
-```
-
-- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+### Method: isMoving
+Returns `true` if the device is currently moving. Requires the sensor to be enabled via `onMotionStart()`, `onMotionStop()` or `setMotion()`.
 
 ### Method: setMotion
 Enable or disable the motion sensor. The sensor will be enabled automatically by `onMotionStart()` and `onMotionStop()`. You also do not need to call these methods again after re-enabling the sensor.
@@ -217,6 +211,15 @@ void setMotion(bool enabled = true);
 ```
 
 - `bool enabled = true`: Set to `false` to disable the motion sensor. Defaults to `true`.
+
+### Method: onButtonPress
+Register a function (with no args nor return value) to be called when the button is pressed down.
+
+```c
+void onButtonPress(void(*callback)(void));
+```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
 
 ### Method: onButtonRelease
 Register a function to be called when the button is released.

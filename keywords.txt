@@ -31,6 +31,7 @@ getTemperatureAsInt            KEYWORD2
 getTemperatureAsFloat          KEYWORD2
 onMotionStart                  KEYWORD2
 onMotionStop                   KEYWORD2
+isMoving                       KEYWORD2
 setMotion                      KEYWORD2
 onButtonPress                  KEYWORD2
 onButtonRelease                KEYWORD2
