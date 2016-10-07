@@ -106,7 +106,6 @@ TheThingsNode::TheThingsNode()
   Serial.begin(9600);
 
   initLight();
-  initTemperature();
   initButton();
   initLED();
   initBattery();
@@ -160,12 +159,18 @@ void TheThingsNode::setLight(int gain)
 
 int8_t TheThingsNode::getTemperatureAsInt()
 {
-  return TTN_TEMPERATURE_SENSOR.getTAInteger();
+  enableTemperature();
+  int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
+  disableTemperature();
+  return value;
 }
 
 float TheThingsNode::getTemperatureAsFloat()
 {
-  return TTN_TEMPERATURE_SENSOR.getTAFloat();
+  enableTemperature();
+  int8_t value = TTN_TEMPERATURE_SENSOR.getTAFloat();
+  disableTemperature();
+  return value;
 }
 
 void TheThingsNode::onMotionStart(void (*callback)(void))
@@ -194,8 +199,6 @@ void TheThingsNode::setMotion(bool enabled)
     return;
   }
 
-  this->motionEnabled = enabled;
-
   if (enabled)
   {
     //http://arduino.stackexchange.com/questions/1475/setting-up-the-mma8452-to-trigger-interrupt describes motion interrupt setup for low power
@@ -220,10 +223,16 @@ void TheThingsNode::setMotion(bool enabled)
   }
   else
   {
-    detachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
+    // no need to detach if motionEnabled is undefined
+    if (this->motionEnabled == true)
+    {
+      detachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
+    }
 
     writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //Put ACC in standby mode
   }
+
+  this->motionEnabled = enabled;
 }
 
 void TheThingsNode::onButtonPress(void (*callback)(void))
@@ -403,8 +412,8 @@ void TheThingsNode::initLight()
 }
 
 void TheThingsNode::initTemperature()
-{ 
-  // TTN_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
+{
+  TTN_TEMPERATURE_SENSOR.setResolution(R_DEGREES_0_0625);
 }
 
 void TheThingsNode::initButton()
@@ -426,6 +435,41 @@ void TheThingsNode::initBattery()
 {
   pinMode(TTN_VBAT_MEAS_EN, OUTPUT);
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
+}
+
+void TheThingsNode::enableTemperature()
+{
+  if (this->temperatureEnabled == true)
+  {
+    return;
+  }
+
+  // currently unitialized
+  if (this->temperatureEnabled != false)
+  {
+    initTemperature();
+  }
+
+  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+  configurationRegister &= ~0x100;
+  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
+  delay(255);
+
+  this->temperatureEnabled = true;
+}
+
+void TheThingsNode::disableTemperature()
+{
+  if (!this->temperatureEnabled == false)
+  {
+    return;
+  }
+
+  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+  configurationRegister |= 0x100;
+  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
+
+  this->temperatureEnabled = false;
 }
 
 void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652

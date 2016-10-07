@@ -56,13 +56,17 @@ class TheThingsNode
     uint16_t getBattery();
 
   private:
-    bool motionEnabled = false;
+    bool temperatureEnabled;
+    bool motionEnabled;
 
     void initLight();
     void initTemperature();
     void initButton();
     void initLED();
     void initBattery();
+
+    void enableTemperature();
+    void disableTemperature();
 
     void writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA);
     uint8_t readMotion(unsigned char REG_ADDRESS);
