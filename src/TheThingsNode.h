@@ -36,6 +36,7 @@ class TheThingsNode
     void onTemperatureAlert(void(*callback)(void));
     void configTemperatureAlert(bool enabled);
     void configTemperatureAlert(bool enabled, int8_t lower, int8_t upper, int8_t critical = 55, MCP9804_Hysteresis hysteresis = H_DEGREES_0_0);
+    bool hasTemperatureAlert();
 
     void onMotionStart(void(*callback)(void));
     void onMotionStop(void(*callback)(void));

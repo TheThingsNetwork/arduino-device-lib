@@ -22,6 +22,7 @@ Will write something like:
 Light: 25
 Temperature as int: 23 C
 Temperature as float: 23.00 C
+Temperature alert: No
 Moving: No
 Button pressed: No
 Color: Yellow
@@ -32,13 +33,6 @@ Battery voltage: 4704 MV
 ## Light
 Use and control the light sensor.
 
-### Method: getLight
-Get the current value of the light sensor as an unsigned integer of 2 bytes.
-
-```c
-uint16_t getLight();
-```
-
 ### Method: configLight
 Configure the light sensor.
 
@@ -48,22 +42,15 @@ void configLight(int gain);
 
 - `int gain`: **TODO**
 
+### Method: getLight
+Get the current value of the light sensor as an unsigned integer of 2 bytes.
+
+```c
+uint16_t getLight();
+```
+
 ## Temperature
 Use and control the temperature sensor.
-
-### Method: getTemperatureAsInt
-Get the current value of the temperature sensor in Celsius, rounded to a signed integer of 1 byte.
-
-```c
-int8_t getTemperatureAsInt();
-```
-
-### Method: getTemperatureAsFloat
-Get the current value of the temperature sensor in Celsius as signed float of 4 bytes.
-
-```c
-float getTemperatureAsFloat();
-```
 
 ### Method: configTemperature
 Configure the temperature sensor.
@@ -80,14 +67,19 @@ void configTemperature(MCP9804_Resolution resolution);
 
   See the sensor's [data sheet, section 5.2.4](http://ww1.microchip.com/downloads/en/DeviceDoc/22203C.pdf) for more details.
 
-### Method: onTemperatureAlert
-Register a function to be called when temperature exceeds the configured bounds. This will automatically enable the temperature alerts.
+### Method: getTemperatureAsInt
+Get the current value of the temperature sensor in Celsius, rounded to a signed integer of 1 byte.
 
 ```c
-void onTemperature(void(*callback)(void));
+int8_t getTemperatureAsInt();
 ```
 
-- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+### Method: getTemperatureAsFloat
+Get the current value of the temperature sensor in Celsius as signed float of 4 bytes.
+
+```c
+float getTemperatureAsFloat();
+```
 
 ### Method: configureTemperatureAlert
 Configure the temperature alert.
@@ -110,8 +102,29 @@ void configTemperatureAlert(bool enabled, int8_t lower, int8_t upper, int8_t cri
 
   See the sensor's [data sheet, section 5.2.2](http://ww1.microchip.com/downloads/en/DeviceDoc/22203C.pdf) for more details.
 
+### Method: onTemperatureAlert
+Register a function to be called when temperature exceeds the configured bounds. This will automatically enable the temperature alerts.
+
+```c
+void onTemperature(void(*callback)(void));
+```
+
+- `void(*callback)(void)`: Function to be called, with no arguments nor return value.
+
+### Method: hasTemperatureAlert
+Returns `true` if the current temperature exceeds the configured bounds for the alert. This also works if the alert itself is temporarily disabled.
+
 ## Motion
 Use and control the motion sensor.
+
+### Method: configMotion
+Enable or disable the motion sensor. The sensor will be enabled automatically by `onMotionStart()` and `onMotionStop()`, but you can use this method to temporarily disable the sensor.
+
+```c
+void configMotion(bool enabled);
+```
+
+- `bool enabled`: Enable or disable the sensor.
 
 ### Method: onMotionStart
 Register a function to be called when motion starts. This will automatically enable the motion sensor.
@@ -133,15 +146,6 @@ void onMotionStop(void(*callback)(void));
 
 ### Method: isMoving
 Returns `true` if the device is currently moving. Requires the sensor to be enabled via `onMotionStart()`, `onMotionStop()` or `setMotion()`.
-
-### Method: configMotion
-Enable or disable the motion sensor. The sensor will be enabled automatically by `onMotionStart()` and `onMotionStop()`, but you can use this method to temporarily disable the sensor.
-
-```c
-void configMotion(bool enabled);
-```
-
-- `bool enabled`: Enable or disable the sensor.
 
 ## Button
 

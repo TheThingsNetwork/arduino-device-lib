@@ -146,6 +146,8 @@ void TheThingsNode::showStatus()
   Serial.println(String(getTemperatureAsInt()) + F(" C"));
   Serial.print(F("Temperature as float: "));
   Serial.println(String(getTemperatureAsFloat()) + F(" C"));
+  Serial.print(F("Temperature alert: "));
+  Serial.println(hasTemperatureAlert() ? F("Yes") : F("No"));  
   Serial.print(F("Moving: "));
   Serial.println(isMoving() ? F("Yes") : F("No"));
   Serial.print(F("Button pressed: "));
@@ -161,11 +163,6 @@ void TheThingsNode::showStatus()
 /******************************************************************************
  * LIGHT
  */
-
-uint16_t TheThingsNode::getLight()
-{
-  return analogRead(TTN_LDR_INPUT);
-}
 
 void TheThingsNode::configLight(int gain)
 {
@@ -190,9 +187,19 @@ void TheThingsNode::configLight(int gain)
   }
 }
 
+uint16_t TheThingsNode::getLight()
+{
+  return analogRead(TTN_LDR_INPUT);
+}
+
 /******************************************************************************
  * TEMPERATURE
  */
+
+void TheThingsNode::configTemperature(MCP9804_Resolution resolution)
+{
+  TTN_TEMPERATURE_SENSOR.setResolution(resolution);
+}
 
 int8_t TheThingsNode::getTemperatureAsInt()
 {
@@ -216,26 +223,6 @@ float TheThingsNode::getTemperatureAsFloat()
   return value;
 }
 
-void TheThingsNode::configTemperature(MCP9804_Resolution resolution)
-{
-  TTN_TEMPERATURE_SENSOR.setResolution(resolution);
-}
-
-void TheThingsNode::onTemperatureAlert(void (*callback)(void))
-{
-  TTN_TEMPERATURE = callback;
-
-  if (this->temperatureAlertEnabled == true)
-  {
-    catchCurrentTemperatureAlert();
-  }
-  // no need to do this again
-  else
-  {
-    configTemperatureAlert(true);
-  }
-}
-
 void TheThingsNode::configTemperatureAlert(bool enabled)
 {
   if (this->temperatureAlertEnabled == enabled)
@@ -253,7 +240,10 @@ void TheThingsNode::configTemperatureAlert(bool enabled)
 
     attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
 
-    catchCurrentTemperatureAlert();
+    if (hasTemperatureAlert())
+    {
+      TTN_TEMPERATURE_CALLBACK();
+    }
   }
   else
   {
@@ -279,28 +269,35 @@ void TheThingsNode::configTemperatureAlert(bool enabled, int8_t lower, int8_t up
   configTemperatureAlert(enabled);
 }
 
+void TheThingsNode::onTemperatureAlert(void (*callback)(void))
+{
+  TTN_TEMPERATURE = callback;
+
+  if (this->temperatureAlertEnabled == true)
+  {
+    if (hasTemperatureAlert())
+    {
+      TTN_TEMPERATURE_CALLBACK();
+    }
+  }
+  // no need to do this again
+  else
+  {
+    configTemperatureAlert(true);
+  }
+}
+
+bool TheThingsNode::hasTemperatureAlert()
+{
+  // From testing, it appears that if Ta is already out of range of the defined thresholds at startup, the Alert output is not activated.
+  int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
+  return ((value < TTN_TEMPERATURE_SENSOR.getTLOWER()) || (value > TTN_TEMPERATURE_SENSOR.getTUPPER()) || (value > TTN_TEMPERATURE_SENSOR.getTCRIT()));
+}
+
+
 /******************************************************************************
  * MOTION
  */
-
-void TheThingsNode::onMotionStart(void (*callback)(void))
-{
-  configMotion(true);
-
-  TTN_MOTION_START = callback;
-}
-
-void TheThingsNode::onMotionStop(void (*callback)(void))
-{
-  configMotion(true);
-
-  TTN_MOTION_STOP = callback;
-}
-
-bool TheThingsNode::isMoving()
-{
-  return TTN_MOTION_MOVING;
-}
 
 void TheThingsNode::configMotion(bool enabled)
 {
@@ -346,6 +343,25 @@ void TheThingsNode::configMotion(bool enabled)
   }
 
   this->motionEnabled = enabled;
+}
+
+void TheThingsNode::onMotionStart(void (*callback)(void))
+{
+  configMotion(true);
+
+  TTN_MOTION_START = callback;
+}
+
+void TheThingsNode::onMotionStop(void (*callback)(void))
+{
+  configMotion(true);
+
+  TTN_MOTION_STOP = callback;
+}
+
+bool TheThingsNode::isMoving()
+{
+  return TTN_MOTION_MOVING;
 }
 
 /******************************************************************************
@@ -595,21 +611,6 @@ void TheThingsNode::disableTemperature()
   TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
 
   this->temperatureEnabled = false;
-}
-
-void TheThingsNode::catchCurrentTemperatureAlert()
-{
-  if (!TTN_TEMPERATURE_CALLBACK)
-  {
-    return;
-  }
-
-  // From testing, it appears that if Ta is already out of range of the defined thresholds at startup, the Alert output is not activated.
-  int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
-  if ((value < TTN_TEMPERATURE_SENSOR.getTLOWER()) || (value > TTN_TEMPERATURE_SENSOR.getTUPPER()) || (value > TTN_TEMPERATURE_SENSOR.getTCRIT()))
-  {
-    TTN_TEMPERATURE_CALLBACK();
-  }
 }
 
 void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652
