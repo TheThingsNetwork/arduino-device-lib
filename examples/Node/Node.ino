@@ -12,7 +12,9 @@ void setup() {
 
   debugSerial.println("-- SETUP");
 
-  node.onTemperature(onTemperature, 10, 23);
+  node.configTemperatureAlert(true, 10, 15);
+  
+  node.onTemperatureAlert(onTemperatureAlert);
   
   node.onMotionStart(onMotionStart);
   node.onMotionStop(onMotionStop);
@@ -33,8 +35,8 @@ void loop() {
   delay(5000);
 }
 
-void onTemperature() {
-  debugSerial.println("-- TEMPERATURE");
+void onTemperatureAlert() {
+  debugSerial.println("-- TEMPERATURE ALERT");
 }
 
 void onMotionStart() {

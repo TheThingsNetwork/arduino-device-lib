@@ -48,6 +48,7 @@ void (*TTN_BUTTON_PRESS)(void);
 void (*TTN_BUTTON_RELEASE)(void);
 
 bool TTN_MOTION_MOVING = false;
+bool TTN_BUTTON_PRESSED = false;
 
 void TTN_MOTION_CALLBACK()
 {
@@ -87,29 +88,45 @@ void TTN_TEMPERATURE_CALLBACK()
   {
     TTN_TEMPERATURE();
   }
+  
+  TTN_TEMPERATURE_SENSOR.clearAlert();
 }
 
 void TTN_BUTTON_CALLBACK()
 {
   uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_BUTTON));
 
-  if (trigger == RISING)
+  if(trigger == FALLING)
   {
-    if (TTN_BUTTON_RELEASE)
+    // prevent multiple starts
+    if (TTN_BUTTON_PRESSED)
     {
-      TTN_BUTTON_RELEASE();
+      return;
     }
-  }
-  else if(trigger == FALLING)
-  {
+    TTN_BUTTON_PRESSED = true;
     if (TTN_BUTTON_PRESS)
     {
       TTN_BUTTON_PRESS();
     }
   }
+  else if (trigger == RISING)
+  {
+    // prevent multiple starts
+    if (!TTN_BUTTON_PRESSED)
+    {
+      return;
+    }
+    TTN_BUTTON_PRESSED = false;
+    if (TTN_BUTTON_RELEASE)
+    {
+      TTN_BUTTON_RELEASE();
+    }
+  }
 }
 
-/* PUBLIC */
+/******************************************************************************
+ * PUBLIC
+ *****************************************************************************/
 
 TheThingsNode::TheThingsNode() 
 {
@@ -131,6 +148,8 @@ void TheThingsNode::showStatus()
   Serial.println(String(getTemperatureAsFloat()) + F(" C"));
   Serial.print(F("Moving: "));
   Serial.println(isMoving() ? F("Yes") : F("No"));
+  Serial.print(F("Button pressed: "));
+  Serial.println(isButtonPressed() ? F("Yes") : F("No"));
   Serial.print(F("Color: "));
   Serial.println(colorToString(getColor()));
   Serial.print(F("USB connected: "));
@@ -139,12 +158,16 @@ void TheThingsNode::showStatus()
   Serial.println(String(getBattery()) + F(" MV"));
 }
 
+/******************************************************************************
+ * LIGHT
+ */
+
 uint16_t TheThingsNode::getLight()
 {
   return analogRead(TTN_LDR_INPUT);
 }
 
-void TheThingsNode::setLight(int gain)
+void TheThingsNode::configLight(int gain)
 {
   switch (gain)
   {
@@ -167,78 +190,98 @@ void TheThingsNode::setLight(int gain)
   }
 }
 
+/******************************************************************************
+ * TEMPERATURE
+ */
+
 int8_t TheThingsNode::getTemperatureAsInt()
 {
-  enableTemperature(true);
+  enableTemperature();
   int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
-  enableTemperature(this->temperatureAlert == true);
+  if (!this->temperatureAlertEnabled)
+  {
+    disableTemperature();
+  }
   return value;
 }
 
 float TheThingsNode::getTemperatureAsFloat()
 {
-  enableTemperature(true);
+  enableTemperature();
   int8_t value = TTN_TEMPERATURE_SENSOR.getTAFloat();
-  enableTemperature(this->temperatureAlert == true);
+  if (!this->temperatureAlertEnabled)
+  {
+    disableTemperature();
+  }
   return value;
 }
 
-void TheThingsNode::onTemperature(void (*callback)(void), int8_t lower, int8_t upper, int8_t critical, MCP9804_Hysteresis hysteresis)
+void TheThingsNode::configTemperature(MCP9804_Resolution resolution)
 {
-  enableTemperature(true);
+  TTN_TEMPERATURE_SENSOR.setResolution(resolution);
+}
 
+void TheThingsNode::onTemperatureAlert(void (*callback)(void))
+{
+  TTN_TEMPERATURE = callback;
+
+  if (this->temperatureAlertEnabled == true)
+  {
+    catchCurrentTemperatureAlert();
+  }
+  // no need to do this again
+  else
+  {
+    configTemperatureAlert(true);
+  }
+}
+
+void TheThingsNode::configTemperatureAlert(bool enabled)
+{
+  if (this->temperatureAlertEnabled == enabled)
+  {
+    return;
+  }
+
+  if (enabled)
+  {
+    // only need to do this once
+    if (this->temperatureEnabled != false)
+    {
+      TTN_TEMPERATURE_SENSOR.configureAlert();
+    }
+
+    attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
+
+    catchCurrentTemperatureAlert();
+  }
+  else
+  {
+    // no need to do this when it was never enabled
+    if (this->temperatureAlertEnabled == true)
+    {
+      detachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT));
+    }
+
+    disableTemperature();
+  }
+
+  this->temperatureAlertEnabled = enabled;
+}
+
+void TheThingsNode::configTemperatureAlert(bool enabled, int8_t lower, int8_t upper, int8_t critical, MCP9804_Hysteresis hysteresis)
+{
   TTN_TEMPERATURE_SENSOR.setTLOWER(lower);
   TTN_TEMPERATURE_SENSOR.setTUPPER(upper);
   TTN_TEMPERATURE_SENSOR.setTCRIT(critical);
   TTN_TEMPERATURE_SENSOR.setHysteresis(hysteresis);
 
-  TTN_TEMPERATURE_SENSOR.configureAlert();
-
-  TTN_TEMPERATURE = callback;
-
-  if (!this->temperatureAlert)
-  {
-    // From testing, it appears that if Ta is already out of range of the defined thresholds at startup, the Alert output is not activated.
-    int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
-    Serial.println(value);
-    if ((value < TTN_TEMPERATURE_SENSOR.getTLOWER()) || (value > TTN_TEMPERATURE_SENSOR.getTUPPER()) || (value > TTN_TEMPERATURE_SENSOR.getTCRIT()))
-    {
-      TTN_TEMPERATURE_CALLBACK();
-    }
-
-    attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
-  }
-
-  this->temperatureAlert = true;
+  configTemperatureAlert(enabled);
 }
 
-void TheThingsNode::configTemperature(bool enabled, MCP9804_Resolution resolution)
-{
-  TTN_TEMPERATURE_SENSOR.setResolution(resolution);
-
-  if (this->temperatureAlert == enabled)
-  {
-    return;
-  }
-
-  enableTemperature(enabled);
-
-  if (this->temperatureAlert)
-  {
-    if (enabled)
-    {
-      attachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT), TTN_TEMPERATURE_CALLBACK, FALLING);
-    }
-    else
-    {
-      // no need to detach if temperatureAlert is undefined
-      if (this->temperatureAlert == true)
-      {
-        detachPCINT(digitalPinToPCINT(TTN_TEMPERATURE_ALERT));
-      }
-    }
-  }
-}
+/******************************************************************************
+ * MOTION
+ */
 
 void TheThingsNode::onMotionStart(void (*callback)(void))
 {
@@ -268,19 +311,22 @@ void TheThingsNode::configMotion(bool enabled)
 
   if (enabled)
   {
-    //http://arduino.stackexchange.com/questions/1475/setting-up-the-mma8452-to-trigger-interrupt describes motion interrupt setup for low power
-    uint8_t intsrc;
+    // first time, when motionEnabled is undefined
+    if (this->motionEnabled != false)
+    {
+      // describes motion interrupt setup for low power:
+      // http://arduino.stackexchange.com/questions/1475/setting-up-the-mma8452-to-trigger-interrupt
+      writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //DR and SR defined data rate and sleep rate
+      writeMotion(TTN_CTRL_REG2, 0x1F);  //LP mode in sleep and active, autosleep on
+      writeMotion(TTN_ASLP_CNT, TTN_SC);  //defined sleep count
+      writeMotion(TTN_CTRL_REG3, 0x42); //Transient interrupt
+      writeMotion(TTN_CTRL_REG4, 0x20); //Transient interrupt source on
+      writeMotion(TTN_CTRL_REG5, 0x20); //Transient to pin INT1, the rest to INT2
 
-    writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //DR and SR defined data rate and sleep rate
-    writeMotion(TTN_CTRL_REG2, 0x1F);  //LP mode in sleep and active, autosleep on
-    writeMotion(TTN_ASLP_CNT, TTN_SC);  //defined sleep count
-    writeMotion(TTN_CTRL_REG3, 0x42); //Transient interrupt
-    writeMotion(TTN_CTRL_REG4, 0x20); //Transient interrupt source on
-    writeMotion(TTN_CTRL_REG5, 0x20); //Transient to pin INT1, the rest to INT2
-
-    writeMotion(TTN_TRANSIENT_CFG, 0x0E); //Flag latch disabled, motion on all axes
-    writeMotion(TTN_TRANSIENT_THS, TTN_MT); //Motion threshold, debounce in inc/dec mode
-    writeMotion(TTN_TRANSIENT_COUNT, TTN_MDC);  //Motion delay
+      writeMotion(TTN_TRANSIENT_CFG, 0x0E); //Flag latch disabled, motion on all axes
+      writeMotion(TTN_TRANSIENT_THS, TTN_MT); //Motion threshold, debounce in inc/dec mode
+      writeMotion(TTN_TRANSIENT_COUNT, TTN_MDC);  //Motion delay
+    }
 
     writeMotion(TTN_CTRL_REG1, (0x01 | TTN_DR << 3) | TTN_SR << 6); //Put ACC in active mode
     delay(300);
@@ -290,7 +336,7 @@ void TheThingsNode::configMotion(bool enabled)
   }
   else
   {
-    // no need to detach if motionEnabled is undefined
+    // not on first time, when motionEnabled is undefined
     if (this->motionEnabled == true)
     {
       detachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
@@ -302,6 +348,10 @@ void TheThingsNode::configMotion(bool enabled)
   this->motionEnabled = enabled;
 }
 
+/******************************************************************************
+ * BUTTON
+ */
+
 void TheThingsNode::onButtonPress(void (*callback)(void))
 {
   TTN_BUTTON_PRESS = callback;
@@ -311,6 +361,15 @@ void TheThingsNode::onButtonRelease(void (*callback)(void))
 {
   TTN_BUTTON_RELEASE = callback;
 }
+
+bool TheThingsNode::isButtonPressed()
+{
+  return TTN_BUTTON_PRESSED;
+}
+
+/******************************************************************************
+ * LED
+ */
 
 bool TheThingsNode::getRed()
 {
@@ -451,6 +510,10 @@ void TheThingsNode::setColor(TTN_COLOR color)
   }
 }
 
+/******************************************************************************
+ * BATTERY
+ */
+
 uint16_t TheThingsNode::getBattery()
 {
   digitalWrite(TTN_VBAT_MEAS_EN, LOW);
@@ -460,12 +523,18 @@ uint16_t TheThingsNode::getBattery()
   return batteryVoltage;
 }
 
+/******************************************************************************
+ * USB
+ */
+
 bool TheThingsNode::getUSB()
 {
   return USBSTA&(1<<VBUS);
 }
 
-/* PRIVATE */
+/******************************************************************************
+ * PRIVATE
+ *****************************************************************************/
 
 void TheThingsNode::initLight()
 { 
@@ -475,7 +544,7 @@ void TheThingsNode::initLight()
   digitalWrite(TTN_LDR_GAIN1, LOW);
   digitalWrite(TTN_LDR_GAIN2, LOW);
 
-  setLight(1);
+  configLight(1);
 }
 
 void TheThingsNode::initButton()
@@ -499,28 +568,48 @@ void TheThingsNode::initBattery()
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
 }
 
-void TheThingsNode::enableTemperature(bool enabled)
+void TheThingsNode::enableTemperature()
 {
-  if (this->temperatureEnabled == enabled)
+  if (this->temperatureEnabled == true)
   {
     return;
   }
 
-  if (enabled)
+  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+  configurationRegister &= ~0x100;
+  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
+  delay(255);
+
+  this->temperatureEnabled = true;
+}
+
+void TheThingsNode::disableTemperature()
+{
+  if (this->temperatureEnabled == false)
   {
-    uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-    configurationRegister &= ~0x100;
-    TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
-    delay(255);
-  }
-  else
-  {
-    uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-    configurationRegister |= 0x100;
-    TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
+    return;
   }
 
-  this->temperatureEnabled = enabled;
+  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
+  configurationRegister |= 0x100;
+  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
+
+  this->temperatureEnabled = false;
+}
+
+void TheThingsNode::catchCurrentTemperatureAlert()
+{
+  if (!TTN_TEMPERATURE_CALLBACK)
+  {
+    return;
+  }
+
+  // From testing, it appears that if Ta is already out of range of the defined thresholds at startup, the Alert output is not activated.
+  int8_t value = TTN_TEMPERATURE_SENSOR.getTAInteger();
+  if ((value < TTN_TEMPERATURE_SENSOR.getTLOWER()) || (value > TTN_TEMPERATURE_SENSOR.getTUPPER()) || (value > TTN_TEMPERATURE_SENSOR.getTCRIT()))
+  {
+    TTN_TEMPERATURE_CALLBACK();
+  }
 }
 
 void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652

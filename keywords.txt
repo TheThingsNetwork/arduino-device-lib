@@ -26,15 +26,19 @@ sendBytes                      KEYWORD2
 poll                           KEYWORD2
 
 getLight                       KEYWORD2
-setLight                       KEYWORD2
+configLight                    KEYWORD2
 getTemperatureAsInt            KEYWORD2
 getTemperatureAsFloat          KEYWORD2
+configTemperature              KEYWORD2
+onTemperatureAlert             KEYWORD2
+configTemperatureAlert         KEYWORD2
 onMotionStart                  KEYWORD2
 onMotionStop                   KEYWORD2
 isMoving                       KEYWORD2
-setMotion                      KEYWORD2
+configMotion                   KEYWORD2
 onButtonPress                  KEYWORD2
 onButtonRelease                KEYWORD2
+isButtonPressed                KEYWORD2
 getRed                         KEYWORD2
 getGreen                       KEYWORD2
 getBlue                        KEYWORD2
