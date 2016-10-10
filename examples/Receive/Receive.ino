@@ -7,7 +7,7 @@ const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, /* TTN_FP_EU868 or TTN_FP_US915 */);
 
 void setup() {
   loraSerial.begin(57600);
