@@ -16,19 +16,11 @@ String TheThingsNetwork::readLine() {
   }
 }
 
-bool TheThingsNetwork::waitForOK(String okMessage) {
-  String line = readLine();
-
-  if (line != okMessage) {
-    debugPrint(F("Response is not OK: "));
-    debugPrintLn(line);
-    return false;
+String TheThingsNetwork::readValue(String cmd) {
+  while(modemStream->available()) {
+    modemStream->read();
   }
 
-  return true;
-}
-
-String TheThingsNetwork::readValue(String cmd) {
   modemStream->println(cmd);
   return readLine();
 }
@@ -37,9 +29,15 @@ bool TheThingsNetwork::sendCommand(String cmd) {
   debugPrint(F("Sending: "));
   debugPrintLn(cmd);
 
-  modemStream->println(cmd);
+  String line = readValue(cmd);
 
-  return waitForOK();
+  if (line != "ok") {
+    debugPrint(F("Response is not OK: "));
+    debugPrintLn(line);
+    return false;
+  }
+
+  return true;
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, String value) {
@@ -61,29 +59,20 @@ char btohexa_low(unsigned char b) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length) {
-  debugPrint(F("Sending: "));
-  debugPrint(cmd);
-  debugPrint(F(" with "));
-  debugPrint(length);
-  debugPrintLn(F(" bytes"));
-
-  modemStream->print(cmd + " ");
+  String str = cmd + " ";
 
   for (int i = 0; i < length; i++) {
-    modemStream->print(btohexa_high(buf[i]));
-    modemStream->print(btohexa_low(buf[i]));
+    str += btohexa_high(buf[i]);
+    str += btohexa_low(buf[i]);
   }
-  modemStream->println();
 
-  return waitForOK();
+  return sendCommand(str);
 }
 
 void TheThingsNetwork::reset(bool adr) {
   #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
-
-  clearBuffer();
 
   String version = readValue(F("sys reset"));
   model = version.substring(0, version.indexOf(' '));
@@ -114,7 +103,6 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int
 
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
   reset();
-  clearBuffer();
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
   sendCommand(F("mac set appskey"), appSKey, 16);
@@ -123,7 +111,6 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 
 bool TheThingsNetwork::personalize() {
   configureChannels(this->sf, this->fsb);
-  clearBuffer();
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -138,14 +125,12 @@ bool TheThingsNetwork::personalize() {
 }
 
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
-  clearBuffer();
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
   return sendCommand(F("mac save"));
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
-  clearBuffer();
   configureChannels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
@@ -184,7 +169,6 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int ret
 }
 
 int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
-  clearBuffer();
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
@@ -226,7 +210,6 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 }
 
 void TheThingsNetwork::showStatus() {
-  clearBuffer();
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
   debugPrint(F("Battery: "));
@@ -250,7 +233,6 @@ void TheThingsNetwork::showStatus() {
 }
 
 void TheThingsNetwork::configureEU868(int sf) {
-  clearBuffer();
   int ch;
   int dr = -1;
   long int freq = 867100000;
@@ -323,7 +305,6 @@ void TheThingsNetwork::configureEU868(int sf) {
 }
 
 void TheThingsNetwork::configureUS915(int sf, int fsb) {
-  clearBuffer();
   int ch;
   int dr = -1;
   String str = "";
@@ -393,12 +374,6 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
     default:
       debugPrintLn("Invalid frequency plan");
       break;
-  }
-}
-
-void TheThingsNetwork::clearBuffer() {
-  while(modemStream->available()) {
-    modemStream->read();
   }
 }
 
