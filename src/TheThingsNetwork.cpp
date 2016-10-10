@@ -85,8 +85,7 @@ void TheThingsNetwork::reset(bool adr) {
 
   clearBuffer();
 
-  modemStream->println(F("sys reset"));
-  String version = readLine();
+  String version = readValue(F("sys reset"));
   model = version.substring(0, version.indexOf(' '));
   debugPrint(F("Version is "));
   debugPrint(version);
