@@ -119,6 +119,7 @@ bool TheThingsNetwork::personalize() {
     return false;
   }
 
+  fillAirtimeInfo();
   debugPrint(F("Personalize accepted. Status: "));
   debugPrintLn(readValue(F("mac get status")));
   return true;
@@ -157,6 +158,7 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
     debugPrintLn(readValue(F("mac get status")));
     debugPrint(F("DevAddr: "));
     debugPrintLn(readValue(F("mac get devaddr")));
+    fillAirtimeInfo();
     return true;
   }
   return false;
@@ -179,6 +181,14 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   }
 
   String response = readLine();
+  float i = this->airtime;
+  trackAirtime(length);
+  debugPrint(F("Airtime added: "));
+  debugPrint(this->airtime - i);
+  debugPrintLn(F(" s"));
+  debugPrint(F("Total airtime: "));
+  debugPrint(this->airtime);
+  debugPrintLn(F(" s"));
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
@@ -209,6 +219,55 @@ int TheThingsNetwork::poll(int port, bool confirm) {
   return sendBytes(payload, 1, port, confirm);
 }
 
+void TheThingsNetwork::fillAirtimeInfo() {
+  this->info.sf = getInfo(readValue(F("radio get sf")));
+  this->info.ps = getInfo(readValue(F("radio get prlen")));
+  this->info.band = getInfo(readValue(F("radio get bw")));
+  this->info.header = getInfo(readValue(F("radio get crc")));
+  this->info.cr = getInfo(readValue(F("radio get cr")));
+  this->info.sf >= 11 ? this->info.de = 1 : this->info.de = 0;
+}
+
+int TheThingsNetwork::getInfo(String message) {
+  int i = 5;
+  int stock = 0;
+  String str;
+
+  while (i <= 8) {
+    str = "";
+    str.concat(F("4/"));
+    str.concat(i);
+    if (str == message)
+      return (i - 4);
+    i = i + 1;
+  }
+  i = -1;
+  debugPrintLn(message);
+  while (message[++i]) {
+    if (message[i] >= '0' && message[i] <= '9') {
+      stock = (stock + (message[i] - 48)) * 10;
+    }
+  }
+  if (stock == 0 && message == F("on")) {
+    stock = 1;
+  }
+  else {
+    stock = stock / 10;
+  }
+  return stock;
+}
+
+void TheThingsNetwork::trackAirtime(int payloadSize) {
+  payloadSize = 13 + payloadSize;
+
+  float Tsym = pow(2, this->info.sf) / this->info.band;
+  float Tpreamble = (this->info.ps + 4.25) * Tsym;
+  unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
+  float Tpayload = payLoadSymbNb * Tsym;
+  float Tpacket = Tpreamble + Tpayload;
+  this->airtime = this->airtime + (Tpacket / 1000);
+}
+
 void TheThingsNetwork::showStatus() {
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
@@ -218,18 +277,20 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
   debugPrintLn(readValue(F("mac get deveui")));
-  
+
   if (this->model == F("RN2483")) {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
   }
-
   debugPrint(F("Data Rate: "));
   debugPrintLn(readValue(F("mac get dr")));
   debugPrint(F("RX Delay 1: "));
   debugPrintLn(readValue(F("mac get rxdelay1")));
   debugPrint(F("RX Delay 2: "));
   debugPrintLn(readValue(F("mac get rxdelay2")));
+  debugPrint(F("Total airtime: "));
+  debugPrint(this->airtime);
+  debugPrintLn(F(" s"));
 }
 
 void TheThingsNetwork::configureEU868(int sf) {
