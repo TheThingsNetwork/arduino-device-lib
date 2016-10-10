@@ -48,6 +48,7 @@ class TheThingsNetwork
     void configureEU868(int sf);
     void configureUS915(int sf, int fsb);
     void configureChannels(int sf, int fsb);
+    void clearBuffer();
 
   public:
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 

@@ -8,14 +8,12 @@
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
 String TheThingsNetwork::readLine() {
-  while(modemStream->available()) {
-    modemStream->read();
+  while (true) {
+    String line = modemStream->readStringUntil('\n');
+    if (line.length() > 0) {
+      return line.substring(0, line.length() - 1);
+    }
   }
-  String line = modemStream->readStringUntil('\n');
-  if (line.length() > 0) {
-    return line.substring(0, line.length() - 1);
-  }
-  return "";
 }
 
 bool TheThingsNetwork::waitForOK(String okMessage) {
@@ -89,6 +87,8 @@ void TheThingsNetwork::reset(bool adr) {
     adr = false;
   #endif
 
+  clearBuffer();
+
   modemStream->println(F("sys reset"));
   String version = readLine();
   if (version == "") {
@@ -124,6 +124,7 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int
 
 bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
   reset();
+  clearBuffer();
   sendCommand(F("mac set devaddr"), devAddr, 4);
   sendCommand(F("mac set nwkskey"), nwkSKey, 16);
   sendCommand(F("mac set appskey"), appSKey, 16);
@@ -132,6 +133,7 @@ bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16]
 
 bool TheThingsNetwork::personalize() {
   configureChannels(this->sf, this->fsb);
+  clearBuffer();
   sendCommand(F("mac join abp"));
   String response = readLine();
   if (response != F("accepted")) {
@@ -146,12 +148,14 @@ bool TheThingsNetwork::personalize() {
 }
 
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
+  clearBuffer();
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
   return sendCommand(F("mac save"));
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
+  clearBuffer();
   configureChannels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
@@ -190,6 +194,7 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int ret
 }
 
 int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
+  clearBuffer();
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
@@ -235,6 +240,7 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 }
 
 void TheThingsNetwork::showStatus() {
+  clearBuffer();
   debugPrint(F("EUI: "));
   debugPrintLn(readValue(F("sys get hweui")));
   debugPrint(F("Battery: "));
@@ -258,6 +264,7 @@ void TheThingsNetwork::showStatus() {
 }
 
 void TheThingsNetwork::configureEU868(int sf) {
+  clearBuffer();
   int ch;
   int dr = -1;
   long int freq = 867100000;
@@ -330,6 +337,7 @@ void TheThingsNetwork::configureEU868(int sf) {
 }
 
 void TheThingsNetwork::configureUS915(int sf, int fsb) {
+  clearBuffer();
   int ch;
   int dr = -1;
   String str = "";
@@ -399,6 +407,12 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
     default:
       debugPrintLn("Invalid frequency plan");
       break;
+  }
+}
+
+void TheThingsNetwork::clearBuffer() {
+  while(modemStream->available()) {
+    modemStream->read();
   }
 }
 
