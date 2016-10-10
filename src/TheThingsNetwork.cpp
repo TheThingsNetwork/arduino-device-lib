@@ -95,7 +95,7 @@ void TheThingsNetwork::reset(bool adr) {
     debugPrintLn(F("Invalid version"));
     return;
   }
-  
+
   model = version.substring(0, version.indexOf(' '));
   debugPrint(F("Version is "));
   debugPrint(version);
@@ -200,7 +200,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     debugPrintLn(F("Send command failed"));
     return -1;
   }
-  
+
   String response = readLine(10000);
   float i = this->airtime;
   trackAirtime(length);
@@ -257,7 +257,7 @@ int TheThingsNetwork::getInfo(String message) {
   int i = 5;
   int stock = 0;
   String str;
-  
+
   while (i <= 8) {
     str = "";
     str.concat(F("4/"));
