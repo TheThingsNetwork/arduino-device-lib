@@ -18,10 +18,6 @@ String TheThingsNetwork::readLine() {
 
 bool TheThingsNetwork::waitForOK(String okMessage) {
   String line = readLine();
-  if (line == "") {
-    debugPrintLn(F("Wait for OK time-out expired"));
-    return false;
-  }
 
   if (line != okMessage) {
     debugPrint(F("Response is not OK: "));
@@ -91,11 +87,6 @@ void TheThingsNetwork::reset(bool adr) {
 
   modemStream->println(F("sys reset"));
   String version = readLine();
-  if (version == "") {
-    debugPrintLn(F("Invalid version"));
-    return;
-  }
-  
   model = version.substring(0, version.indexOf(' '));
   debugPrint(F("Version is "));
   debugPrint(version);
@@ -205,10 +196,6 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   }
 
   String response = readLine();
-  if (response == "") {
-    debugPrintLn(F("Time-out"));
-    return -2;
-  }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
