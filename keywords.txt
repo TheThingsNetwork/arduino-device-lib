@@ -44,7 +44,7 @@ getGreen                       KEYWORD2
 getBlue                        KEYWORD2
 getColor                       KEYWORD2
 colorToString                  KEYWORD2
-setRGN                         KEYWORD2
+setRGB                         KEYWORD2
 setRed                         KEYWORD2
 setGreen                       KEYWORD2
 setBlue                        KEYWORD2
@@ -56,7 +56,6 @@ getBattery                     KEYWORD2
 # Constants (LITERAL1)
 #######################################
 
-TTN_DEFAULT_WAIT_TIME          LITERAL1
 TTN_DEFAULT_SF                 LITERAL1
 TTN_DEFAULT_FSB                LITERAL1
 TTN_ADR_SUPPORTED              LITERAL1
