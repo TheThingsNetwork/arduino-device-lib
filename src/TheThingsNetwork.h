@@ -5,6 +5,7 @@
 #define _THETHINGSNETWORK_H_
 
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #include <Stream.h>
 
 #define TTN_DEFAULT_WAIT_TIME 120
@@ -33,6 +34,8 @@ class TheThingsNetwork
   private:
     Stream* modemStream;
     Stream* debugStream;
+    // added softser support
+    SoftwareSerial* softser = NULL;
     String model;
     fp_ttn_t fp;
     int sf;
@@ -51,7 +54,9 @@ class TheThingsNetwork
     void configureChannels(int sf, int fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
+    /*TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); */
+    TheThingsNetwork(HardwareSerial& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
+    TheThingsNetwork(SoftwareSerial& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);

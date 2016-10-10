@@ -67,6 +67,10 @@ char btohexa_low(unsigned char b) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int waitTime) {
+
+  // listen if softwareserial is used
+  if(softser){softser->listen();}
+
   debugPrint(F("Sending: "));
   debugPrint(cmd);
   debugPrint(F(" with "));
@@ -88,6 +92,9 @@ void TheThingsNetwork::reset(bool adr) {
   #if !TTN_ADR_SUPPORTED
     adr = false;
   #endif
+
+  // listen if softwareserial is used
+  if(softser){softser->listen();}
 
   modemStream->println(F("sys reset"));
   String version = readLine(3000);
@@ -397,14 +404,25 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
       configureUS915(sf, fsb);
       break;
     default:
-      debugPrintLn("Invalid frequency plan");
+      debugPrintLn(F("Invalid frequency plan"));
       break;
   }
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
+//Added HardwareSerial and SoftwareSerial support
+
+TheThingsNetwork::TheThingsNetwork(HardwareSerial& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
+  this->fp = fp;
+  this->sf = sf;
+  this->fsb = fsb;
+}
+
+TheThingsNetwork::TheThingsNetwork(SoftwareSerial& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
+  this->debugStream = &debugStream;
+  this->modemStream = &modemStream;
+  softser = &modemStream;
   this->fp = fp;
   this->sf = sf;
   this->fsb = fsb;
