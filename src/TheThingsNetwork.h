@@ -7,7 +7,6 @@
 #include <Arduino.h>
 #include <Stream.h>
 
-#define TTN_DEFAULT_WAIT_TIME 120
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
 
@@ -39,12 +38,12 @@ class TheThingsNetwork
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
    
-    String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
-    bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
+    String readLine();
+    bool waitForOK(String okMessage = "ok");
     String readValue(String key);
-    bool sendCommand(String cmd, int waitTime = TTN_DEFAULT_WAIT_TIME);
-    bool sendCommand(String cmd, String value, int waitTime = TTN_DEFAULT_WAIT_TIME);
-    bool sendCommand(String cmd, const byte* buf, int length, int waitTime = TTN_DEFAULT_WAIT_TIME);
+    bool sendCommand(String cmd);
+    bool sendCommand(String cmd, String value);
+    bool sendCommand(String cmd, const byte* buf, int length);
     void reset(bool adr = true);
     void configureEU868(int sf);
     void configureUS915(int sf, int fsb);

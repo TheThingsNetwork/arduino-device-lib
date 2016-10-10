@@ -7,19 +7,19 @@
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
-String TheThingsNetwork::readLine(int waitTime) {
-  unsigned long start = millis();
-  while (millis() < start + waitTime) {
-    String line = modemStream->readStringUntil('\n');
-    if (line.length() > 0) {
-      return line.substring(0, line.length() - 1);
-    }
+String TheThingsNetwork::readLine() {
+  while(modemStream->available()) {
+    modemStream->read();
+  }
+  String line = modemStream->readStringUntil('\n');
+  if (line.length() > 0) {
+    return line.substring(0, line.length() - 1);
   }
   return "";
 }
 
-bool TheThingsNetwork::waitForOK(int waitTime, String okMessage) {
-  String line = readLine(waitTime);
+bool TheThingsNetwork::waitForOK(String okMessage) {
+  String line = readLine();
   if (line == "") {
     debugPrintLn(F("Wait for OK time-out expired"));
     return false;
@@ -39,21 +39,21 @@ String TheThingsNetwork::readValue(String cmd) {
   return readLine();
 }
 
-bool TheThingsNetwork::sendCommand(String cmd, int waitTime) {
+bool TheThingsNetwork::sendCommand(String cmd) {
   debugPrint(F("Sending: "));
   debugPrintLn(cmd);
 
   modemStream->println(cmd);
 
-  return waitForOK(waitTime);
+  return waitForOK();
 }
 
-bool TheThingsNetwork::sendCommand(String cmd, String value, int waitTime) {
+bool TheThingsNetwork::sendCommand(String cmd, String value) {
   int l = value.length();
   byte buf[l];
   value.getBytes(buf, l);
 
-  return sendCommand(cmd, buf, l, waitTime);
+  return sendCommand(cmd, buf, l);
 }
 
 char btohexa_high(unsigned char b) {
@@ -66,7 +66,7 @@ char btohexa_low(unsigned char b) {
   return (b > 0x9u) ? b + 'A' - 10 : b + '0';
 }
 
-bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int waitTime) {
+bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length) {
   debugPrint(F("Sending: "));
   debugPrint(cmd);
   debugPrint(F(" with "));
@@ -81,7 +81,7 @@ bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length, int 
   }
   modemStream->println();
 
-  return waitForOK(waitTime);
+  return waitForOK();
 }
 
 void TheThingsNetwork::reset(bool adr) {
@@ -90,7 +90,7 @@ void TheThingsNetwork::reset(bool adr) {
   #endif
 
   modemStream->println(F("sys reset"));
-  String version = readLine(3000);
+  String version = readLine();
   if (version == "") {
     debugPrintLn(F("Invalid version"));
     return;
@@ -148,7 +148,7 @@ bool TheThingsNetwork::personalize() {
 bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
   sendCommand(F("mac set appeui"), appEui, 8);
   sendCommand(F("mac set appkey"), appKey, 16);
-  return sendCommand(F("mac save"), 50000);
+  return sendCommand(F("mac save"));
 }
 
 bool TheThingsNetwork::join(int retries, long int retryDelay) {
@@ -167,7 +167,7 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
       delay(retryDelay);
       continue;
     }
-    String response = readLine(10000);
+    String response = readLine();
     if (response != F("accepted")) {
       debugPrint(F("Join not accepted: "));
       debugPrintLn(response);
@@ -199,7 +199,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = readLine(10000);
+  String response = readLine();
   if (response == "") {
     debugPrintLn(F("Time-out"));
     return -2;
