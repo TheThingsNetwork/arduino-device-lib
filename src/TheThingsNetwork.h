@@ -28,6 +28,16 @@ typedef unsigned long   fp_ttn_t;
 #define TTN_FP_EU868 1
 #define TTN_FP_US915 2
 
+typedef struct  airtime_s
+{
+  int           sf;
+  int           de;
+  int           ps;
+  int           band;
+  int           header;
+  int           cr;
+}               airtime_t;
+
 class TheThingsNetwork
 {
   private:
@@ -35,10 +45,15 @@ class TheThingsNetwork
     Stream* debugStream;
     String model;
     fp_ttn_t fp;
+    airtime_t info;
+    float airtime;
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
-   
+
+    void fillAirtimeInfo();
+    int getInfo(String str);
+    void trackAirtime(int payloadSize);
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
     String readValue(String key);
@@ -51,7 +66,7 @@ class TheThingsNetwork
     void configureChannels(int sf, int fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);
