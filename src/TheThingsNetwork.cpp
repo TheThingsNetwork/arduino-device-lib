@@ -267,11 +267,19 @@ int TheThingsNetwork::getInfo(String message) {
     i = i + 1;
   }
   i = -1;
+  debugPrintLn(message);
   while (message[++i]) {
-    message[i] >= '0' && message[i] <= '9' ? stock = (stock + (message[i] - 48)) * 10 : stock = stock;
+    if (message[i] >= '0' && message[i] <= '9') {
+      stock = (stock + (message[i] - 48)) * 10;
+    }
   }
-  stock == 0 && message == F("on") ? stock = 1 : stock = stock / 10;
-  return (stock);
+  if (stock == 0 && message == F("on")) {
+    stock = 1;
+  }
+  else {
+    stock = stock / 10;
+  }
+  return stock;
 }
 
 void TheThingsNetwork::trackAirtime(int payloadSize) {
@@ -294,7 +302,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
   debugPrintLn(readValue(F("mac get deveui")));
-  
+
   if (this->model == F("RN2483")) {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
