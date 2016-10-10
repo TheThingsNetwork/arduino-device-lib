@@ -135,7 +135,7 @@ bool TheThingsNetwork::personalize() {
     debugPrintLn(response);
     return false;
   }
-
+ 
   debugPrint(F("Personalize accepted. Status: "));
   debugPrintLn(readValue(F("mac get status")));
   return true;
