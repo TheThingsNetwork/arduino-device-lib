@@ -179,7 +179,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     while ((response = readLine()) == "");
   }
   else {
-    response = readLine(10000);
+    response = readLine();
   }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
