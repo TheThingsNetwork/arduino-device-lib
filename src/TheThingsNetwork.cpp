@@ -24,7 +24,7 @@ bool TheThingsNetwork::waitForOK(int waitTime, String okMessage) {
     debugPrintLn(F("Wait for OK time-out expired"));
     return false;
   }
- 
+
   if (line != okMessage) {
     debugPrint(F("Response is not OK: "));
     debugPrintLn(line);
