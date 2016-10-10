@@ -130,8 +130,6 @@ void TTN_BUTTON_CALLBACK()
 
 TheThingsNode::TheThingsNode() 
 {
-  Serial.begin(9600);
-
   initLight();
   initButton();
   initLED();

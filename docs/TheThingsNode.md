@@ -302,3 +302,4 @@ Returns the battery level in micro voltage as a unsigned integer of 2 bytes.
 ```c
 uint16_t getBattery();
 ```
+    
