@@ -17,10 +17,10 @@ void setup() {
 }
 
 void loop() {
-  if (debugSerial.available()) {
+  while (debugSerial.available()) {
     loraSerial.write(debugSerial.read());
   }
-  if (loraSerial.available()) {
+  while (loraSerial.available()) {
     debugSerial.write(loraSerial.read());
   }
 }
