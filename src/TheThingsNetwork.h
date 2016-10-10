@@ -19,6 +19,16 @@ typedef unsigned long   fp_ttn_t;
 #define TTN_FP_EU868 1
 #define TTN_FP_US915 2
 
+typedef struct  airtime_s
+{
+  int           sf;
+  int           de;
+  int           ps;
+  int           band;
+  int           header;
+  int           cr;
+}               airtime_t;
+
 class TheThingsNetwork
 {
   private:
@@ -26,11 +36,16 @@ class TheThingsNetwork
     Stream* debugStream;
     String model;
     fp_ttn_t fp;
+    airtime_t info;
+    float airtime;
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
 
     String readLine();
+    void fillAirtimeInfo();
+    int getInfo(String str);
+    void trackAirtime(int payloadSize);
     String readValue(String key);
     bool sendCommand(String cmd);
     bool sendCommand(String cmd, String value);
