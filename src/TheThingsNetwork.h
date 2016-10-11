@@ -9,12 +9,7 @@
 
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
-
-// Set ADR off as it is currently not supported by The Things Network
-// The RN2xx3 module slows down to SF12 when no datarate commands are
-// sent by the network, so disabling ADR is a work-around to avoid
-// all the modules slowing down to SF12
-#define TTN_ADR_SUPPORTED false
+#define TTN_RETX 7
 
 #define TTN_PWRIDX_868 1
 #define TTN_PWRIDX_915 5
@@ -37,7 +32,7 @@ class TheThingsNetwork
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
-   
+
     String readLine();
     String readValue(String key);
     bool sendCommand(String cmd);
@@ -49,7 +44,7 @@ class TheThingsNetwork
     void configureChannels(int sf, int fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);
