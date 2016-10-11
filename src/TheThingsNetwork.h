@@ -49,7 +49,7 @@ class TheThingsNetwork
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
-   
+
     String readLine();
     void fillAirtimeInfo();
     void trackAirtime(int payloadSize);
