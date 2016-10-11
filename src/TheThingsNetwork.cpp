@@ -174,7 +174,13 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return -1;
   }
 
-  String response = readLine();
+  String response = "";
+  if (confirm) {
+    while ((response = readLine()) == "");
+  }
+  else {
+    response = readLine();
+  }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
