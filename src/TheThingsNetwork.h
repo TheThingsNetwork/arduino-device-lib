@@ -19,9 +19,6 @@
 #define TTN_PWRIDX_868 1
 #define TTN_PWRIDX_915 5
 
-#define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
-#define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
-
 typedef unsigned long   fp_ttn_t;
 
 #define TTN_FP_EU868 1
@@ -37,7 +34,7 @@ class TheThingsNetwork
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
-   
+
     String readLine();
     String readValue(String key);
     bool sendCommand(String cmd);
@@ -49,7 +46,7 @@ class TheThingsNetwork
     void configureChannels(int sf, int fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB); 
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
     bool provision(const byte appEui[8], const byte appKey[16]);
