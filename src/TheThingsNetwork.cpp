@@ -218,7 +218,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(F("mac get appeui")));
   debugPrint(F("DevEUI: "));
   debugPrintLn(readValue(F("mac get deveui")));
-  
+
   if (this->model == F("RN2483")) {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(F("mac get band")));
@@ -377,7 +377,7 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
   }
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int sf, int fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
   this->fp = fp;
