@@ -30,12 +30,12 @@ typedef unsigned long   fp_ttn_t;
 
 typedef struct  airtime_s
 {
-  int           sf;
-  int           de;
-  int           ps;
-  int           band;
-  int           header;
-  int           cr;
+  int sf;
+  int de;
+  int ps;
+  int band;
+  int header;
+  int cr;
 }               airtime_t;
 
 class TheThingsNetwork
@@ -52,7 +52,7 @@ class TheThingsNetwork
     void (* messageCallback)(const byte* payload, int length, int port);
 
     void fillAirtimeInfo();
-    int getInfo(String str);
+    void getInfo(String str, int infoType);
     void trackAirtime(int payloadSize);
     String readLine(int waitTime = TTN_DEFAULT_WAIT_TIME);
     bool waitForOK(int waitTime = TTN_DEFAULT_WAIT_TIME, String okMessage = "ok");
