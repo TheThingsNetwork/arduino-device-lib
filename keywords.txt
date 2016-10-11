@@ -12,9 +12,6 @@ TheThingsNetwork        KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
-TTN_HEX_CHAR_TO_NIBBLE  KEYWORD2
-
 showStatus              KEYWORD2
 onMessage               KEYWORD2
 provision               KEYWORD2
