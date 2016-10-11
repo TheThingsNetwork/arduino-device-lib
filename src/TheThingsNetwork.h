@@ -35,7 +35,7 @@ typedef struct  airtime_s
   int band;
   int header;
   int cr;
-}               airtime_t;
+} airtime_t;
 
 class TheThingsNetwork
 {
@@ -52,7 +52,6 @@ class TheThingsNetwork
    
     String readLine();
     void fillAirtimeInfo();
-    void getInfo(String str, int infoType);
     void trackAirtime(int payloadSize);
     String readValue(String key);
     bool sendCommand(String cmd);

@@ -220,47 +220,33 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 }
 
 void TheThingsNetwork::fillAirtimeInfo() {
-  getInfo(readValue(F("radio get sf")), 1);
-  getInfo(readValue(F("radio get bw")), 2);
-  getInfo(readValue(F("radio get prlen")), 3);
-  getInfo(readValue(F("radio get crc")), 4);
-  getInfo(readValue(F("radio get cr")), 5);
-  this->info.sf >= 11 ? this->info.de = 1 : this->info.de = 0;
-}
-
-void TheThingsNetwork::getInfo(String message, int infoType) {
   int i;
-  if (message == "") {
-    debugPrint("Information message empty");
-    return ;
+  String message = readValue(F("radio get sf"));
+  for (i = 2; message[i] && i <= 3; i++) {
+    this->info.sf = (this->info.sf + message[i] - 48) * 10;
   }
-  switch (infoType) {
-    case 1:
-      for (i = 2; message[i] && i <= 3; i++) {
-        this->info.sf = (this->info.sf + message[i] - 48) * 10;
-      }
-      this->info.sf = this->info.sf / 10;
-      break;
-    case 2:
-      for (i = 0; message[i] && i <= 2; i++) {
-        this->info.band = (this->info.band + message[i] - 48) * 10;
-      }
-      this->info.band = this->info.band / 10;
-      break;
-    case 3:
-      this->info.ps = (this->info.ps + message[i] - 48);
-      break;
-    case 4:
-      if (message == F("on")) {
-        this->info.header = 1;
-      }
-      break;
-    case 5:
-      this->info.cr = (this->info.cr + message[2] - 48);
-      break;
-    default:
-      debugPrintLn("Wrong info type.");
+  this->info.sf = this->info.sf / 10;
+
+  message = readValue(F("radio get bw"));
+  for (i = 0; message[i] && i <= 2; i++) {
+    this->info.band = (this->info.band + message[i] - 48) * 10;
   }
+  this->info.band = this->info.band / 10;
+  
+  message = readValue(F("radio get prlen"));
+  this->info.ps = this->info.ps + message[0] - 48;
+  debugPrintLn(this->info.ps);
+  
+  message = readValue(F("radio get crc"));
+  if (message == F("on")) {
+    this->info.header = 1;
+  }
+  debugPrintLn(this->info.header);
+
+  message = readValue(F("radio get cr"));
+  this->info.cr = (this->info.cr + message[2] - 48);
+  
+  this->info.sf >= 11 ? this->info.de = 1 : this->info.de = 0;
 }
 
 void TheThingsNetwork::trackAirtime(int payloadSize) {
