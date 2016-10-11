@@ -4,12 +4,13 @@
 const byte appEui[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 const byte appKey[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+const uint8_t version = 1;
 int loopDelay = 60000;
 
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, TTN_FP_EU868);
+TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
 TheThingsNode node;
 
 enum REASON : byte
@@ -46,7 +47,7 @@ void setup() {
   node.onButtonPress(onButtonPress);
   node.onButtonRelease(onButtonRelease);
 
-  node.setColor(TTN_YELLOW);
+  node.setColor(TTN_GREEN);
 
   debugSerial.println("-- NODE: STATUS");
   node.showStatus();
@@ -118,24 +119,33 @@ void onMessage(const byte* payload, int length, int port) {
 void sendMessage(REASON reason) {
   debugSerial.println("-- SEND MESSAGE");
 
-  byte payload[9];
+  byte* bytes;
 
-  payload[0] = reason;
+  byte payload[7];
+  //byte payload[10];
 
-  byte temperature = node.getTemperatureAsFloat();
-  byte* b = (byte*) &temperature;
-  payload[1] = b[0];
-  payload[2] = b[1];
-  payload[3] = b[2];
-  payload[4] = b[3];
-
-  uint16_t light = node.getLight();
-  payload[5] = (light & 0xFF00) >> 8;
-  payload[6] = (light & 0x00FF);
+  payload[0] = version;
+  payload[1] = reason;
 
   uint16_t battery = node.getBattery();
-  payload[7] = (battery & 0xFF00) >> 8;
-  payload[8] = (battery & 0x00FF);
+  bytes = (byte*) &battery;
+  payload[2] = bytes[1];
+  payload[3] = bytes[0];
+
+  uint16_t light = node.getLight();
+  bytes = (byte*) &light;
+  payload[4] = bytes[1];
+  payload[5] = bytes[0];
+
+  int8_t temperature = node.getTemperatureAsInt();
+  payload[6] = temperature;
+
+  //float temperature = node.getTemperatureAsFloat();
+  //bytes = (byte*) &temperature;
+  //payload[6] = bytes[3];
+  //payload[7] = bytes[2];
+  //payload[8] = bytes[1];
+  //payload[9] = bytes[0];
 
   ttn.sendBytes(payload, sizeof(payload));
 }
