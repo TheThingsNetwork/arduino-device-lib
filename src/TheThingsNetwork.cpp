@@ -220,41 +220,47 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 }
 
 void TheThingsNetwork::fillAirtimeInfo() {
-  this->info.sf = getInfo(readValue(F("radio get sf")));
-  this->info.ps = getInfo(readValue(F("radio get prlen")));
-  this->info.band = getInfo(readValue(F("radio get bw")));
-  this->info.header = getInfo(readValue(F("radio get crc")));
-  this->info.cr = getInfo(readValue(F("radio get cr")));
+  getInfo(readValue(F("radio get sf")), 1);
+  getInfo(readValue(F("radio get bw")), 2);
+  getInfo(readValue(F("radio get prlen")), 3);
+  getInfo(readValue(F("radio get crc")), 4);
+  getInfo(readValue(F("radio get cr")), 5);
   this->info.sf >= 11 ? this->info.de = 1 : this->info.de = 0;
 }
 
-int TheThingsNetwork::getInfo(String message) {
-  int i = 5;
-  int stock = 0;
-  String str;
-
-  while (i <= 8) {
-    str = "";
-    str.concat(F("4/"));
-    str.concat(i);
-    if (str == message)
-      return (i - 4);
-    i = i + 1;
+void TheThingsNetwork::getInfo(String message, int infoType) {
+  int i;
+  if (message == "") {
+    debugPrint("Information message empty");
+    return ;
   }
-  i = -1;
-  debugPrintLn(message);
-  while (message[++i]) {
-    if (message[i] >= '0' && message[i] <= '9') {
-      stock = (stock + (message[i] - 48)) * 10;
-    }
+  switch (infoType) {
+    case 1:
+      for (i = 2; message[i] && i <= 3; i++) {
+        this->info.sf = (this->info.sf + message[i] - 48) * 10;
+      }
+      this->info.sf = this->info.sf / 10;
+      break;
+    case 2:
+      for (i = 0; message[i] && i <= 2; i++) {
+        this->info.band = (this->info.band + message[i] - 48) * 10;
+      }
+      this->info.band = this->info.band / 10;
+      break;
+    case 3:
+      this->info.ps = (this->info.ps + message[i] - 48);
+      break;
+    case 4:
+      if (message == F("on")) {
+        this->info.header = 1;
+      }
+      break;
+    case 5:
+      this->info.cr = (this->info.cr + message[2] - 48);
+      break;
+    default:
+      debugPrintLn("Wrong info type.");
   }
-  if (stock == 0 && message == F("on")) {
-    stock = 1;
-  }
-  else {
-    stock = stock / 10;
-  }
-  return stock;
 }
 
 void TheThingsNetwork::trackAirtime(int payloadSize) {
