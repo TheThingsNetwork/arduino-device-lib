@@ -190,7 +190,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2) {
       nibble = (data[d] >= 'A') ? (data[d] - 'A' + 0x0A) : (data[d] - '0');
       nextNibble = (data[d + 1] >= 'A') ? (data[d + 1] - 'A' + 0x0A) : (data[d + 1] - '0');
-      downlink[i] = (nibble << 4) + nextNibble;
+      downlink[i] = (nibble << 4) + nextNibble; 
     }
     debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
