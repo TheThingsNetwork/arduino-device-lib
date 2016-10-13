@@ -22,6 +22,7 @@ sendBytes               KEYWORD2
 poll                    KEYWORD2
 
 encodeSensorData        KEYWORD2
+decodeAppData           KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -35,3 +36,5 @@ TTN_PWRIDX_868          LITERAL1
 TTN_PWRIDX_915          LITERAL1
 TTN_FP_EU868            LITERAL1
 TTN_FP_EU915            LITERAL1
+
+TTN_PIN_LED             LITERAL1

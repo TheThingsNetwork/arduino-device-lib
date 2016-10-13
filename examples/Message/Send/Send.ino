@@ -45,8 +45,9 @@ void loop() {
 
   // Encode the selected fields of the struct as bytes
   byte *buffer;
+  size_t buffer_size = 51;
   size_t size;
-  TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+  TheThingsMessage::encodeSensorData(&data, &buffer, buffer_size, &size);
 
   ttn.sendBytes(buffer, size);
 
