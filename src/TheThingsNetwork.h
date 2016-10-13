@@ -21,13 +21,13 @@ typedef unsigned long   fp_ttn_t;
 
 typedef struct  airtime_s
 {
-  int           sf;
-  int           de;
-  int           ps;
-  int           band;
-  int           header;
-  int           cr;
-}               airtime_t;
+  int sf;
+  int de;
+  int ps;
+  int band;
+  int header;
+  int cr;
+} airtime_t;
 
 class TheThingsNetwork
 {
@@ -44,7 +44,6 @@ class TheThingsNetwork
 
     String readLine();
     void fillAirtimeInfo();
-    int getInfo(String str);
     void trackAirtime(int payloadSize);
     String readValue(String key);
     bool sendCommand(String cmd);

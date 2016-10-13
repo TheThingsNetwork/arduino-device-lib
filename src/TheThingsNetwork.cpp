@@ -221,41 +221,36 @@ int TheThingsNetwork::poll(int port, bool confirm) {
 }
 
 void TheThingsNetwork::fillAirtimeInfo() {
-  this->info.sf = getInfo(readValue(F("radio get sf")));
-  this->info.ps = getInfo(readValue(F("radio get prlen")));
-  this->info.band = getInfo(readValue(F("radio get bw")));
-  this->info.header = getInfo(readValue(F("radio get crc")));
-  this->info.cr = getInfo(readValue(F("radio get cr")));
-  this->info.sf >= 11 ? this->info.de = 1 : this->info.de = 0;
-}
+  this->info.sf = 0;
+  this->info.ps = 0;
+  this->info.band = 0;
+  this->info.header = 0;
+  this->info.cr = 0;
+  this->info.de = 0;
 
-int TheThingsNetwork::getInfo(String message) {
-  int i = 5;
-  int stock = 0;
-  String str;
+  int i;
+  String message = readValue(F("radio get sf"));
+  for (i = 2; message[i] && i <= 3; i++) {
+    this->info.sf = (this->info.sf + message[i] - 48) * 10;
+  }
+  this->info.sf = this->info.sf / 10;
 
-  while (i <= 8) {
-    str = "";
-    str.concat(F("4/"));
-    str.concat(i);
-    if (str == message)
-      return (i - 4);
-    i = i + 1;
+  message = readValue(F("radio get bw"));
+  for (i = 0; message[i] && i <= 2; i++) {
+    this->info.band = (this->info.band + message[i] - 48) * 10;
   }
-  i = -1;
-  debugPrintLn(message);
-  while (message[++i]) {
-    if (message[i] >= '0' && message[i] <= '9') {
-      stock = (stock + (message[i] - 48)) * 10;
-    }
-  }
-  if (stock == 0 && message == F("on")) {
-    stock = 1;
-  }
-  else {
-    stock = stock / 10;
-  }
-  return stock;
+  this->info.band = this->info.band / 10;
+
+  message = readValue(F("radio get prlen"));
+  this->info.ps = this->info.ps + message[0] - 48;
+
+  message = readValue(F("radio get crc"));
+  this->info.header = message == F("on") ? 1 : 0;
+
+  message = readValue(F("radio get cr"));
+  this->info.cr = (this->info.cr + message[2] - 48);
+
+  this->info.de = this->info.sf >= 11 ? 1 : 0;
 }
 
 void TheThingsNetwork::trackAirtime(int payloadSize) {
