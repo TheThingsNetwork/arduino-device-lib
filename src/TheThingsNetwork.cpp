@@ -438,7 +438,7 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
   sendCommand(retries);
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int sf, int fsb) {
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int sf, int fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
   this->fp = fp;
