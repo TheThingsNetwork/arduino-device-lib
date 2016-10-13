@@ -197,6 +197,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
       downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);debugPrint(F("Successful transmission. Received "));
+    debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
     if (this->messageCallback)
