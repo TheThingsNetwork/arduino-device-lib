@@ -195,14 +195,8 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     String data = response.substring(portEnds + 1);
     int downlinkLength = data.length() / 2;
     byte downlink[64];
-    byte nibble;
-    byte nextNibble;
-    for (int i = 0, d = 0; i < downlinkLength; i++, d += 2) {
-      nibble = (data[d] >= 'A') ? (data[d] - 'A' + 0x0A) : (data[d] - '0');
-      nextNibble = (data[d + 1] >= 'A') ? (data[d + 1] - 'A' + 0x0A) : (data[d + 1] - '0');
-      downlink[i] = (nibble << 4) + nextNibble;
-    }
-    debugPrint(F("Successful transmission. Received "));
+    for (int i = 0, d = 0; i < downlinkLength; i++, d += 2)
+      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);debugPrint(F("Successful transmission. Received "));
     debugPrint(downlinkLength);
     debugPrintLn(F(" bytes"));
     if (this->messageCallback)
