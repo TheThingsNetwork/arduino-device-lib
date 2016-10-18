@@ -22,18 +22,32 @@ enum ttn_fp_t {
   TTN_FP_US915
 };
 
+typedef struct  airtime_s
+{
+  int sf;
+  int de;
+  int ps;
+  int band;
+  int header;
+  int cr;
+} airtime_t;
+
 class TheThingsNetwork
 {
   private:
     Stream* modemStream;
     Stream* debugStream;
     String model;
+    airtime_t info;
+    float airtime;
     ttn_fp_t fp;
     int sf;
     int fsb;
     void (* messageCallback)(const byte* payload, int length, int port);
 
     String readLine();
+    void fillAirtimeInfo();
+    void trackAirtime(int payloadSize);
     String readValue(String key);
     bool sendCommand(String cmd);
     bool sendCommand(String cmd, String value);
