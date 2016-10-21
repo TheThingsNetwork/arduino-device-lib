@@ -257,7 +257,7 @@ void TheThingsNetwork::trackAirtime(size_t payloadSize) {
 
   float Tsym = pow(2, this->info.sf) / this->info.band;
   float Tpreamble = (this->info.ps + 4.25) * Tsym;
-  unsigned int32_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
+  int16_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
   this->airtime = this->airtime + (Tpacket / 1000);
