@@ -39,7 +39,7 @@ void loop() {
   delay(10000);
 }
 
-void message(const byte* payload, int length, int port) {
+void message(const byte* payload, size_t length, int8_t port) {
   debugSerial.println("-- MESSAGE");
 
   // Only handle messages of a single byte
@@ -50,7 +50,7 @@ void message(const byte* payload, int length, int port) {
   if (payload[0] == 0) {
     debugSerial.println("LED: off");
     digitalWrite(LED_BUILTIN, LOW);
-      
+
   } else if (payload[0] == 1) {
     debugSerial.println("LED: on");
     digitalWrite(LED_BUILTIN, HIGH);

@@ -44,7 +44,7 @@ bool TheThingsNetwork::sendCommand(String cmd) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, String value) {
-  int l = value.length();
+  size_t l = value.length();
   byte buf[l];
   value.getBytes(buf, l);
 
@@ -61,7 +61,7 @@ char btohexa_low(unsigned char b) {
   return (b > 0x9u) ? b + 'A' - 10 : b + '0';
 }
 
-bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, int length) {
+bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, size_t length) {
   String str = cmd + " ";
 
   for (int i = 0; i < length; i++) {
@@ -96,7 +96,7 @@ void TheThingsNetwork::reset(bool adr) {
   sendCommand(str);
 }
 
-void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int port)) {
+void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, size_t length, int8_t port)) {
   this->messageCallback = cb;
 }
 
@@ -130,7 +130,7 @@ bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
   return sendCommand(F("mac save"));
 }
 
-bool TheThingsNetwork::join(int retries, long int retryDelay) {
+bool TheThingsNetwork::join(int8_t retries, int32_t retryDelay) {
   configureChannels(this->sf, this->fsb);
   String devEui = readValue(F("sys get hweui"));
   String str = "";
@@ -163,13 +163,13 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
   return false;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
+bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int8_t retries, int32_t retryDelay) {
   reset();
   provision(appEui, appKey);
   return join(retries, retryDelay);
 }
 
-int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool confirm) {
+int TheThingsNetwork::sendBytes(const byte* payload, size_t length, int8_t port, bool confirm) {
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
@@ -193,10 +193,10 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
     return 1;
   }
   if (response.startsWith(F("mac_rx"))) {
-    int portEnds = response.indexOf(" ", 7);
-    int downlinkPort = response.substring(7, portEnds).toInt();
+    int8_t portEnds = response.indexOf(" ", 7);
+    int8_t downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
-    int downlinkLength = data.length() / 2;
+    size_t downlinkLength = data.length() / 2;
     byte downlink[64];
     for (int i = 0, d = 0; i < downlinkLength; i++, d += 2) {
       downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
@@ -214,7 +214,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, int length, int port, bool 
   return -10;
 }
 
-int TheThingsNetwork::poll(int port, bool confirm) {
+int TheThingsNetwork::poll(int8_t port, bool confirm) {
   byte payload[] = { 0x00 };
   return sendBytes(payload, 1, port, confirm);
 }
@@ -227,7 +227,7 @@ void TheThingsNetwork::fillAirtimeInfo() {
   this->info.cr = 0;
   this->info.de = 0;
 
-  int i;
+  int32_t i;
   String message = readValue(F("radio get sf"));
   for (i = 2; message[i] && i <= 3; i++) {
     this->info.sf = (this->info.sf + message[i] - 48) * 10;
@@ -252,7 +252,7 @@ void TheThingsNetwork::fillAirtimeInfo() {
   this->info.de = this->info.sf >= 11 ? 1 : 0;
 }
 
-void TheThingsNetwork::trackAirtime(int payloadSize) {
+void TheThingsNetwork::trackAirtime(size_t payloadSize) {
   payloadSize = 13 + payloadSize;
 
   float Tsym = pow(2, this->info.sf) / this->info.band;
@@ -288,10 +288,10 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(F(" s"));
 }
 
-void TheThingsNetwork::configureEU868(int sf) {
-  int ch;
+void TheThingsNetwork::configureEU868(int8_t sf) {
+  int8_t ch;
   int dr = -1;
-  long int freq = 867100000;
+  int32_t freq = 867100000;
   String str = "";
 
   str.concat(F("mac set rx2 3 869525000"));
@@ -360,13 +360,13 @@ void TheThingsNetwork::configureEU868(int sf) {
   }
 }
 
-void TheThingsNetwork::configureUS915(int sf, int fsb) {
-  int ch;
+void TheThingsNetwork::configureUS915(int8_t sf, int8_t fsb) {
+  int8_t ch;
   int dr = -1;
   String str = "";
-  int chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
-  int chHigh = fsb > 0 ? chLow + 7 : 71;
-  int ch500 = fsb + 63;
+  int8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
+  int8_t chHigh = fsb > 0 ? chLow + 7 : 71;
+  int8_t ch500 = fsb + 63;
 
   sendCommand(F("radio set freq 904200000"));
   str = "";
@@ -419,7 +419,7 @@ void TheThingsNetwork::configureUS915(int sf, int fsb) {
   }
 }
 
-void TheThingsNetwork::configureChannels(int sf, int fsb) {
+void TheThingsNetwork::configureChannels(int8_t sf, int8_t fsb) {
   switch (this->fp) {
     case TTN_FP_EU868:
       configureEU868(sf);
@@ -437,7 +437,7 @@ void TheThingsNetwork::configureChannels(int sf, int fsb) {
   sendCommand(retries);
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int sf, int fsb) {
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int8_t sf, int8_t fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
   this->fp = fp;
