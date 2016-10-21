@@ -6,14 +6,14 @@ Include and instantiate the TheThingsNetwork class. The constructor initialize t
 ```c
 #include <TheThingsNetwork.h>
 
-TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, int8_t sf = 7, int8_t fsb = 2);
+TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint8_t sf = 7, uint8_t fsb = 2);
 ```
 
 - `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
 - `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
-- `int8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
-- `int8_t fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
+- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
+- `uint8_t fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
 
 ## Method: showStatus
 Writes information about the device and LoRa module to `debugStream`.
@@ -42,12 +42,12 @@ See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob
 Sets a function which will be called to process incoming messages.
 
 ```c
-void onMessage(void (*cb)(const byte* payload, size_t length, int8_t port));
+void onMessage(void (*cb)(const byte* payload, size_t length, uint8_t port));
 ```
 
 - `const byte* payload`: Bytes received.
 - `size_t length`: Number of bytes.
-- `int8_t port`: The port addressed.
+- `uint8_t port`: The port addressed.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
@@ -55,14 +55,14 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Activate the device via OTAA (default).
 
 ```c
-bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, int32_t retryDelay = 10000);
-bool join(int8_t retries = -1, int32_t retryDelay = 10000);
+bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, uint32_t retryDelay = 10000);
+bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
 ```
 
 - `const byte appEui[8]`: Application EUI the device is registered to.
 - `const byte appKey[16]`: Application Key assigned to the device.
 - `int8_t retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1` which means infinite.
-- `int32_t retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
+- `uint32_t retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
 
 Returns `true` or `false` depending on whether it received confirmation that the activation was successful before the maximum number of attempts.
 
@@ -90,12 +90,12 @@ See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master
 Send a message to the application using raw bytes.
 
 ```c
-int sendBytes(const byte* payload, size_t length, int8_t port = 1, bool confirm = false);
+int sendBytes(const byte* payload, size_t length, uint8_t port = 1, bool confirm = false);
 ```
 
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
-- `int8_t port = 1`: The port to address. Defaults to `1`.
+- `uint8_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`.
 
 Returns a success or error code and logs the related error message:
@@ -113,7 +113,7 @@ Also in sendBytes, due to TTN's 30 second fair access policy, we update the airt
 ## Method: poll
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
 
-- `int8_t port = 1`: The port to address. Defaults to `1`.
+- `uint8_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation.
 
 Returns the result of `sendBytes()`.

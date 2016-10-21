@@ -39,7 +39,7 @@ void loop() {
   delay(10000);
 }
 
-void message(const byte* payload, size_t length, int8_t port) {
+void message(const byte* payload, size_t length, uint8_t port) {
   debugSerial.println("-- MESSAGE");
 
   // Only handle messages of a single byte

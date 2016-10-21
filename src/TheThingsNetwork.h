@@ -21,12 +21,12 @@ enum ttn_fp_t {
 
 typedef struct  airtime_s
 {
-  int8_t sf;
-  int8_t de;
-  int8_t ps;
-  int16_t band;
-  int8_t header;
-  int8_t cr;
+  uint8_t sf;
+  uint8_t de;
+  uint8_t ps;
+  uint16_t band;
+  uint8_t header;
+  uint8_t cr;
 } airtime_t;
 
 class TheThingsNetwork
@@ -38,9 +38,9 @@ class TheThingsNetwork
     airtime_t info;
     float airtime;
     ttn_fp_t fp;
-    int8_t sf;
-    int8_t fsb;
-    void (* messageCallback)(const byte* payload, size_t length, int8_t port);
+    uint8_t sf;
+    uint8_t fsb;
+    void (* messageCallback)(const byte* payload, size_t length, uint8_t port);
 
     String readLine();
     void fillAirtimeInfo();
@@ -50,21 +50,21 @@ class TheThingsNetwork
     bool sendCommand(String cmd, String value);
     bool sendCommand(String cmd, const byte* buf, size_t length);
     void reset(bool adr = true);
-    void configureEU868(int8_t sf);
-    void configureUS915(int8_t sf, int8_t fsb);
-    void configureChannels(int8_t sf, int8_t fsb);
+    void configureEU868(uint8_t sf);
+    void configureUS915(uint8_t sf, uint8_t fsb);
+    void configureChannels(uint8_t sf, uint8_t fsb);
 
   public:
-    TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int8_t sf = TTN_DEFAULT_SF, int8_t fsb = TTN_DEFAULT_FSB);
+    TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
     void showStatus();
-    void onMessage(void (*cb)(const byte* payload, size_t length, int8_t port));
+    void onMessage(void (*cb)(const byte* payload, size_t length, uint8_t port));
     bool provision(const byte appEui[8], const byte appKey[16]);
-    bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, int32_t retryDelay = 10000);
-    bool join(int8_t retries = -1, int32_t retryDelay = 10000);
+    bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, uint32_t retryDelay = 10000);
+    bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool personalize();
-    int sendBytes(const byte* payload, size_t length, int8_t port = 1, bool confirm = false);
-    int poll(int8_t port = 1, bool confirm = false);
+    int sendBytes(const byte* payload, size_t length, uint8_t port = 1, bool confirm = false);
+    int poll(uint8_t port = 1, bool confirm = false);
 };
 
 #endif
