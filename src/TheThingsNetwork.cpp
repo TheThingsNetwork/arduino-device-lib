@@ -64,7 +64,7 @@ char btohexa_low(unsigned char b) {
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, size_t length) {
   String str = cmd + " ";
 
-  for (int i = 0; i < length; i++) {
+  for (int32_t i = 0; i < length; i++) {
     str += btohexa_high(buf[i]);
     str += btohexa_low(buf[i]);
   }
@@ -198,7 +198,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, size_t length, int8_t port,
     String data = response.substring(portEnds + 1);
     size_t downlinkLength = data.length() / 2;
     byte downlink[64];
-    for (int i = 0, d = 0; i < downlinkLength; i++, d += 2) {
+    for (int32_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
       downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     }
     debugPrint(F("Successful transmission. Received "));
@@ -227,7 +227,7 @@ void TheThingsNetwork::fillAirtimeInfo() {
   this->info.cr = 0;
   this->info.de = 0;
 
-  int32_t i;
+  int16_t i;
   String message = readValue(F("radio get sf"));
   for (i = 2; message[i] && i <= 3; i++) {
     this->info.sf = (this->info.sf + message[i] - 48) * 10;
@@ -257,7 +257,7 @@ void TheThingsNetwork::trackAirtime(size_t payloadSize) {
 
   float Tsym = pow(2, this->info.sf) / this->info.band;
   float Tpreamble = (this->info.ps + 4.25) * Tsym;
-  unsigned int payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
+  unsigned int32_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
   float Tpayload = payLoadSymbNb * Tsym;
   float Tpacket = Tpreamble + Tpayload;
   this->airtime = this->airtime + (Tpacket / 1000);
@@ -290,7 +290,7 @@ void TheThingsNetwork::showStatus() {
 
 void TheThingsNetwork::configureEU868(int8_t sf) {
   int8_t ch;
-  int dr = -1;
+  int8_t dr = -1;
   int32_t freq = 867100000;
   String str = "";
 
@@ -362,7 +362,7 @@ void TheThingsNetwork::configureEU868(int8_t sf) {
 
 void TheThingsNetwork::configureUS915(int8_t sf, int8_t fsb) {
   int8_t ch;
-  int dr = -1;
+  int8_t dr = -1;
   String str = "";
   int8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
   int8_t chHigh = fsb > 0 ? chLow + 7 : 71;
