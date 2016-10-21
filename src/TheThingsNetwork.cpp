@@ -64,7 +64,7 @@ char btohexa_low(unsigned char b) {
 bool TheThingsNetwork::sendCommand(String cmd, const byte *buf, size_t length) {
   String str = cmd + " ";
 
-  for (int32_t i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     str += btohexa_high(buf[i]);
     str += btohexa_low(buf[i]);
   }
@@ -198,7 +198,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, size_t length, int8_t port,
     String data = response.substring(portEnds + 1);
     size_t downlinkLength = data.length() / 2;
     byte downlink[64];
-    for (int32_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
+    for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
       downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     }
     debugPrint(F("Successful transmission. Received "));
