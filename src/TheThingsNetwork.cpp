@@ -44,12 +44,11 @@ bool TheThingsNetwork::sendCommand(String cmd) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, String value) {
-  String str = "";
-  str.concat(cmd);
-  str.concat(" ");
-  str.concat(value);
+  int l = value.length();
+  byte buf[l];
+  value.getBytes(buf, l);
 
-  return sendCommand(str);
+  return sendCommand(cmd, buf, l);
 }
 
 char btohexa_high(unsigned char b) {
@@ -101,11 +100,18 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int
   this->messageCallback = cb;
 }
 
-bool TheThingsNetwork::personalize(const String devAddr, const String nwkSKey, const String appSKey) {
+bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey) {
   reset();
-  sendCommand(F("mac set devaddr"), devAddr);
-  sendCommand(F("mac set nwkskey"), nwkSKey);
-  sendCommand(F("mac set appskey"), appSKey);
+  String addr = "mac set devaddr ";
+  String nKey = "mac set nwkskey ";
+  String aKey = "mac set appskey ";
+
+  addr.concat(devAddr);
+  nKey.concat(nwkSKey);
+  aKey.concat(appSKey);
+  sendCommand(addr);
+  sendCommand(nKey);
+  sendCommand(aKey);
   return personalize();
 }
 
@@ -125,9 +131,14 @@ bool TheThingsNetwork::personalize() {
   return true;
 }
 
-bool TheThingsNetwork::provision(const String appEui, const String appKey) {
-  sendCommand(F("mac set appeui"), appEui);
-  sendCommand(F("mac set appkey"), appKey);
+bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
+  String eui = "mac set appeui ";
+  String key = "mac set appkey ";
+
+  key.concat(appKey);
+  eui.concat(appEui);
+  sendCommand(eui);
+  sendCommand(key);
   return sendCommand(F("mac save"));
 }
 
@@ -164,7 +175,7 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
   return false;
 }
 
-bool TheThingsNetwork::join(const String appEui, const String appKey, int retries, long int retryDelay) {
+bool TheThingsNetwork::join(const char *appEui, const char *appKey, int retries, long int retryDelay) {
   reset();
   provision(appEui, appKey);
   return join(retries, retryDelay);

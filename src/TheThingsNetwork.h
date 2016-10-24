@@ -58,10 +58,10 @@ class TheThingsNetwork
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, int sf = TTN_DEFAULT_SF, int fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, int length, int port));
-    bool provision(const String appEui, const String appKey);
-    bool join(const String appEui, const String appKey, int retries = -1, long int retryDelay = 10000);
+    bool provision(const char *appEui, const char *appKey);
+    bool join(const char *appEui, const char *appKey, int retries = -1, long int retryDelay = 10000);
     bool join(int retries = -1, long int retryDelay = 10000);
-    bool personalize(const String devAddr, const String nwkSKey, const String appSKey);
+    bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
     bool personalize();
     int sendBytes(const byte* payload, int length, int port = 1, bool confirm = false);
     int poll(int port = 1, bool confirm = false);

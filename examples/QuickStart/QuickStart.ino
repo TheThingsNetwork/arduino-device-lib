@@ -1,8 +1,8 @@
 #include <TheThingsNetwork.h>
 
 // Set your AppEUI and AppKey
-const String appEui = "0000000000000000";
-const String appKey = "00000000000000000000000000000000";
+const char *appEui = "0000000000000000";
+const char *appKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
@@ -50,7 +50,7 @@ void message(const byte* payload, int length, int port) {
   if (payload[0] == 0) {
     debugSerial.println("LED: off");
     digitalWrite(LED_BUILTIN, LOW);
-      
+
   } else if (payload[0] == 1) {
     debugSerial.println("LED: on");
     digitalWrite(LED_BUILTIN, HIGH);

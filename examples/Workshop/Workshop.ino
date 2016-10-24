@@ -7,15 +7,15 @@
 // and copy the Device Addr, Network Session Key and App Session Key
 
 // Set your Device Address, for example: "1C55B133";
-const String devAddr = " ... ";
+const char *devAddr = "00000000";
 
 // Set your Network Session Key, for example: "0C11F84C5E4315CCDE50AB31C430BBE5";
 // This is used by the network to identify your device
-const String nwkSKey = " ... ";
+const char *nwkSKey = "00000000000000000000000000000000";
 
 // Set your Application Session Key, for example: "6C250A6B559B1BA0A51696ED20E3CF56";
 // This is used by the network for encryption
-const String appSKey = " ... ";
+const char *appSKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
