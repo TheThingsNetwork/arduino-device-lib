@@ -44,11 +44,12 @@ bool TheThingsNetwork::sendCommand(String cmd) {
 }
 
 bool TheThingsNetwork::sendCommand(String cmd, String value) {
-  int l = value.length();
-  byte buf[l];
-  value.getBytes(buf, l);
+  String str = "";
+  str.concat(cmd);
+  str.concat(" ");
+  str.concat(value);
 
-  return sendCommand(cmd, buf, l);
+  return sendCommand(str);
 }
 
 char btohexa_high(unsigned char b) {
@@ -100,11 +101,11 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int
   this->messageCallback = cb;
 }
 
-bool TheThingsNetwork::personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]) {
+bool TheThingsNetwork::personalize(const String devAddr, const String nwkSKey, const String appSKey) {
   reset();
-  sendCommand(F("mac set devaddr"), devAddr, 4);
-  sendCommand(F("mac set nwkskey"), nwkSKey, 16);
-  sendCommand(F("mac set appskey"), appSKey, 16);
+  sendCommand(F("mac set devaddr"), devAddr);
+  sendCommand(F("mac set nwkskey"), nwkSKey);
+  sendCommand(F("mac set appskey"), appSKey);
   return personalize();
 }
 
@@ -124,9 +125,9 @@ bool TheThingsNetwork::personalize() {
   return true;
 }
 
-bool TheThingsNetwork::provision(const byte appEui[8], const byte appKey[16]) {
-  sendCommand(F("mac set appeui"), appEui, 8);
-  sendCommand(F("mac set appkey"), appKey, 16);
+bool TheThingsNetwork::provision(const String appEui, const String appKey) {
+  sendCommand(F("mac set appeui"), appEui);
+  sendCommand(F("mac set appkey"), appKey);
   return sendCommand(F("mac save"));
 }
 
@@ -163,7 +164,7 @@ bool TheThingsNetwork::join(int retries, long int retryDelay) {
   return false;
 }
 
-bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int retries, long int retryDelay) {
+bool TheThingsNetwork::join(const String appEui, const String appKey, int retries, long int retryDelay) {
   reset();
   provision(appEui, appKey);
   return join(retries, retryDelay);
