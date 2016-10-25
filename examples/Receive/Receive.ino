@@ -35,7 +35,7 @@ void loop() {
   delay(10000);
 }
 
-void message(const byte* payload, size_t length, uint8_t port) {
+void message(const byte* payload, size_t length, port_t port) {
   debugSerial.println("-- MESSAGE");
   debugSerial.print("Received " + String(length) + " bytes on port " + String(port) + ":");
 

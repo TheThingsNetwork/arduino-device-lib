@@ -42,12 +42,12 @@ See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob
 Sets a function which will be called to process incoming messages.
 
 ```c
-void onMessage(void (*cb)(const byte* payload, size_t length, uint8_t port));
+void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
 ```
 
 - `const byte* payload`: Bytes received.
 - `size_t length`: Number of bytes.
-- `uint8_t port`: The port addressed.
+- `port_t port`: The port addressed.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
@@ -90,12 +90,12 @@ See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master
 Send a message to the application using raw bytes.
 
 ```c
-int sendBytes(const byte* payload, size_t length, uint8_t port = 1, bool confirm = false);
+int sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
 ```
 
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
-- `uint8_t port = 1`: The port to address. Defaults to `1`.
+- `port_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`.
 
 Returns a success or error code and logs the related error message:
@@ -113,7 +113,7 @@ Also in sendBytes, due to TTN's 30 second fair access policy, we update the airt
 ## Method: poll
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
 
-- `uint8_t port = 1`: The port to address. Defaults to `1`.
+- `port_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation.
 
 Returns the result of `sendBytes()`.
