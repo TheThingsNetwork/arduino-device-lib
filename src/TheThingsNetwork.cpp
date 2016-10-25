@@ -103,15 +103,17 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, int length, int
 bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey) {
   reset();
   String addr = "mac set devaddr ";
-  String nKey = "mac set nwkskey ";
-  String aKey = "mac set appskey ";
   addr.concat(devAddr);
-  nKey.concat(nwkSKey);
-  aKey.concat(appSKey);
-
   sendCommand(addr);
+
+  String nKey = "mac set nwkskey ";
+  nKey.concat(nwkSKey);
   sendCommand(nKey);
+
+  String aKey = "mac set appskey ";
+  aKey.concat(appSKey);
   sendCommand(aKey);
+
   return personalize();
 }
 
@@ -133,12 +135,13 @@ bool TheThingsNetwork::personalize() {
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
   String eui = "mac set appeui ";
+  eui.concat(appEui);
+  sendCommand(eui);
+
   String key = "mac set appkey ";
   key.concat(appKey);
-  eui.concat(appEui);
-
-  sendCommand(eui);
   sendCommand(key);
+
   return sendCommand(F("mac save"));
 }
 
