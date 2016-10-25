@@ -38,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-  // Create a buffer with three bytes  
+  // Create a buffer with three bytes
   byte payload[3] = { 0x01, 0x02, 0x03 };
 
   // Send it to the network
