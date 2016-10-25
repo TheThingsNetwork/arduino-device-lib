@@ -14,6 +14,8 @@
 #define TTN_PWRIDX_868 1
 #define TTN_PWRIDX_915 5
 
+typedef uint8_t port_t;
+
 enum ttn_fp_t {
   TTN_FP_EU868,
   TTN_FP_US915
@@ -32,6 +34,7 @@ typedef struct  airtime_s
 class TheThingsNetwork
 {
   private:
+    port_t port;
     Stream* modemStream;
     Stream* debugStream;
     String model;
@@ -40,7 +43,7 @@ class TheThingsNetwork
     ttn_fp_t fp;
     uint8_t sf;
     uint8_t fsb;
-    void (* messageCallback)(const byte* payload, size_t length, uint8_t port);
+    void (* messageCallback)(const byte* payload, size_t length, port_t port);
 
     String readLine();
     void fillAirtimeInfo();
@@ -57,14 +60,14 @@ class TheThingsNetwork
   public:
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
     void showStatus();
-    void onMessage(void (*cb)(const byte* payload, size_t length, uint8_t port));
+    void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
     bool provision(const byte appEui[8], const byte appKey[16]);
     bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, uint32_t retryDelay = 10000);
     bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
     bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
     bool personalize();
-    int sendBytes(const byte* payload, size_t length, uint8_t port = 1, bool confirm = false);
-    int poll(uint8_t port = 1, bool confirm = false);
+    int sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+    int poll(port_t port = 1, bool confirm = false);
 };
 
 #endif

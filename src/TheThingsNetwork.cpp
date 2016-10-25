@@ -96,7 +96,7 @@ void TheThingsNetwork::reset(bool adr) {
   sendCommand(str);
 }
 
-void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, size_t length, uint8_t port)) {
+void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, size_t length, port_t port)) {
   this->messageCallback = cb;
 }
 
@@ -169,7 +169,7 @@ bool TheThingsNetwork::join(const byte appEui[8], const byte appKey[16], int8_t 
   return join(retries, retryDelay);
 }
 
-int TheThingsNetwork::sendBytes(const byte* payload, size_t length, uint8_t port, bool confirm) {
+int TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t port, bool confirm) {
   String str = "";
   str.concat(F("mac tx "));
   str.concat(confirm ? F("cnf ") : F("uncnf "));
@@ -194,7 +194,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, size_t length, uint8_t port
   }
   if (response.startsWith(F("mac_rx"))) {
     uint8_t portEnds = response.indexOf(" ", 7);
-    uint8_t downlinkPort = response.substring(7, portEnds).toInt();
+    port_t downlinkPort = response.substring(7, portEnds).toInt();
     String data = response.substring(portEnds + 1);
     size_t downlinkLength = data.length() / 2;
     byte downlink[64];
@@ -214,7 +214,7 @@ int TheThingsNetwork::sendBytes(const byte* payload, size_t length, uint8_t port
   return -10;
 }
 
-int TheThingsNetwork::poll(uint8_t port, bool confirm) {
+int TheThingsNetwork::poll(port_t port, bool confirm) {
   byte payload[] = { 0x00 };
   return sendBytes(payload, 1, port, confirm);
 }
