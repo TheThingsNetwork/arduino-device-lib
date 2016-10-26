@@ -6,16 +6,16 @@
 // After you registered your ABP device, go to The Things Network Dashboard
 // and copy the Device Addr, Network Session Key and App Session Key
 
-// Set your Device Address, for example: { 0x02, 0xDE, 0xAE, 0x00 };
-const byte devAddr[4] = { ... };
+// Set your Device Address, for example: "1C55B133";
+const String devAddr = " ... ";
 
-// Set your Network Session Key, for example: { 0x2B, 0x7E, 0x15, 0x16, ... };
+// Set your Network Session Key, for example: "0C11F84C5E4315CCDE50AB31C430BBE5";
 // This is used by the network to identify your device
-const byte nwkSKey[16] = { ... };
+const String nwkSKey = " ... ";
 
-// Set your Application Session Key, for example: { 0x2B, 0x7E, 0x15, 0x16, ... };
+// Set your Application Session Key, for example: "6C250A6B559B1BA0A51696ED20E3CF56";
 // This is used by the network for encryption
-const byte appSKey[16] = { ... };
+const String appSKey = " ... ";
 
 #define loraSerial Serial1
 #define debugSerial Serial
