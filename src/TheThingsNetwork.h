@@ -51,7 +51,7 @@ class TheThingsNetwork
     String readValue(String key);
     bool sendCommand(String cmd);
     bool sendCommand(String cmd, String value);
-    bool sendCommand(String cmd, const byte* buf, size_t length);
+    bool sendCommand(String cmd, const byte *buf, size_t length);
     void reset(bool adr = true);
     void configureEU868(uint8_t sf);
     void configureUS915(uint8_t sf, uint8_t fsb);
@@ -61,10 +61,10 @@ class TheThingsNetwork
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
-    bool provision(const byte appEui[8], const byte appKey[16]);
-    bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, uint32_t retryDelay = 10000);
+    bool provision(const char *appEui, const char *appKey);
+    bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
     bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
-    bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
+    bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
     bool personalize();
     int sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
     int poll(port_t port = 1, bool confirm = false);

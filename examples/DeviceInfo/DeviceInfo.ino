@@ -20,6 +20,6 @@ void loop()
   debugSerial.println("Use the EUI to register the device for OTAA");
   debugSerial.println("-------------------------------------------");
   debugSerial.println();
-  
+
   delay(10000);
 }

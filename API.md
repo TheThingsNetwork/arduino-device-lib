@@ -55,12 +55,12 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Activate the device via OTAA (default).
 
 ```c
-bool join(const byte appEui[8], const byte appKey[16], int8_t retries = -1, uint32_t retryDelay = 10000);
+bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
 bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
 ```
 
-- `const byte appEui[8]`: Application EUI the device is registered to.
-- `const byte appKey[16]`: Application Key assigned to the device.
+- `const char *appEui`: Application EUI the device is registered to.
+- `const char *appKey`: Application Key assigned to the device.
 - `int8_t retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1` which means infinite.
 - `uint32_t retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
 
@@ -72,13 +72,13 @@ Call the method without the first two arguments if the device's LoRa module come
 Activate the device via ABP.
 
 ```c
-bool personalize(const byte devAddr[4], const byte nwkSKey[16], const byte appSKey[16]);
+bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
 bool personalize();
 ```
 
-- `const byte devAddr[4]`: Device Address assigned to the device.
-- `const byte nwkSKey[16]`: Network Session Key assigned to the device for identification.
-- `const byte appSKey[16]`: Application Session Key assigned to the device for encryption.
+- `const char *devAddr`: Device Address assigned to the device.
+- `const char *nwkSKey`: Network Session Key assigned to the device for identification.
+- `const char *appSKey`: Application Session Key assigned to the device for encryption.
 
 Returns `true` or `false` depending on whether the activation was successful.
 
@@ -124,8 +124,8 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
-bool provision(const byte appEui[8], const byte appKey[16]);
+bool provision(const char *appEui, const char *appKey);
 ```
 
-- `const byte appEui[8]`: Application Identifier for the device.
-- `const byte appKey[16]`: Application Key assigned to the device.
+- `const char *appEui`: Application Identifier for the device.
+- `const char *appKey`: Application Key assigned to the device.
