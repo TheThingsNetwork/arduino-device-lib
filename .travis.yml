@@ -1,7 +1,18 @@
-language: c
+language: python
+python:
+    - "2.7"
+
+# Cache PlatformIO packages using Travis CI container-based infrastructure
 sudo: false
-before_install:
-  - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+cache:
+    directories:
+        - "~/.platformio"
+
+env:
+    - PLATFORMIO_CI_SRC=examples
+
+install:
+    - pip install -U platformio
+
 script:
-  - build_main_platforms
-  - build_platform trinket
+    - platformio ci --lib="." --board=leonardo --board=sparkfun_promicro8
