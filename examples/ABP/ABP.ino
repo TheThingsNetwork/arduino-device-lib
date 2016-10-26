@@ -1,9 +1,9 @@
 #include <TheThingsNetwork.h>
 
 // Set your DevAddr, NwkSKey and AppSKey
-const String devAddr = "00000000";
-const String nwkSKey = "00000000000000000000000000000000";
-const String appSKey = "00000000000000000000000000000000";
+const char *devAddr = "00000000";
+const char *nwkSKey = "00000000000000000000000000000000";
+const char *appSKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial

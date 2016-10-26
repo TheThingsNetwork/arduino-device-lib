@@ -4,8 +4,8 @@
 #include <DHT.h>
 
 // Set your AppEUI and AppKey
-const String appEui = "0000000000000000";
-const String appKey = "00000000000000000000000000000000";
+const char *appEui = "0000000000000000";
+const char *appKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
