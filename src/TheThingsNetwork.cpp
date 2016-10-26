@@ -197,12 +197,14 @@ int TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t port,
   String response = readLine();
   float i = this->airtime;
   trackAirtime(length);
-  debugPrint(F("Airtime added: "));
-  debugPrint(this->airtime - i);
-  debugPrintLn(F(" s"));
-  debugPrint(F("Total airtime: "));
-  debugPrint(this->airtime);
-  debugPrintLn(F(" s"));
+  if (!isnan(i) && !isinf(i) && !isnan(this->airtime) && !isinf(this->airtime)) {
+    debugPrint(F("Airtime added: "));
+    debugPrint(this->airtime - i);
+    debugPrintLn(F(" s"));
+    debugPrint(F("Total airtime: "));
+    debugPrint(this->airtime);
+    debugPrintLn(F(" s"));
+  }
   if (response == F("mac_tx_ok")) {
     debugPrintLn(F("Successful transmission"));
     return 1;
