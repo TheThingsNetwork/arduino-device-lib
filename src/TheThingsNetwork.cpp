@@ -48,7 +48,7 @@ bool TheThingsNetwork::sendCommand(String cmd, String value) {
   byte buf[l];
   value.getBytes(buf, l);
 
-  return sendCommand(cmd, buf, 1);
+  return sendCommand(cmd, buf, l);
 }
 
 char btohexa_high(unsigned char b) {
