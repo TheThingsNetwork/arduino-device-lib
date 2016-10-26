@@ -52,6 +52,7 @@ class TheThingsNetwork
     bool sendCommand(String cmd);
     bool sendCommand(String cmd, String value);
     bool sendCommand(String cmd, const byte *buf, size_t length);
+    void init();
     void reset(bool adr = true);
     void configureEU868(uint8_t sf);
     void configureUS915(uint8_t sf, uint8_t fsb);

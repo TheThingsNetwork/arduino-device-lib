@@ -10,6 +10,29 @@
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
+TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb) {
+  this->debugStream = &debugStream;
+  this->modemStream = &modemStream;
+  this->fp = fp;
+  this->sf = sf;
+  this->fsb = fsb;
+}
+
+void TheThingsNetwork::init() {
+  static bool done = false;
+
+  if (done) {
+    return;
+  }
+
+  // trigger auto-baud detection to fix
+  // https://github.com/TheThingsNetwork/arduino-device-lib/issues/114
+  modemStream->write(0x55);
+  delay(200);
+
+  done = true;
+}
+
 String TheThingsNetwork::readLine() {
   while (true) {
     String line = modemStream->readStringUntil('\n');
@@ -20,6 +43,8 @@ String TheThingsNetwork::readLine() {
 }
 
 String TheThingsNetwork::readValue(String cmd) {
+  init();
+
   while(modemStream->available()) {
     modemStream->read();
   }
@@ -452,12 +477,4 @@ void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb) {
   retries.concat(F("mac set retx "));
   retries.concat(TTN_RETX);
   sendCommand(retries);
-}
-
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb) {
-  this->debugStream = &debugStream;
-  this->modemStream = &modemStream;
-  this->fp = fp;
-  this->sf = sf;
-  this->fsb = fsb;
 }
