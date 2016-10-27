@@ -419,7 +419,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb) {
     str = "";
     str.concat(F("mac set ch status "));
     str.concat(ch);
-    if (ch == ch500 || ch <= chHigh && ch >= chLow) {
+    if (ch == ch500 || (ch <= chHigh && ch >= chLow)) {
       str.concat(F(" on"));
       sendCommand(str);
       if (ch < 63) {

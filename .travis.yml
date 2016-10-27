@@ -9,10 +9,10 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=examples
+    - PLATFORMIO_CI_SRC=test
 
 install:
     - pip install -U platformio
 
 script:
-    - platformio ci --lib="." --board=leonardo --board=sparkfun_promicro8
+    - platformio ci --lib=src --board=leonardo --board=sparkfun_promicro8
