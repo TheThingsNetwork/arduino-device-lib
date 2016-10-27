@@ -1,4 +1,5 @@
 # The Things Network Arduino Library
+[![Build Status](https://travis-ci.org/TheThingsNetwork/arduino-device-lib.svg?branch=master)](https://travis-ci.org/TheThingsNetwork/arduino-device-lib)
 
 This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Arduino-compatible devices like [The Things Uno](https://shop.thethingsnetwork.com/index.php/product/the-things-uno/) and [Node](https://shop.thethingsnetwork.com/index.php/product/the-things-node/) to communicate via [The Things Network](https://www.thethingsnetwork.org).
 
