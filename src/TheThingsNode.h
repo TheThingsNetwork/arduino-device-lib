@@ -43,13 +43,13 @@ class TheThingsNode
 
     void showStatus();
 
+    void onInterval(void(*callback)(void));
     void configInterval(bool enabled, uint32_t ms);
     void configInterval(bool enabled);
-    void onInterval(void(*callback)(void));
 
-    uint16_t getLight();
     void configLight(bool enabled, uint8_t gain);
     void configLight(bool enabled);
+    uint16_t getLight();
 
     int8_t getTemperatureAsInt();
     float getTemperatureAsFloat();
@@ -64,24 +64,24 @@ class TheThingsNode
     bool isMoving();
     void configMotion(bool enabled);
 
-    void configButton(bool enabled);
     void onButtonPress(void(*callback)(void));
     void onButtonRelease(void(*callback)(unsigned long duration));
     bool isButtonPressed();
+    void configButton(bool enabled);
 
-    bool getRed();
-    bool getGreen();
-    bool getBlue();
-    ttn_color getColor();
-    String colorToString(ttn_color color);
+    void setColor(ttn_color color);
     void setRGB(bool red = false, bool green = false, bool blue = false);
     void setRed(bool on = true);
     void setGreen(bool on = true);
     void setBlue(bool on = true);
-    void setColor(ttn_color color);
+    ttn_color getColor();
+    String colorToString(ttn_color color);
+    bool getRed();
+    bool getGreen();
+    bool getBlue();
 
-    void configUSB(bool deepSleep);
     bool isUSBConnected();
+    void configUSB(bool deepSleep);
 
     uint16_t getBattery();
 
@@ -105,8 +105,9 @@ class TheThingsNode
     bool buttonEnabled;
     bool buttonPressed;
     unsigned long buttonPressedAt;
-    bool USBDisconnected;
+    bool wasUSBDisconnected;
     bool USBDeepSleep;
+    bool wdtStarted;
 
     void (*wakeCallback)(void);
     void (*sleepCallback)(void);

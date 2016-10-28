@@ -40,9 +40,10 @@ void setup() {
   node->configLight(true);
   node->configInterval(true, 20000);
 
-  node->onWake(onWake);
+  node->onWake(wake);
   node->onInterval(interval);
-  node->onSleep(onSleep);
+  node->onSleep(sleep);
+  
   node->onTemperature(onTemperature);
   node->onMotionStart(onMotionStart);
   node->onMotionStop(onMotionStop);
@@ -104,11 +105,11 @@ void interval() {
   ttn.sendBytes(payload, sizeof(payload), PORT_INTERVAL);
 }
 
-void onWake() {
+void wake() {
   node->setColor(TTN_GREEN);
 }
 
-void onSleep() {
+void sleep() {
   node->setColor(TTN_BLACK);
 }
 

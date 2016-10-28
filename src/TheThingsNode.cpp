@@ -99,13 +99,23 @@ void TheThingsNode::onWake(void (*callback)(void))
 
 void TheThingsNode::loop()
 {
-  if (this->isUSBConnected() == this->USBDisconnected) {
-    this->USBDisconnected = !this->isUSBConnected();
-    if (this->USBDisconnected) {
+  // USB is connected and last time we checked it wasn't or visa versa
+  if (this->isUSBConnected() == this->wasUSBDisconnected) {
+    this->wasUSBDisconnected = !this->isUSBConnected();
+
+    // It is no longer connected
+    if (this->wasUSBDisconnected) {
       Serial.end();
       WDT_start();
+
     } else {
-      WDT_stop();
+
+      // Stop watchdog unless deep sleep is enabled for USB
+      if (!this->USBDeepSleep) {
+        WDT_stop();
+      }
+
+      // Restore communication
       if (Serial) {
         Serial.begin(9600);
       }
@@ -202,9 +212,7 @@ void TheThingsNode::showStatus()
   } else {
     Serial.println(F("disabled"));
   }
-  Serial.print(F("Temperature as int: "));
-  Serial.println(String(getTemperatureAsInt()) + F(" C"));
-  Serial.print(F("Temperature as float: "));
+  Serial.print(F("Temperature: "));
   Serial.println(String(getTemperatureAsFloat()) + F(" C"));
   Serial.print(F("Temperature alert: "));
   if (this->temperatureEnabled) {
@@ -654,6 +662,12 @@ uint16_t TheThingsNode::getBattery()
 void TheThingsNode::configUSB(bool deepSleep)
 {
   this->USBDeepSleep = deepSleep;
+
+  if (this->USBDeepSleep || !isUSBConnected()) {
+    WDT_start();
+  } else {
+    WDT_stop();
+  }
 }
 
 bool TheThingsNode::isUSBConnected()
@@ -691,7 +705,9 @@ TheThingsNode::TheThingsNode()
   pinMode(TTN_VBAT_MEAS_EN, OUTPUT);
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
 
-  WDT_start();
+  if (!isUSBConnected() || this->USBDeepSleep) {
+    WDT_start();
+  }
 }
 
 void TheThingsNode::sleepTemperature()
@@ -768,22 +784,34 @@ uint8_t TheThingsNode::readMotion(unsigned char REG_ADDRESS)
 
 void TheThingsNode::WDT_start()
 {
+  if (this->wdtStarted) {
+    return;
+  }
+
   cli();
   MCUSR &= ~(1 << WDRF);
   WDTCSR |= (1 << WDCE) | (1 << WDE);
   WDTCSR = 1 << WDP0 | 0 << WDP1 | 0 << WDP2 | 1 << WDP3; /* 2.0 seconds */
   WDTCSR |= _BV(WDIE);
   sei();
+
+  this->wdtStarted = true;
 }
 
 void TheThingsNode::WDT_stop()
 {
+  if (!this->wdtStarted) {
+    return;
+  }
+
   cli();
   MCUSR &= ~(1 << WDRF);
   WDTCSR |= (1 << WDCE) | (1 << WDE);
   WDTCSR = 0x00;
   WDTCSR = 0 << WDP0 | 1 << WDP1 | 0 << WDP2 | 0 << WDP3; 
   sei();
+
+  this->wdtStarted = true;
 }
 
 void TheThingsNode::deepSleep(void)
