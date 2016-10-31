@@ -73,7 +73,7 @@ Usage:
 void setup() {
     node = TheThingsNode::setup();
     
-    node->onWake(sleep);
+    node->onSleep(sleep);
 }
 
 void sleep() {
