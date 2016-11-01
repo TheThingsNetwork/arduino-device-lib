@@ -1,8 +1,8 @@
-function Validator(converted) {
+function Validator(converted, port) {
   // Return false if the decoded, converted
   // message is invalid and should be dropped.
     
-  if (converted.led !== true && converted.led !== false) {
+  if (port === 1 && typeof converted.led !== 'boolean') {
     return false;
   }
     
