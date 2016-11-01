@@ -35,12 +35,8 @@
  * }
  */
 
-function Decoder(bytes /*, port */ ) {
+function Decoder(bytes, port) {
   var decoded = {};
-
-  // Until PF support port we pass it as first byte
-  var port = bytes[0];
-  bytes = bytes.slice(1);
 
   var ports = {
     PORT_INTERVAL: 1,

@@ -120,15 +120,12 @@ void onTemperature() {
   debugSerial.println("-- TEMPERATURE: " + String(temperature));
 
   byte* bytes;
-  byte payload[3];
-
-  // until payload functions receive port
-  payload[0] = PORT_TEMPERATURE;
+  byte payload[2];
 
   int16_t rounded = round(temperature * 100);
   bytes = (byte*) &rounded;
-  payload[1] = bytes[1];
-  payload[2] = bytes[0];
+  payload[0] = bytes[1];
+  payload[1] = bytes[0];
 
   ttn.sendBytes(payload, sizeof(payload), PORT_TEMPERATURE);
 }
@@ -144,16 +141,13 @@ void onMotionStop(unsigned long duration) {
   debugSerial.println(duration);
 
   byte* bytes;
-  byte payload[5];
-
-  // until payload functions receive port
-  payload[0] = PORT_MOTION;
+  byte payload[4];
 
   bytes = (byte*) &duration;
-  payload[1] = bytes[3];
-  payload[2] = bytes[2];
-  payload[3] = bytes[1];
-  payload[4] = bytes[0];
+  payload[0] = bytes[3];
+  payload[1] = bytes[2];
+  payload[2] = bytes[1];
+  payload[3] = bytes[0];
 
   ttn.sendBytes(payload, sizeof(payload), PORT_MOTION);
 }
@@ -169,16 +163,13 @@ void onButtonRelease(unsigned long duration) {
   debugSerial.println(duration);
 
   byte* bytes;
-  byte payload[5];
-
-  // until payload functions receive port
-  payload[0] = PORT_BUTTON;
+  byte payload[4];
 
   bytes = (byte*) &duration;
-  payload[1] = bytes[3];
-  payload[2] = bytes[2];
-  payload[3] = bytes[1];
-  payload[4] = bytes[0];
+  payload[0] = bytes[3];
+  payload[1] = bytes[2];
+  payload[2] = bytes[1];
+  payload[3] = bytes[0];
 
   ttn.sendBytes(payload, sizeof(payload), PORT_BUTTON);
 }
