@@ -39,7 +39,7 @@ void loop() {
   // Read the sensors
   data.motion = true;
   data.water = 682;
-  data.temperature_celcius = 30
+  data.temperature_celcius = 30;
   data.temperature_fahrenheit = 86;
   data.humidity = 97;
 
