@@ -13,7 +13,9 @@ This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Ardu
 ## Documentation
 
 * [The Things Network Documentation / Arduino](https://www.thethingsnetwork.org/docs/arduino/)
-* [API Reference](API.md)
+* API References:
+    * [TheThingsNetwork](docs/TheThingsNetwork.md)
+    * [TheThingsMessage](docs/TheThingsMessage.md)
 
 ## Examples
 

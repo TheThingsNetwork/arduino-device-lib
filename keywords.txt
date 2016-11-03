@@ -7,6 +7,7 @@
 #######################################
 
 TheThingsNetwork        KEYWORD1
+TheThingsMessage        KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -19,6 +20,8 @@ join                    KEYWORD2
 personalize             KEYWORD2
 sendBytes               KEYWORD2
 poll                    KEYWORD2
+
+encodeSensorData        KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

@@ -9,7 +9,8 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=test
+    - PLATFORMIO_CI_SRC=test/TheThingsNetwork.ino
+    - PLATFORMIO_CI_SRC=test/TheThingsMessage.ino
 
 install:
     - pip install -U platformio
