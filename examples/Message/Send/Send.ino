@@ -12,10 +12,7 @@ TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */
 
 sensordata_t data = api_SensorData_init_default;
 
-void setup()
-{
-  pinMode(2, INPUT);
-
+void setup() {
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
@@ -28,7 +25,7 @@ void setup()
   debugSerial.println("-- JOIN");
   ttn.join(appEui, appKey);
 
-  //Chose message you want to send (send the message by writing true)
+  // Select what fields to include in the encoded message
   data.has_motion = true;
   data.has_water = false;
   data.has_temperature_celcius = true;
@@ -39,24 +36,18 @@ void setup()
 void loop() {
   debugSerial.println("-- LOOP");
 
-  float humidity = 232;
-  bool motion = digitalRead(2) == HIGH;
-  uint32_t water = 682 - analogRead(A0);
-  float temperature_celcius = 345 - analogRead(A0);
-  float temperature_fahrenheit = 345 - analogRead(A0);
+  // Read the sensors
+  data.motion = true;
+  data.water = 682;
+  data.temperature_celcius = 30
+  data.temperature_fahrenheit = 86;
+  data.humidity = 97;
+
+  // Encode the selected fields of the struct as bytes
   byte *buffer;
   size_t size;
-
-  data.motion = motion;
-  data.water = water;
-  data.temperature_celcius = temperature_celcius;
-  data.temperature_fahrenheit = temperature_fahrenheit;
-  data.humidity = humidity;
-
-  //Encode the message
   TheThingsMessage::encodeSensorData(&data, &buffer, &size);
 
-  //Send the message
   ttn.sendBytes(buffer, size);
 
   delay(10000);
