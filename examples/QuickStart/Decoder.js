@@ -3,7 +3,9 @@ function Decoder(bytes, port) {
   // (array) of bytes to an object of fields.
   var decoded = {};
     
-  if (port === 1) decoded.led = bytes[0];
+  if (port === 1) {
+    decoded.led = bytes[0];
+  }
     
   return decoded;
 }
