@@ -338,35 +338,42 @@ void TheThingsNetwork::configureEU868(uint8_t sf) {
 
   str.concat(F("mac set rx2 3 869525000"));
   sendCommand(str);
+  
   str = "";
+  str.concat(F("mac set ch drrange 1 0 6"));
+  sendCommand(str);
+  
   for (ch = 0; ch <= 7; ch++) {
+    str = "";
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" 799"));
+    sendCommand(str);
+    
     if (ch >= 3) {
+      str = "";
       str.concat(F("mac set ch freq "));
       str.concat(ch);
       str.concat(F(" "));
       str.concat(freq);
       sendCommand(str);
+
       str = "";
       str.concat(F("mac set ch drrange "));
       str.concat(ch);
       str.concat(F(" 0 5"));
       sendCommand(str);
+
       str = "";
       str.concat(F("mac set ch status "));
       str.concat(ch);
       str.concat(F(" on"));
       sendCommand(str);
-      str = "";
+
       freq = freq + 200000;
     }
-    str.concat(F("mac set ch dcycle "));
-    str.concat(ch);
-    str.concat(F(" 799"));
-    sendCommand(str);
-    str = "";
   }
-  str.concat(F("mac set ch drrange 1 0 6"));
-  sendCommand(str);
+  
   str = "";
   str.concat(F("mac set pwridx "));
   str.concat(TTN_PWRIDX_868);
