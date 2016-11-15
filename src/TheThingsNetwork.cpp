@@ -160,6 +160,12 @@ const char* const mac_tx_table[] PROGMEM = {mac_tx_type_cnf,mac_tx_type_ucnf};
 
 char set_buffer[TTN_BUFFER_SIZE];
 
+void memsetBuffer(size_t i) {
+  for (size_t set = i; set--; ) {
+    set_buffer[set] = 0;
+  }
+}
+
 TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb) {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
@@ -318,10 +324,10 @@ int8_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t po
     debugPrintLn(" s");
     debugPrint(F("Total airtime: "));
     debugPrint(this->airtime);
-    debugPrintLn(" s");
+    debugPrintLn(F(" s"));
   }
   if (compareStrings(response, MAC_TX_OK)) {
-    debugPrintLn("Successful transmission");
+    debugPrintLn(F("Successful transmission"));
     return 1;
   }
   if (compareStrings(response, MAC_RX, 5)) {
@@ -449,7 +455,7 @@ void TheThingsNetwork::showStatus() {
   debugPrintLn(readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY2));
   debugPrint(F("Total airtime: "));
   debugPrint(this->airtime);
-  debugPrintLn(" s");
+  debugPrintLn(F(" s"));
 }
 
 void TheThingsNetwork::configureEU868(uint8_t sf) {
@@ -621,6 +627,7 @@ bool TheThingsNetwork::sendMacSet(uint8_t index, const char* setting) {
 }
 
 bool TheThingsNetwork::waitForOk() {
+  memsetBuffer(TTN_BUFFER_SIZE);
   uint16_t responseLength = Serial1.readBytesUntil('\n',set_buffer, TTN_BUFFER_SIZE);
   if (responseLength >= 5) {
     if (!compareStrings(set_buffer, ACCEPTED)) {
@@ -711,14 +718,21 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload,
 }
 
 bool TheThingsNetwork::compareStrings(const char *str1, const char *str2, size_t length) {
-  size_t one = -1;
-  while (str1[++one] != '\0' && str2[one] != '\0') {
+  size_t one = 0;
+  while (str1[one] != '\0' && str2[one] != '\0') {
     if (str1[one] != str2[one]) {
       return false;
     }
+    one = one + 1;
     if (one == length) {
       return true;
     }
+  }
+  if (str1[one] == '\r' && str2[one] == '\0') {
+    return true;
+  }
+  else if (str1[one] != str2[one]) {
+    return false;
   }
   return true;
 }
