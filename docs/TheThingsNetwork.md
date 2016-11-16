@@ -90,7 +90,7 @@ See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master
 Send a message to the application using raw bytes.
 
 ```c
-int sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+int8_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
 ```
 
 - `const byte* payload `: Bytes to send.
@@ -112,6 +112,10 @@ Also in sendBytes, due to TTN's 30 second fair access policy, we update the airt
 
 ## Method: poll
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
+
+```c
+int8_t poll(port_t port = 1, bool confirm = false);
+```
 
 - `port_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation.
