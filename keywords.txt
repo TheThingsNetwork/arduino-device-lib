@@ -22,6 +22,9 @@ personalize                    KEYWORD2
 sendBytes                      KEYWORD2
 poll                           KEYWORD2
 
+encodeSensorData               KEYWORD2
+decodeAppData                  KEYWORD2
+
 getLight                       KEYWORD2
 configLight                    KEYWORD2
 getTemperatureAsInt            KEYWORD2
@@ -48,9 +51,6 @@ setBlue                        KEYWORD2
 setColor                       KEYWORD2
 getUSB                         KEYWORD2
 getBattery                     KEYWORD2
-
-encodeSensorData               KEYWORD2
-decodeAppData                  KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
