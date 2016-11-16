@@ -16,25 +16,6 @@
 #define TTN_PWRIDX_915 "5"
 
 #define TTN_BUFFER_SIZE 300
-#define SEND_MSG "\r\n"
-
-#define ON "on"
-#define OFF "off"
-#define OK "ok"
-#define ACCEPTED "accepted"
-#define MAC_TX_OK "mac_tx_ok"
-#define MAC_RX "mac_rx"
-
-#define INVALID_SF "Invalid SF"
-#define INVALID_FP "Invalid frequency plan"
-#define UNEXPECTED_RESPONSE "Unexpected response: "
-#define SEND_COMMAND_FAILED "Send command failed"
-#define JOIN_FAILED "Send join command failed"
-#define JOIN_NOT_ACCEPTED "Join not accepted: "
-#define PERSONALIZE_NOT_ACCEPTED "Personalize not accepted"
-#define RESPONSE_IS_NOT_OK "Response is not OK: "
-
-#define SENDING "Sending: "
 
 typedef uint8_t port_t;
 

@@ -9,6 +9,25 @@
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
+#define ON "on"
+#define OFF "off"
+#define OK "ok"
+#define ACCEPTED "accepted"
+#define MAC_TX_OK "mac_tx_ok"
+#define MAC_RX "mac_rx"
+
+#define INVALID_SF "Invalid SF"
+#define INVALID_FP "Invalid frequency plan"
+#define UNEXPECTED_RESPONSE "Unexpected response: "
+#define SEND_COMMAND_FAILED "Send command failed"
+#define JOIN_FAILED "Send join command failed"
+#define JOIN_NOT_ACCEPTED "Join not accepted: "
+#define PERSONALIZE_NOT_ACCEPTED "Personalize not accepted"
+#define RESPONSE_IS_NOT_OK "Response is not OK: "
+
+#define SENDING "Sending: "
+#define SEND_MSG "\r\n"
+
 const char radio_prefix[] PROGMEM = "radio";
 const char radio_set[] PROGMEM = "set";
 const char radio_get[] PROGMEM = "get";
