@@ -49,8 +49,8 @@ static void encodeSensorData(sensordata_t *data, byte **buffer, size_t *size);
 ```
 
 - `sensordata_t *data`: Structure containing all the message we can send.
-- `const byte **buffer`: Bytes received.
-- `size_t *size`: The number of bytes.
+- `byte **buffer`: Bytes to send.
+- `size_t *size`: The number of bytes to send.
 
 Usage:
 
@@ -58,4 +58,23 @@ Usage:
 byte *buffer;
 size_t size;
 TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+```
+
+## Method: decodeAppData
+Decode the message you received.
+
+```c
+static bool decodeAppData(appdata_t *receiveData, const byte *payload, size_t length);
+```
+
+- `appdata_t *receiveData`: Structure containing all the message we can interpret.
+- `const byte *payload`: Bytes received.
+- `size_t *length`: The number of bytes.
+
+Usage:
+
+```c
+const byte *payload;
+size_t length;
+TheThingsMessage::decodeAppData(&receiveData, payload, length);
 ```
