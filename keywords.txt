@@ -27,6 +27,7 @@ encodeSensorData        KEYWORD2
 # Constants (LITERAL1)
 #######################################
 
+TTN_BUFFER_SIZE         LITERAL1
 TTN_DEFAULT_WAIT_TIME   LITERAL1
 TTN_DEFAULT_SF          LITERAL1
 TTN_DEFAULT_FSB         LITERAL1
