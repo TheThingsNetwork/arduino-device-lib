@@ -15,9 +15,12 @@ typedef api_AppData appdata_t;
 
 class TheThingsMessage
 {
+  private:
+    void flushWater();
   public:
     static void encodeSensorData(sensordata_t *data, byte **buffer, size_t *size);
     static bool decodeAppData(appdata_t *receiveData, const byte *payload, size_t length);
+    static unsigned long getWaterLevel(int signal);
 };
 
 #endif

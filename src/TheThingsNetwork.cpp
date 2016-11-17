@@ -712,7 +712,21 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload,
   sendCommand(MAC_TABLE, MAC_PREFIX,true);
   sendCommand(MAC_TABLE, MAC_TX,true);
   sendCommand(MAC_TX_TABLE, mode,true);
-  Serial1.write(0x30+port);
+  char newPort[5];
+  if (port > 99) {
+    newPort[0] = ((port - (port % 100)) / 100) + 48;
+    newPort[1] = (((port % 100) - (port % 10)) / 10) + 48;
+    newPort[2] = (port % 10) + 48;
+  } else if (port > 9) {
+    newPort[0] = ((port - (port % 10)) / 10) + 48;
+    newPort[1] = (port % 10) + 48;
+    newPort[2] = '\0';
+  } else {
+    newPort[0] = port + 48;
+    newPort[1] = '\0';
+  }
+  newPort[3] = '\0';
+  Serial1.write(newPort);
   debugPrint(port);
   debugPrint(F(" "));
   Serial1.print(" ");
