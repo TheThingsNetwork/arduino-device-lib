@@ -3,9 +3,10 @@
 // First install "DHT sensor library" via the Library Manager
 #include <DHT.h>
 
-// Set your AppEUI and AppKey
+// Set your AppEUI, AppKey and the frequency plan
 const char *appEui = "0000000000000000";
 const char *appKey = "00000000000000000000000000000000";
+const ttn_fp_t freqPlan = // Use either TTN_FP_EU868; or TTN_FP_US915; here
 
 #define loraSerial Serial1
 #define debugSerial Serial
@@ -19,7 +20,7 @@ const char *appKey = "00000000000000000000000000000000";
 
 DHT dht(DHTPIN, DHTTYPE);
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
 void setup() {
   loraSerial.begin(57600);
