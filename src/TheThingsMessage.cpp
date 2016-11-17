@@ -10,7 +10,8 @@ bool TheThingsMessage::decodeAppData(appdata_t *receiveData, const byte *payload
 }
 
 void TheThingsMessage::encodeSensorData(sensordata_t *data, byte **buffer, size_t *size) {
-  byte message[*(size)];
+  byte message[TTN_BUFFER_SIZE];
+
   pb_ostream_t sendStream = pb_ostream_from_buffer(message, sizeof(message));
   pb_encode(&sendStream, api_SensorData_fields, data);
   *buffer = message;

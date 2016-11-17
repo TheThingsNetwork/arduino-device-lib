@@ -44,7 +44,7 @@ void loop() {
 
   // Encode data
   byte *buffer;
-  size_t size = 51;
+  size_t size;
 
   // Send standard message on port 100
   TheThingsMessage::encodeSensorData(&sensorData, &buffer, &size);
