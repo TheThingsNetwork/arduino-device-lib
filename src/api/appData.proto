@@ -4,4 +4,5 @@ package api;
 
 message AppData {
         optional bool light = 1;
+        optional bool flush = 2;
 }
