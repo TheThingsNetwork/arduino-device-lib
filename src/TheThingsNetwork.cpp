@@ -215,23 +215,23 @@ const char *TheThingsNetwork::readLine() {
 }
 
 const char *TheThingsNetwork::readValue(uint8_t prefixTable, uint8_t index) {
-  while (Serial1.available()) {
-    Serial1.read();
+  while (modemStream->available()) {
+    modemStream->read();
   }
   sendCommand(prefixTable, 0, true, false);
   sendCommand(prefixTable, index, false, false);
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   return readLine();
 }
 
 const char *TheThingsNetwork::readValue(uint8_t prefixTable, uint8_t indexTable, uint8_t index) {
-  while (Serial1.available()) {
-    Serial1.read();
+  while (modemStream->available()) {
+    modemStream->read();
   }
   sendCommand(prefixTable, 0, true, false);
   sendCommand(MAC_TABLE, MAC_GET, true, false);
   sendCommand(indexTable, index, false, false);
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   return readLine();
 }
 
@@ -285,7 +285,7 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
   debugPrint(SENDING);
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SAVE, false);
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   debugPrintLn();
   return true;
 }
@@ -619,9 +619,9 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool with_space
       break;
   }
 
-  Serial1.write(set_buffer);
+  modemStream->write(set_buffer);
   if (with_space) {
-    Serial1.write(" ");
+    modemStream->write(" ");
   }
   if (print) {
     debugPrint(set_buffer);
@@ -630,16 +630,16 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool with_space
 }
 
 bool TheThingsNetwork::sendMacSet(uint8_t index, const char* setting) {
-  while (Serial1.available()) {
-    Serial1.read();
+  while (modemStream->available()) {
+    modemStream->read();
   }
   debugPrint(SENDING);
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
   sendCommand(MAC_GET_SET_TABLE, index, true);
-  Serial1.write(setting);
+  modemStream->write(setting);
   debugPrint(setting);
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   debugPrintLn();
 
   return waitForOk();
@@ -647,7 +647,7 @@ bool TheThingsNetwork::sendMacSet(uint8_t index, const char* setting) {
 
 bool TheThingsNetwork::waitForOk() {
   memsetBuffer(TTN_BUFFER_SIZE);
-  uint16_t responseLength = Serial1.readBytesUntil('\n',set_buffer, TTN_BUFFER_SIZE);
+  uint16_t responseLength = modemStream->readBytesUntil('\n',set_buffer, TTN_BUFFER_SIZE);
   if (responseLength >= 5) {
     if (!compareStrings(set_buffer, ACCEPTED)) {
       errMessage(RESPONSE_IS_NOT_OK, set_buffer);
@@ -664,8 +664,8 @@ bool TheThingsNetwork::waitForOk() {
 }
 
 bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char* setting) {
-  while(Serial1.available()) {
-    Serial1.read();
+  while(modemStream->available()) {
+    modemStream->read();
   }
   char ch[5];
   if (channel > 9) {
@@ -681,10 +681,10 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char* set
   sendCommand(MAC_TABLE, MAC_SET,true);
   sendCommand(MAC_GET_SET_TABLE, MAC_SET_CH,true);
   sendCommand(MAC_CH_TABLE, index, true);
-  Serial1.write(ch);
-  Serial1.write(" ");
-  Serial1.write(setting);
-  Serial1.write(SEND_MSG);
+  modemStream->write(ch);
+  modemStream->write(" ");
+  modemStream->write(setting);
+  modemStream->write(SEND_MSG);
   debugPrint(channel);
   debugPrint(F(" "));
   debugPrintLn(setting);
@@ -692,21 +692,21 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char* set
 }
 
 bool TheThingsNetwork::sendJoinSet(uint8_t type) {
-  while (Serial1.available()) {
-    Serial1.read();
+  while (modemStream->available()) {
+    modemStream->read();
   }
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_JOIN, true);
   sendCommand(MAC_JOIN_TABLE, type, false);
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   debugPrintLn();
   return waitForOk();
 }
 
 bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload, size_t len) {
-  while(Serial1.available()) {
-    Serial1.read();
+  while(modemStream->available()) {
+    modemStream->read();
   }
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX,true);
@@ -726,26 +726,26 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload,
     newPort[1] = '\0';
   }
   newPort[3] = '\0';
-  Serial1.write(newPort);
+  modemStream->write(newPort);
   debugPrint(port);
   debugPrint(F(" "));
-  Serial1.print(" ");
+  modemStream->print(" ");
   uint8_t i = 0;
   for(i=0;i<len;i++) {
     if(payload[i] ==0) {
-      Serial1.print("00");
+      modemStream->print("00");
       debugPrint(F("00"));
     } else if(payload[i] < 16) {
-      Serial1.print("0");
+      modemStream->print("0");
       debugPrint(F("0"));
-      Serial1.print(payload[i],HEX);
+      modemStream->print(payload[i],HEX);
       debugPrint(payload[i], HEX);
     } else {
-      Serial1.print(payload[i],HEX);
+      modemStream->print(payload[i],HEX);
       debugPrint(payload[i], HEX);
     }
   }
-  Serial1.write(SEND_MSG);
+  modemStream->write(SEND_MSG);
   debugPrintLn();
   return waitForOk();
 }
