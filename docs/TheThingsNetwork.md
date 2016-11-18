@@ -91,21 +91,20 @@ See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master
 Send a message to the application using raw bytes.
 
 ```c
-int8_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
 ```
 
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `port_t port = 1`: The port to address. Defaults to `1`.
-- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `-10`.
+- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `TTN_ERROR_UNEXPECTED_RESPONSE`.
 
 Returns a success or error code and logs the related error message:
 
-* `-1`: Send command failed.
-* `-2`: Time-out.
-* `1`: Successful transmission.
-* `2`: Successful transmission. Received \<N> bytes
-* `-10`: Unexpected response: \<Response>
+* `TTN_ERROR_SEND_COMMAND_FAILED`: Send command failed.
+* `TTN_SUCCESSFUL_TRANSMISSION`: Successful transmission.
+* `TTN_SUCCESSFUL_RECEIVE`: Successful transmission. Received \<N> bytes
+* `TTN_ERROR_UNEXPECTED_RESPONSE`: Unexpected response: \<Response>
 
 See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Send/Send.ino) example.
 

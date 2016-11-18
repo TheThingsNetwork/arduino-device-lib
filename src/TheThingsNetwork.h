@@ -19,6 +19,13 @@
 
 typedef uint8_t port_t;
 
+enum ttn_response_t {
+  TTN_ERROR_SEND_COMMAND_FAILED = (-1),
+  TTN_ERROR_UNEXPECTED_RESPONSE = (-10),
+  TTN_SUCCESSFUL_TRANSMISSION = 1,
+  TTN_SUCCESSFUL_RECEIVE = 2
+};
+
 enum ttn_fp_t {
   TTN_FP_EU868,
   TTN_FP_US915
@@ -82,7 +89,7 @@ class TheThingsNetwork
     bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
     bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
     bool personalize();
-    int8_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+    ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
     int8_t poll(port_t port = 1, bool confirm = false);
 };
 
