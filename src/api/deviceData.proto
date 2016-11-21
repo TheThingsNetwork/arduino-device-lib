@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+package api;
+
+message Location {
+        optional float longitude = 1;
+        optional float latitude = 2;
+        optional int32 altitude = 3;
+}
+
+message DeviceData {
+        optional bool motion = 1;
+        optional uint32 water = 2;
+        optional float temperature_celcius = 3;
+        optional float temperature_fahrenheit = 4;
+        optional float humidity = 5;
+
+        optional Location location = 6;
+        optional float level = 7;
+        optional bool triggered = 8;
+        optional bool actuator_active = 9;
+        optional float actuator_time = 10;
+
+        repeated uint32 analog_readings = 110;
+}

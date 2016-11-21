@@ -13,7 +13,7 @@ const char *appKey = "00000000000000000000000000000000";
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
-sensordata_t sensorData = api_SensorData_init_default;
+devicedata_t data = api_DeviceData_init_default;
 
 void setup()
 {
@@ -33,24 +33,24 @@ void setup()
 
   ttn.onMessage(message);
 
-  sensorData.has_motion = true;
-  sensorData.has_water = true;
-  sensorData.has_temperature_celcius = false;
-  sensorData.has_temperature_fahrenheit = false;
-  sensorData.has_humidity = false;
+  data.has_motion = true;
+  data.has_water = true;
+  data.has_temperature_celcius = false;
+  data.has_temperature_fahrenheit = false;
+  data.has_humidity = false;
 }
 
 void loop() {
   // Read sensors
-  sensorData.motion = digitalRead(TTN_PIN_LED) == HIGH;
-  sensorData.water = 682;
+  data.motion = digitalRead(TTN_PIN_LED) == HIGH;
+  data.water = 682;
 
   // Encode data
   byte *buffer;
   size_t size;
 
   // Send standard message on port 100
-  TheThingsMessage::encodeSensorData(&sensorData, &buffer, &size);
+  TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
   ttn.sendBytes(buffer, size, 100);
 
   delay(10000);

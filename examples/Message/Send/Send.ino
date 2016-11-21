@@ -13,7 +13,7 @@ const char *appKey = "00000000000000000000000000000000";
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
-sensordata_t data = api_SensorData_init_default;
+devicedata_t data = api_DeviceData_init_default;
 
 void setup() {
   loraSerial.begin(57600);
@@ -49,7 +49,7 @@ void loop() {
   // Encode the selected fields of the struct as bytes
   byte *buffer;
   size_t size;
-  TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+  TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
 
   ttn.sendBytes(buffer, size);
 

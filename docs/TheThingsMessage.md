@@ -1,5 +1,5 @@
 # API Reference
-The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
+The `TheThingsMessage` class provides structs for device and application data you can encode and decode as bytes.
 
 ## Class: TheThingsMessage
 
@@ -7,12 +7,12 @@ The `TheThingsMessage` class provides structs for sensor and application data yo
 #include <TheThingsMessage.h>
 ```
 
-## Type: sensordata_t
+## Type: devicedata_t
 
-Create a struct of this type using `api_SensorData_init_default` as defaults.
+Create a struct of this type using `api_DeviceData_init_default` as defaults.
 
 ```c
-sensordata_t data = api_SensorData_init_default;
+devicedata_t data = api_DeviceData_init_default;
 ```
 
 Then in your `setup()` function select what fields of the struct should be included when encoding it as bytes:
@@ -41,14 +41,14 @@ You can also add other analog readings.
 
 > **TODO:** Document how this works and include in example.
 
-## Method: encodeSensorData
+## Method: encodeDeviceData
 Encode the message you want to send.
 
 ```c
-static void encodeSensorData(sensordata_t *data, byte **buffer, size_t *size);
+static void encodeDeviceData(devicedata_t *data, byte **buffer, size_t *size);
 ```
 
-- `sensordata_t *data`: Structure containing all the message we can send.
+- `devicedata_t *data`: Structure containing all the message we can send.
 - `byte **buffer`: Bytes to send.
 - `size_t *size`: The number of bytes to send.
 
@@ -57,7 +57,7 @@ Usage:
 ```c
 byte *buffer;
 size_t size;
-TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
 ```
 
 ## Method: decodeAppData
