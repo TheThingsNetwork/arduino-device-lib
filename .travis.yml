@@ -9,9 +9,14 @@ cache:
         - "~/.platformio"
 
 env:
+<<<<<<< 739dc24f93e9bc867fce6dbc95dfdaeb1c1ed755
     - PLATFORMIO_CI_SRC=test/TheThingsNetwork.ino
     - PLATFORMIO_CI_SRC=test/TheThingsMessage.ino
     - PLATFORMIO_BUILD_FLAGS=-Wno-parentheses
+=======
+- PLATFORMIO_CI_SRC=test
+- PLATFORMIO_BUILD_FLAGS=-Wno-parentheses
+>>>>>>> single env pair
 
 install:
     - pip install -U platformio
