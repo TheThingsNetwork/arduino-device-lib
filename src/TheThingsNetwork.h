@@ -40,7 +40,7 @@ class TheThingsNetwork
     port_t port;
     Stream* modemStream;
     Stream* debugStream;
-    const char *model;
+    bool model_EU;
     airtime_t info;
     float airtime;
     ttn_fp_t fp;
@@ -62,15 +62,15 @@ class TheThingsNetwork
     bool sendJoinSet(uint8_t type);
     bool sendPayload(uint8_t mode, uint8_t port, uint8_t* payload, size_t len);
     void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
-    bool compareStrings(const char *str1, const char *str2, size_t length = -2);
     const char *subString(const char *response, int16_t start, int16_t end = -2);
+    bool compareStrings(const char *str1, uint8_t msg, size_t length = -2);
     uint8_t receivedPort(const char *response, size_t length);
     size_t bufLength(const char *data);
     size_t portLength(size_t port);
     const char *readValue(uint8_t prefixTable, uint8_t indexTable, uint8_t index);
     const char *readValue(uint8_t table, uint8_t index);
-    void errMessage(const char *err, const char *errMsg);
-    void errMessage(const char *err);
+    void stateMessage(uint8_t type, uint8_t indexMsg, const char *output = NULL);
+    void valueToShow(uint8_t index, const char *value = NULL);
 
   public:
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
