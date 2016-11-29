@@ -16,5 +16,5 @@ install:
     - pip install -U platformio
 
 script:
-#    - platformio ci --lib=src --board=leonardo --board=sparkfun_promicro8
+    - platformio ci --lib=src --board=leonardo --board=sparkfun_promicro8
     - "echo \"Warning: no test specified\" && exit 0"
