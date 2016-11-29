@@ -236,14 +236,14 @@ const char *TheThingsNetwork::readValue(uint8_t prefixTable, uint8_t indexTable,
 }
 
 void TheThingsNetwork::reset(bool adr) {
-  char *version = readValue(SYS_TABLE, SYS_RESET);
+  const char *version = readValue(SYS_TABLE, SYS_RESET);
   model = subString(version, 0, 6);
   debugPrint(F("Version is "));
   debugPrint(subString(version, 7));
   debugPrint(F(", model is "));
   debugPrintLn(model);
 
-  char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
+  const char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
   sendMacSet(MAC_SET_DEVEUI, devEui);
   if(adr){
     sendMacSet(MAC_SET_ADR, ON);
@@ -267,7 +267,7 @@ bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, con
 bool TheThingsNetwork::personalize() {
   configureChannels(this->sf, this->fsb);
   sendJoinSet(MAC_JOIN_MODE_ABP);
-  char *response = readLine();
+  const char *response = readLine();
   if (!compareStrings(response, ACCEPTED)) {
     errMessage(PERSONALIZE_NOT_ACCEPTED, response);
     return false;
@@ -292,7 +292,7 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
 
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
   configureChannels(this->sf, this->fsb);
-  char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
+  const char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
   sendMacSet(MAC_SET_DEVEUI, devEui);
   while (--retries) {
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA)) {
@@ -300,7 +300,7 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
       delay(retryDelay);
       continue;
     }
-    char *response = readLine();
+    const char *response = readLine();
     if (!compareStrings(response, ACCEPTED)) {
       errMessage(JOIN_NOT_ACCEPTED, response);
       delay(retryDelay);
@@ -334,7 +334,7 @@ int8_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t po
     return -1;
   }
 
-  char *response = readLine();
+  const char *response = readLine();
   float i = this->airtime;
   trackAirtime(length);
   if (!isnan(i) && !isinf(i) && !isnan(this->airtime) && !isinf(this->airtime)) {
@@ -351,7 +351,7 @@ int8_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t po
   }
   if (compareStrings(response, MAC_RX, 5)) {
     port_t downlinkPort = receivedPort(response, 7);
-    char *data = subString(response, (8 + portLength(downlinkPort)));
+    const char *data = subString(response, (8 + portLength(downlinkPort)));
     size_t downlinkLength = bufLength(data) / 2;
     byte downlink[64];
     for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
@@ -369,7 +369,7 @@ int8_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t po
   return -10;
 }
 
-size_t TheThingsNetwork::bufLength(char *data) {
+size_t TheThingsNetwork::bufLength(const char *data) {
   size_t length = 0;
   while (data[length] != '\0') {
    length++;
@@ -386,17 +386,21 @@ size_t TheThingsNetwork::portLength(size_t port) {
   return length;
 }
 
-const char *TheThingsNetwork::subString(char *response, size_t start, size_t end) {
+const char *TheThingsNetwork::subString(const char *response, int16_t start, int16_t end) {
   char sub[TTN_BUFFER_SIZE];
   for (size_t l = TTN_BUFFER_SIZE; l--; ) {
     sub[l] = '\0';
   }
   size_t i;
   char *newString;
-  if (end != -2)
-    response[end] = '\0';
-  for (i = 0; response[start] != '\0'; start++, i++) {
-    sub[i] = response[start];
+  if (end != -2) {
+    for (i = 0; start < end; start++, i++) {
+      sub[i] = response[start];
+    }
+  } else {
+    for (i = 0; response[start] != '\0'; start++, i++) {
+      sub[i] = response[start];
+    }
   }
   sub[i] = '\0';
   delay(1);
@@ -423,7 +427,7 @@ int8_t TheThingsNetwork::poll(port_t port, bool confirm) {
 void TheThingsNetwork::fillAirtimeInfo() {
   this->info = {0, 0, 0, 0, 0, 0};
 
-  char *message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SF);
+  const char *message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SF);
   this->info.sf = message[3] ? (message[2] - 48) * 10 + message[3] - 48 : message[2] - 48;
 
   message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_BW);
@@ -462,7 +466,7 @@ void TheThingsNetwork::showStatus() {
   debugPrint(F("DevEUI: "));
   debugPrintLn(readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI));
 
-  if (this->model == F("RN2483")) {
+  if (compareStrings(this->model, "RN2483")) {
     debugPrint(F("Band: "));
     debugPrintLn(readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_BAND));
   }
@@ -544,7 +548,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb) {
 
   sendMacSet(MAC_SET_PWRIDX, TTN_PWRIDX_915);
   for (ch = 0; ch < 72; ch++) {
-    if (ch == ch500 || ch <= chHigh && ch >= chLow) {
+    if (ch == ch500 || (ch <= chHigh && ch >= chLow)) {
       sendChSet(MAC_CHANNEL_STATUS, ch, ON);
       if (ch < 63) {
         sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 3");
@@ -774,7 +778,7 @@ void TheThingsNetwork::errMessage(const char *err) {
   debugPrintLn(err);
 }
 
-void TheThingsNetwork::errMessage(const char *err, char *errMsg) {
+void TheThingsNetwork::errMessage(const char *err, const char *errMsg) {
   debugPrint(err);
   debugPrintLn(errMsg);
 }

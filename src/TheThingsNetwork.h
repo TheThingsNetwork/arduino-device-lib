@@ -40,7 +40,7 @@ class TheThingsNetwork
     port_t port;
     Stream* modemStream;
     Stream* debugStream;
-    String model;
+    const char *model;
     airtime_t info;
     float airtime;
     ttn_fp_t fp;
@@ -63,13 +63,13 @@ class TheThingsNetwork
     bool sendPayload(uint8_t mode, uint8_t port, uint8_t* payload, size_t len);
     void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
     bool compareStrings(const char *str1, const char *str2, size_t length = -2);
-    const char *subString(char *response, size_t start, size_t end = -2);
+    const char *subString(const char *response, int16_t start, int16_t end = -2);
     uint8_t receivedPort(const char *response, size_t length);
-    size_t bufLength(char *data);
+    size_t bufLength(const char *data);
     size_t portLength(size_t port);
     const char *readValue(uint8_t prefixTable, uint8_t indexTable, uint8_t index);
     const char *readValue(uint8_t table, uint8_t index);
-    void errMessage(const char *err, char *errMsg);
+    void errMessage(const char *err, const char *errMsg);
     void errMessage(const char *err);
 
   public:
