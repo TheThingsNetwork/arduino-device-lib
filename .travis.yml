@@ -10,20 +10,21 @@ before_install:
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
 before_script:
+  # Replace placeholders with actual frequency plan (on Mac OS folow -i by '')
   - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
 script:
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Message.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/PassThrough/PassThrough.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/QuickStart/QuickStart.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Receive/Receive.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Send/Send.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/DHT/DHT.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/LightSensor/LightSensor.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Workshop/Workshop.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Message/Message.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/PassThrough/PassThrough.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/QuickStart/QuickStart.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Receive/Receive.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Send/Send.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Sensors/DHT/DHT.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Sensors/LightSensor/LightSensor.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/examples/Workshop/Workshop.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino
+  - arduino --verify --verbose --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino
 notifications:
   email:
     on_success: change
