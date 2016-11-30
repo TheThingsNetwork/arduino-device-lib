@@ -9,6 +9,7 @@ before_install:
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
+  - arduino --install-library "DHT sensor library"
 before_script:
   # Replace placeholders with actual frequency plan (on Mac OS folow -i by '')
   - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
