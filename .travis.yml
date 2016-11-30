@@ -10,7 +10,7 @@ before_install:
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
 before_script:
-  - find $PWD/examples -type f -name "*.ino" -exec sed -i '' 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
+  - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
 script:
   - arduino --verify --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino
   - arduino --verify --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino
