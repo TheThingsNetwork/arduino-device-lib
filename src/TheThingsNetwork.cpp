@@ -368,7 +368,7 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
       continue;
     }
     stateMessage(SUCCESS_MESSAGE, SCS_JOIN_ACCEPTED, readValue(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS));
-    valueToShow(SHOW_DEVEUI, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVICEADDRESS));
+    valueToShow(SHOW_DEVEUI, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI));
     fillAirtimeInfo();
     return true;
   }
@@ -446,18 +446,11 @@ const char *TheThingsNetwork::subString(const char *response, int16_t start, int
   for (size_t l = TTN_BUFFER_SIZE; l--; ) {
     sub[l] = '\0';
   }
-  size_t i;
   char *newString;
-  if (end != -2) {
-    for (i = 0; start < end; start++, i++) {
-      sub[i] = response[start];
-    }
-  } else {
-    for (i = 0; response[start] != '\0'; start++, i++) {
-      sub[i] = response[start];
-    }
+  for (size_t i = 0; (end == -2 && response[start] != '\0') || start < end; start++, i++) {
+    sub[i] = response[start];
   }
-  sub[i] = '\0';
+  sub[start] = '\0';
   delay(1);
   newString = sub;
   delay(1);
