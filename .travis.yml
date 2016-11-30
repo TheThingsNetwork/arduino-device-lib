@@ -10,8 +10,8 @@ before_install:
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
 script:
-  - arduino --verify --board arduino:avr:uno $PWD/test/TheThingsMessage.ino
-  - arduino --verify --board arduino:avr:uno $PWD/test/TheThingsNetwork.ino
+  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage.ino
+  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork.ino
 notifications:
   email:
     on_success: change
