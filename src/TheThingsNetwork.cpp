@@ -414,7 +414,7 @@ int8_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t po
     for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
       downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
     }
-    stateMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED);
+    stateMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED, (const char *)itoa(downlinkLength, set_buffer, 10));
     if (this->messageCallback)
       this->messageCallback(downlink, downlinkLength, downlinkPort);
     return 2;
@@ -848,7 +848,7 @@ void TheThingsNetwork::stateMessage(uint8_t type, uint8_t indexMsg, const char *
   debugPrint(buffer);
   if (type == SUCCESS_MESSAGE && indexMsg == SCS_SUCCESSFUL_TRANSMISSION_RECEIVED) {
     debugPrint(output);
-    debugPrintLn("bytes");
+    debugPrintLn(" bytes");
   } else if (output) {
     debugPrintLn(output);
   } else {
