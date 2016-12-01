@@ -19,22 +19,20 @@ before_script:
   # Replace placeholders with actual frequency plan (on Mac OS folow -i by '')
   - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
 script:
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Receive/Receive.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Send/Send.ino 2>&1 | tee logs.txt
-  - arduino --verify --board sparkfun:avr:promicro:cpu=8MHzatmega32U4 $PWD/examples/Node/Node.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/PassThrough/PassThrough.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/QuickStart/QuickStart.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Receive/Receive.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Send/Send.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/DHT/DHT.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/LightSensor/LightSensor.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Workshop/Workshop.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino 2>&1 | tee logs.txt
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino 2>&1 | tee logs.txt
-  # break if logs contain warnings
-  - "grep -q ': warning: ' logs.txt"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Receive/Receive.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Send/Send.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board sparkfun:avr:promicro:cpu=8MHzatmega32U4 $PWD/examples/Node/Node.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/PassThrough/PassThrough.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/QuickStart/QuickStart.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Receive/Receive.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Send/Send.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/DHT/DHT.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/LightSensor/LightSensor.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/examples/Workshop/Workshop.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino | (! grep -h -q ': warning: ')"
+  - "arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino | (! grep -h -q ': warning: ')"
 notifications:
   email:
     on_success: change
