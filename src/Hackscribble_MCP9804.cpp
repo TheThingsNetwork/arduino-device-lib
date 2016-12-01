@@ -243,7 +243,7 @@ void Hackscribble_MCP9804::configureAlert()
 }
 
 
-void Hackscribble_MCP9804::configureAlert(boolean action, uint16_t settings = ALERT_ALL | ALERT_LOW | ALERT_INTERRUPT)
+void Hackscribble_MCP9804::configureAlert(boolean action, uint16_t settings)
 {
   uint16_t current = _readRegister16(REG_CONFIG) & 0xFFF0;
   if (action == ENABLE)
