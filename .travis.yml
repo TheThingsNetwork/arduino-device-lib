@@ -33,7 +33,7 @@ script:
   - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino 2>&1 | tee logs.txt
   - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino 2>&1 | tee logs.txt
   # break if logs contain warnings
-  - grep -q ": warning: " logs.txt
+  - "grep -q ': warning: ' logs.txt"
 notifications:
   email:
     on_success: change
