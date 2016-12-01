@@ -1,7 +1,7 @@
 # API Reference
-The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
 
 ## Class: TheThingsMessage
+The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
 
 ```c
 #include <TheThingsMessage.h>

@@ -12,23 +12,27 @@ before_install:
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
   - arduino --install-library "DHT sensor library:1.3.0,Adafruit Unified Sensor:1.0.2"
+  - git clone https://github.com/sparkfun/arduino_boards /tmp/sparkfun
+  - mv /tmp/sparkfun/sparkfun /usr/local/share/arduino/hardware/sparkfun
 before_script:
   # Replace placeholders with actual frequency plan (on Mac OS folow -i by '')
-  - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
+  - find examples -type f -name "*.ino" -exec sed -i 's/\(freqPlan = \)/\1TTN_FP_EU868;/g' {} +
 script:
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/ABP/ABP.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/DeviceInfo/DeviceInfo.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Receive/Receive.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Message/Send/Send.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/PassThrough/PassThrough.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/QuickStart/QuickStart.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Receive/Receive.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Send/Send.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/DHT/DHT.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Sensors/LightSensor/LightSensor.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/examples/Workshop/Workshop.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsMessage/TheThingsMessage.ino
-  - arduino --verify --board arduino:avr:leonardo $PWD/test/TheThingsNetwork/TheThingsNetwork.ino
+  - test/verify arduino:avr:leonardo examples/ABP/ABP.ino
+  - test/verify arduino:avr:leonardo examples/DeviceInfo/DeviceInfo.ino
+  - test/verify arduino:avr:leonardo examples/Message/Receive/Receive.ino
+  - test/verify arduino:avr:leonardo examples/Message/Send/Send.ino
+  - test/verify sparkfun:avr:promicro:cpu=8MHzatmega32U4 examples/Node/Node.ino
+  - test/verify arduino:avr:leonardo examples/PassThrough/PassThrough.ino
+  - test/verify arduino:avr:leonardo examples/QuickStart/QuickStart.ino
+  - test/verify arduino:avr:leonardo examples/Receive/Receive.ino
+  - test/verify arduino:avr:leonardo examples/Send/Send.ino
+  - test/verify arduino:avr:leonardo examples/Sensors/DHT/DHT.ino
+  - test/verify arduino:avr:leonardo examples/Sensors/LightSensor/LightSensor.ino
+  - test/verify arduino:avr:leonardo examples/Workshop/Workshop.ino
+  - test/verify arduino:avr:leonardo test/TheThingsMessage/TheThingsMessage.ino
+  - test/verify arduino:avr:leonardo test/TheThingsNetwork/TheThingsNetwork.ino
+  - test/verify sparkfun:avr:promicro:cpu=8MHzatmega32U4 test/TheThingsNode/TheThingsNode.ino
 notifications:
   email:
     on_success: change
