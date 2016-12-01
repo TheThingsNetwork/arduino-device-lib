@@ -9,6 +9,7 @@ before_install:
   - tar xf arduino-$ARDUINO_VERSION-linux64.tar.xz
   - sudo mv arduino-$ARDUINO_VERSION /usr/local/share/arduino
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
+  - set -o pipefail # return last non zero return for pipes
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/TheThingsNetwork
   - arduino --install-library "DHT sensor library:1.3.0,Adafruit Unified Sensor:1.0.2"
