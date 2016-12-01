@@ -174,7 +174,7 @@ void onButtonRelease(unsigned long duration) {
   ttn.sendBytes(payload, sizeof(payload), PORT_BUTTON);
 }
 
-void onMessage(const byte* payload, int length, int port) {
+void onMessage(const byte* payload, size_t length, port_t port) {
   debugSerial.println("-- ON MESSAGE");
 
   uint32_t interval;
