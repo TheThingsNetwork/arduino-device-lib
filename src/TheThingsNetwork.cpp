@@ -66,8 +66,10 @@ const char join_failed[] PROGMEM = "Send join command failed";
 const char join_not_accepted[] PROGMEM = "Join not accepted: ";
 const char personalize_not_accepted[] PROGMEM = "Personalize not accepted";
 const char response_is_not_ok[] PROGMEM = "Response is not OK: ";
+const char error_key_length[] PROGMEM = "One or more keys are of invalid length.";
+const char check_configuration[] PROGMEM = "Check your coverage, keys and backend status.";
 
-const char* const error_msg[] PROGMEM = {invalid_sf,invalid_fp,unexpected_response,send_command_failed,join_failed,join_not_accepted,personalize_not_accepted,response_is_not_ok};
+const char* const error_msg[] PROGMEM = {invalid_sf,invalid_fp,unexpected_response,send_command_failed,join_failed,join_not_accepted,personalize_not_accepted,response_is_not_ok,error_key_length,check_configuration};
 
 #define ERR_INVALID_SF 0
 #define ERR_INVALID_FP 1
@@ -77,6 +79,8 @@ const char* const error_msg[] PROGMEM = {invalid_sf,invalid_fp,unexpected_respon
 #define ERR_JOIN_NOT_ACCEPTED 5
 #define ERR_PERSONALIZE_NOT_ACCEPTED 6
 #define ERR_RESPONSE_IS_NOT_OK 7
+#define ERR_KEY_LENGTH 8
+#define ERR_CHECK_CONFIGURATION 9
 
 const char personalize_accepted[] PROGMEM = "Personalize accepted. Status: ";
 const char join_accepted[] PROGMEM = "Join accepted. Status: ";
@@ -320,10 +324,14 @@ void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, size_t length, 
 
 bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey) {
   reset();
-  sendMacSet(MAC_SET_DEVICEADDRESS, devAddr);
-  sendMacSet(MAC_SET_NWKSKEY, nwkSKey);
-  sendMacSet(MAC_SET_APPSKEY, appSKey);
-  return personalize();
+  if (bufLength(devAddr) == 8 && bufLength(appSKey) == 32 && bufLength(nwkSKey) == 32) {
+    sendMacSet(MAC_SET_DEVICEADDRESS, devAddr);
+    sendMacSet(MAC_SET_NWKSKEY, nwkSKey);
+    sendMacSet(MAC_SET_APPSKEY, appSKey);
+    return personalize();
+  }
+  stateMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
+  return false;
 }
 
 bool TheThingsNetwork::personalize() {
@@ -332,6 +340,7 @@ bool TheThingsNetwork::personalize() {
   const char *response = readLine();
   if (!compareStrings(response, CMP_ACCEPTED)) {
     stateMessage(ERR_MESSAGE, ERR_PERSONALIZE_NOT_ACCEPTED, response);
+    stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
     return false;
   }
 
@@ -341,29 +350,40 @@ bool TheThingsNetwork::personalize() {
 }
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
-  sendMacSet(MAC_SET_APPEUI, appEui);
-  sendMacSet(MAC_SET_APPKEY, appKey);
-  debugPrint(SENDING);
-  sendCommand(MAC_TABLE, MAC_PREFIX, true);
-  sendCommand(MAC_TABLE, MAC_SAVE, false);
-  modemStream->write(SEND_MSG);
-  debugPrintLn();
-  return true;
+  if (bufLength(appEui) == 16 && bufLength(appKey) == 32) {
+    sendMacSet(MAC_SET_APPEUI, appEui);
+    sendMacSet(MAC_SET_APPKEY, appKey);
+    debugPrint(SENDING);
+    sendCommand(MAC_TABLE, MAC_PREFIX, true);
+    sendCommand(MAC_TABLE, MAC_SAVE, false);
+    modemStream->write(SEND_MSG);
+    debugPrintLn();
+    return true;
+  }
+  stateMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
+  return false;
 }
 
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
   configureChannels(this->sf, this->fsb);
+  int8_t nbr_retries = retries;
   const char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
   sendMacSet(MAC_SET_DEVEUI, devEui);
   while (--retries) {
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA)) {
       stateMessage(ERR_MESSAGE, ERR_JOIN_FAILED);
+      if ((nbr_retries - retries) >= 3) {
+        stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
+      }
       delay(retryDelay);
       continue;
     }
     const char *response = readLine();
     if (!compareStrings(response, CMP_ACCEPTED)) {
       stateMessage(ERR_MESSAGE, ERR_JOIN_NOT_ACCEPTED, response);
+       if ((nbr_retries - retries) >= 3) {
+         stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
+      }
       delay(retryDelay);
       continue;
     }
@@ -377,7 +397,9 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
 
 bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay) {
   reset();
-  provision(appEui, appKey);
+  if (!provision(appEui, appKey)) {
+    return false;
+  }
   return join(retries, retryDelay);
 }
 
