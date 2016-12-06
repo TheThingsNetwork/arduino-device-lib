@@ -39,7 +39,7 @@ Total airtime: 0.00 s
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
 ## Method: onMessage
-Sets a function which will be called to process incoming messages.
+Sets a function which will be called to process incoming messages. You'll want to do this in your `setup()` function and then define a `void (*cb)(const byte* payload, size_t length, port_t port)` function somewhere else in your sketch.
 
 ```c
 void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
@@ -96,7 +96,7 @@ int8_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confi
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `port_t port = 1`: The port to address. Defaults to `1`.
-- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`.
+- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `-10`.
 
 Returns a success or error code and logs the related error message:
 
