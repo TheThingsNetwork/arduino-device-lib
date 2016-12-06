@@ -96,7 +96,7 @@ int8_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confi
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `port_t port = 1`: The port to address. Defaults to `1`.
-- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`.
+- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `-10`.
 
 Returns a success or error code and logs the related error message:
 
