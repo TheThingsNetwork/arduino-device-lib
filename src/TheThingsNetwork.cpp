@@ -535,7 +535,7 @@ void TheThingsNetwork::valueToShow(uint8_t index, const char *value) {
 
 void TheThingsNetwork::configureEU868(uint8_t sf) {
   uint8_t ch;
-  char dr[1];
+  char dr[2];
   uint32_t freq = 867100000;
 
   uint32_t tmp;
@@ -593,7 +593,7 @@ void TheThingsNetwork::configureEU868(uint8_t sf) {
 
 void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb) {
   uint8_t ch;
-  char dr[1];
+  char dr[2];
   uint8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
   uint8_t chHigh = fsb > 0 ? chLow + 7 : 71;
   uint8_t ch500 = fsb + 63;
