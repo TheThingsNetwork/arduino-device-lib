@@ -17,8 +17,8 @@ const char *nwkSKey = "00000000000000000000000000000000";
 // This is used by the network for encryption
 const char *appSKey = "00000000000000000000000000000000";
 
-//Set your frequency plan TTN_FP_EU868; for Europe or TTN_FP_US915; for the United States
-const ttn_fp_t freqPlan = // Use either TTN_FP_EU868; or TTN_FP_US915; here
+//Set your frequency plan by replacing TTN_FP by TTN_FP_EU868 for Europe or TTN_FP_US915 for the United States
+#define freqPlan TTN_FP
 
 #define loraSerial Serial1
 #define debugSerial Serial

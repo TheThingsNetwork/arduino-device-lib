@@ -1,15 +1,17 @@
 #include <TheThingsNetwork.h>
 
-// Set your AppEUI, AppKey and the frequency plan
+// Set your AppEUI and AppKey
 const char *appEui = "0000000000000000";
 const char *appKey = "00000000000000000000000000000000";
-const ttn_fp_t freqPlan = // Use either TTN_FP_EU868; or TTN_FP_US915; here
 
 //define AnalogPin for sensor
 #define LightPin A0
 
 #define loraSerial Serial1
 #define debugSerial Serial
+
+// Replace TTN_FP with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan TTN_FP
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
