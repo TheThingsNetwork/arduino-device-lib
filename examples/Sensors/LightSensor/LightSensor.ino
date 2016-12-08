@@ -10,8 +10,8 @@ const char *appKey = "00000000000000000000000000000000";
 #define loraSerial Serial1
 #define debugSerial Serial
 
-// Replace TTN_FP with TTN_FP_EU868 or TTN_FP_US915
-#define freqPlan TTN_FP
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
