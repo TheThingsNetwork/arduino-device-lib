@@ -142,3 +142,5 @@ float calculateAirtime(size_t payloadSize);
 ```
 
 - `size_t payloadSize`: number of bytes you want to send.
+
+Returns the uplink time of the message in seconds.
