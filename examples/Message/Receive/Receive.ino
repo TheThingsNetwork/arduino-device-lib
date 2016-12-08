@@ -1,13 +1,15 @@
 #include <TheThingsNetwork.h>
 #include <TheThingsMessage.h>
 
-// Set your AppEUI, AppKey and the frequency plan
+// Set your AppEUI and  AppKey
 const char *appEui = "0000000000000000";
 const char *appKey = "00000000000000000000000000000000";
-const ttn_fp_t freqPlan = // Use either TTN_FP_EU868; or TTN_FP_US915; here
 
 #define loraSerial Serial1
 #define debugSerial Serial
+
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 

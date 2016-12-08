@@ -4,10 +4,12 @@
 const char *devAddr = "00000000";
 const char *nwkSKey = "00000000000000000000000000000000";
 const char *appSKey = "00000000000000000000000000000000";
-const ttn_fp_t freqPlan = // Use either TTN_FP_EU868; or TTN_FP_US915; here
 
 #define loraSerial Serial1
 #define debugSerial Serial
+
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
