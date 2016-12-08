@@ -20,6 +20,7 @@ join                    KEYWORD2
 personalize             KEYWORD2
 sendBytes               KEYWORD2
 poll                    KEYWORD2
+calculateAirtime        KEYWORD2
 
 encodeSensorData        KEYWORD2
 decodeAppData           KEYWORD2

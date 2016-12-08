@@ -494,6 +494,17 @@ int8_t TheThingsNetwork::poll(port_t port, bool confirm) {
   return sendBytes(payload, 1, port, confirm);
 }
 
+float TheThingsNetwork::calculateAirtime(size_t payloadSize) {
+  payloadSize = 13 + payloadSize;
+
+  float Tsym = pow(2, this->info.sf) / this->info.band;
+  float Tpreamble = (this->info.ps + 4.25) * Tsym;
+  uint16_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
+  float Tpayload = payLoadSymbNb * Tsym;
+  float Tpacket = Tpreamble + Tpayload;
+  return (Tpacket / 1000);
+}
+
 void TheThingsNetwork::fillAirtimeInfo() {
   this->info = {0, 0, 0, 0, 0, 0};
 
@@ -516,14 +527,7 @@ void TheThingsNetwork::fillAirtimeInfo() {
 }
 
 void TheThingsNetwork::trackAirtime(size_t payloadSize) {
-  payloadSize = 13 + payloadSize;
-
-  float Tsym = pow(2, this->info.sf) / this->info.band;
-  float Tpreamble = (this->info.ps + 4.25) * Tsym;
-  uint16_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
-  float Tpayload = payLoadSymbNb * Tsym;
-  float Tpacket = Tpreamble + Tpayload;
-  this->airtime = this->airtime + (Tpacket / 1000);
+  this->airtime = this->airtime + calculateAirtime(payloadSize);
 }
 
 void TheThingsNetwork::showStatus() {

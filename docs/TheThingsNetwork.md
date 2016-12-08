@@ -133,3 +133,12 @@ bool provision(const char *appEui, const char *appKey);
 
 - `const char *appEui`: Application Identifier for the device.
 - `const char *appKey`: Application Key assigned to the device.
+
+## Method: calculateAirtime
+Calculate the uplink time of a message.
+
+```c
+float calculateAirtime(size_t payloadSize);
+```
+
+- `size_t payloadSize`: number of bytes you want to send.

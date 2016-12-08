@@ -42,7 +42,6 @@ class TheThingsNetwork
     Stream* debugStream;
     bool model_EU;
     airtime_t info;
-    float airtime;
     ttn_fp_t fp;
     uint8_t sf;
     uint8_t fsb;
@@ -74,6 +73,8 @@ class TheThingsNetwork
 
   public:
     TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+    float airtime;
+    float calculateAirtime(size_t payload);
     void showStatus();
     void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
     bool provision(const char *appEui, const char *appKey);
