@@ -35,9 +35,6 @@ void setup()
 
   data.has_motion = true;
   data.has_water = true;
-  data.has_temperature_celcius = false;
-  data.has_temperature_fahrenheit = false;
-  data.has_humidity = false;
 }
 
 void loop() {

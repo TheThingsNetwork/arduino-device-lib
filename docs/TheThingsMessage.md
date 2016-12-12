@@ -48,7 +48,7 @@ Encode the message you want to send.
 static void encodeDeviceData(devicedata_t *data, byte **buffer, size_t *size);
 ```
 
-- `devicedata_t *data`: Structure containing all the message we can send.
+- `devicedata_t *data`: Structure containing typical fields that devices send.
 - `byte **buffer`: Bytes to send.
 - `size_t *size`: The number of bytes to send.
 
