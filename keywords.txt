@@ -23,7 +23,7 @@ poll                    KEYWORD2
 calculateAirtime        KEYWORD2
 airtime                 KEYWORD2
 
-encodeSensorData        KEYWORD2
+encodeDeviceData        KEYWORD2
 decodeAppData           KEYWORD2
 
 #######################################
