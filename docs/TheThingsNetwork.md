@@ -1,7 +1,8 @@
 # API Reference
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+The `TheThingsNetwork` class enables Arduino devices with supported LoRa modules to communicate via The Things Network.
 
 ## Class: TheThingsNetwork
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
 
 ```c
 #include <TheThingsNetwork.h>
