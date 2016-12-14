@@ -13,31 +13,36 @@ TheThingsMessage        KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-showStatus              KEYWORD2
-onMessage               KEYWORD2
-provision               KEYWORD2
-join                    KEYWORD2
-personalize             KEYWORD2
-sendBytes               KEYWORD2
-poll                    KEYWORD2
-calculateAirtime        KEYWORD2
-airtime                 KEYWORD2
+showStatus                      KEYWORD2
+onMessage                       KEYWORD2
+provision                       KEYWORD2
+join                            KEYWORD2
+personalize                     KEYWORD2
+sendBytes                       KEYWORD2
+poll                            KEYWORD2
+calculateAirtime                KEYWORD2
+airtime                         KEYWORD2
 
-encodeDeviceData        KEYWORD2
-decodeAppData           KEYWORD2
+encodeDeviceData                KEYWORD2
+decodeAppData                   KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-TTN_BUFFER_SIZE         LITERAL1
-TTN_DEFAULT_WAIT_TIME   LITERAL1
-TTN_DEFAULT_SF          LITERAL1
-TTN_DEFAULT_FSB         LITERAL1
-TTN_ADR_SUPPORTED       LITERAL1
-TTN_PWRIDX_868          LITERAL1
-TTN_PWRIDX_915          LITERAL1
-TTN_FP_EU868            LITERAL1
-TTN_FP_EU915            LITERAL1
+TTN_BUFFER_SIZE                 LITERAL1
+TTN_DEFAULT_WAIT_TIME           LITERAL1
+TTN_DEFAULT_SF                  LITERAL1
+TTN_DEFAULT_FSB                 LITERAL1
+TTN_ADR_SUPPORTED               LITERAL1
+TTN_PWRIDX_868                  LITERAL1
+TTN_PWRIDX_915                  LITERAL1
+TTN_FP_EU868                    LITERAL1
+TTN_FP_EU915                    LITERAL1
 
-TTN_PIN_LED             LITERAL1
+TTN_PIN_LED                     LITERAL1
+
+TTN_ERROR_SEND_COMMAND_FAILED   LITERAL1
+TTN_ERROR_UNEXPECTED_RESPONSE   LITERAL1
+TTN_SUCCESSFUL_TRANSMISSION     LITERAL1
+TTN_SUCCESSFUL_RECEIVE          LITERAL1
