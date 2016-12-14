@@ -12,7 +12,7 @@ This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Ardu
 
 ## Documentation
 
-* [The Things Network Documentation / Arduino](https://www.thethingsnetwork.org/docs/arduino/)
+* [The Things Network Documentation](https://www.thethingsnetwork.org/docs/devices/arduino/)
 * API References:
     * [TheThingsNetwork](docs/TheThingsNetwork.md)
     * [TheThingsMessage](docs/TheThingsMessage.md)
