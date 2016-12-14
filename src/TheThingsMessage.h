@@ -8,7 +8,7 @@
 #include "deviceData.pb.h"
 #include "appData.pb.h"
 
-#define TTN_PIN_LED A2
+#define TTN_PIN_LED LED_BUILTIN
 
 typedef api_DeviceData devicedata_t;
 typedef api_AppData appdata_t;
