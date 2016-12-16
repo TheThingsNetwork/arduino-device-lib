@@ -90,6 +90,7 @@ class TheThingsNetwork
     bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
     bool personalize();
     ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+    void sleep(unsigned long mseconds);
     int8_t poll(port_t port = 1, bool confirm = false);
 };
 
