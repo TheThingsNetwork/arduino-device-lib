@@ -4,7 +4,5 @@ package api;
 
 message AppData {
         optional bool light = 1;
-        optional bool activation_limit = 2;
-        optional bool switch_state  = 3;
-        optional float deactivation_limit = 4;
+        optional bool activate  = 2;
 }
