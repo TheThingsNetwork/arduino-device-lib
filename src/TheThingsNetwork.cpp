@@ -883,7 +883,7 @@ void TheThingsNetwork::sleep(unsigned long msec) {
         debugPrint(F(SENDING));
         sendCommand(SYS_TABLE, SYS_PREFIX, true);
         sendCommand(SYS_TABLE, SYS_SLEEP, true);
-        char buffer[10];
+        char buffer[11];
         sprintf(buffer, "%ld", msec);
         modemStream->write(buffer);
         debugPrint(buffer);
