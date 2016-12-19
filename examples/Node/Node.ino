@@ -1,13 +1,17 @@
 #include <TheThingsNetwork.h>
 #include <TheThingsNode.h>
 
+// Set your AppEUI and AppKey
 const char *appEui = "0000000000000000";
 const char *appKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, TTN_FP_EU868);
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
+
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 TheThingsNode *node;
 
 enum port : byte
