@@ -401,7 +401,7 @@ int8_t TheThingsNode::getTemperatureAsInt()
 float TheThingsNode::getTemperatureAsFloat()
 {
   wakeTemperature();
-  float value = TTN_TEMPERATURE_SENSOR.getTAFloat();
+  float value = TTN_TEMPERATURE_SENSOR.getTA();
   sleepTemperature();
   return value;
 }
@@ -717,9 +717,7 @@ void TheThingsNode::sleepTemperature()
     return;
   }
 
-  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-  configurationRegister |= 0x100;
-  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);
+  TTN_TEMPERATURE_SENSOR.setMode(MODE_SHUTDOWN);
 
   this->temperatureSleep = true;
 }
@@ -731,10 +729,7 @@ void TheThingsNode::wakeTemperature()
     return;
   }
 
-  uint16_t configurationRegister = TTN_TEMPERATURE_SENSOR._readRegister16(REG_CONFIG);
-  configurationRegister &= ~0x100;
-  TTN_TEMPERATURE_SENSOR._writeRegister16(REG_CONFIG,configurationRegister);  
-  delay(255);
+  TTN_TEMPERATURE_SENSOR.setMode(MODE_CONTINUOUS);
 
   this->temperatureSleep = false;
 }
