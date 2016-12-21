@@ -876,18 +876,18 @@ void TheThingsNetwork::stateMessage(uint8_t type, uint8_t indexMsg, const char *
 }
 
 void TheThingsNetwork::sleep(unsigned long msec) {
-    if (100 < msec && msec < 4294967296) {
-        while (modemStream->available()) {
-          modemStream->read();
-        }
-        debugPrint(F(SENDING));
-        sendCommand(SYS_TABLE, SYS_PREFIX, true);
-        sendCommand(SYS_TABLE, SYS_SLEEP, true);
-        char buffer[11];
-        sprintf(buffer, "%ld", msec);
-        modemStream->write(buffer);
-        debugPrint(buffer);
-        modemStream->write(SEND_MSG);
-        debugPrintLn();
+  if (100 < msec && msec < 4294967296) {
+    while (modemStream->available()) {
+      modemStream->read();
     }
+    debugPrint(F(SENDING));
+    sendCommand(SYS_TABLE, SYS_PREFIX, true);
+    sendCommand(SYS_TABLE, SYS_SLEEP, true);
+    char buffer[11];
+    sprintf(buffer, "%ld", msec);
+    modemStream->write(buffer);
+    debugPrint(buffer);
+    modemStream->write(SEND_MSG);
+    debugPrintLn();
+  }
 }
