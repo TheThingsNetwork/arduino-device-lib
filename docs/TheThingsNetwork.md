@@ -144,3 +144,12 @@ float calculateAirtime(size_t payloadSize);
 - `size_t payloadSize`: number of bytes you want to send.
 
 Returns the uplink time of the message in seconds.
+
+## Method: sleep
+Sleep the LoRa module for a specified number of milliseconds.
+
+```c
+void sleep(unsigned long mseconds);
+```
+
+- `unsigned long mseconds`: number of milliseconds to sleep.
