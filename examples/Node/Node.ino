@@ -1,9 +1,10 @@
 #include <TheThingsNetwork.h>
 #include <TheThingsNode.h>
 
-// Set your AppEUI and AppKey
-const char *appEui = "0000000000000000";
-const char *appKey = "00000000000000000000000000000000";
+// These keys are for https://ttn.fyi/activate
+// Replace them if you want to use your own app
+const char *appEui = "70B3D57EF0001CEE";
+const char *appKey = "F2E5C891560FF9CE24AD56E1A69B85DF";
 
 #define loraSerial Serial1
 #define debugSerial Serial
@@ -14,20 +15,37 @@ const char *appKey = "00000000000000000000000000000000";
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 TheThingsNode *node;
 
-enum port : byte
-{
-  PORT_SETUP = 1,
-  PORT_INTERVAL,
-  PORT_MOTION,
-  PORT_BUTTON
-};
+#define PORT_SETUP 1
+#define PORT_INTERVAL 2
+#define PORT_MOTION 3
+#define PORT_BUTTON 4
 
 void setup() {
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
+  // Test LoRa module
+  ttn.showStatus();
+
+  // Config Node
+  node = TheThingsNode::setup();
+  node->configLight(true);
+  node->configInterval(true, 60000);
+  node->onWake(wake);
+  node->onInterval(interval);
+  node->onSleep(sleep);
+  node->onMotionStart(onMotionStart);
+  node->onButtonRelease(onButtonRelease);
+
+  // Test sensors and set LED to GREEN if it works
+  node->showStatus();
+  node->setColor(TTN_GREEN);
+
   // Wait a maximum of 10s for Serial Monitor
   while (!debugSerial && millis() < 10000);
+
+  debugSerial.println("-- NODE: STATUS");
+  node->showStatus();
 
   debugSerial.println("-- TTN: STATUS");
   ttn.showStatus();
@@ -35,22 +53,7 @@ void setup() {
   debugSerial.println("-- TTN: JOIN");
   ttn.join(appEui, appKey);
 
-  node = TheThingsNode::setup();
-  node->setColor(TTN_GREEN);
-
-  node->configLight(true);
-  node->configInterval(true, 60000);
-
-  node->onWake(wake);
-  node->onInterval(interval);
-  node->onSleep(sleep);
-  
-  node->onMotionStart(onMotionStart);
-  node->onButtonRelease(onButtonRelease);
-
-  debugSerial.println("-- NODE: STATUS");
-  node->showStatus();
-
+  debugSerial.println("-- SEND: SETUP");
   sendData(PORT_SETUP);
 }
 
@@ -61,9 +64,7 @@ void loop() {
 void interval() {
   node->setColor(TTN_BLUE);
   
-  debugSerial.println("-- INTERVAL");
-  node->showStatus();
-
+  debugSerial.println("-- SEND: INTERVAL");
   sendData(PORT_INTERVAL);
 }
 
@@ -76,21 +77,25 @@ void sleep() {
 }
 
 void onMotionStart() {
-  node->setColor(TTN_RED);
-  debugSerial.print("-- MOTION STOP");
+  node->setColor(TTN_BLUE);
 
+  debugSerial.print("-- SEND: MOTION");
   sendData(PORT_MOTION);
 }
 
 void onButtonRelease(unsigned long duration) {
-  node->setColor(TTN_RED);
-  debugSerial.print("-- BUTTON RELEASE: ");
+  node->setColor(TTN_BLUE);
+
+  debugSerial.print("-- SEND: BUTTON");
   debugSerial.println(duration);
 
   sendData(PORT_BUTTON);
 }
 
-void sendData(port) {
+void sendData(uint8_t port) {
+  ttn.showStatus();
+  node->showStatus();
+
   byte* bytes;
   byte payload[9];
 
@@ -109,5 +114,5 @@ void sendData(port) {
   payload[4] = bytes[1];
   payload[5] = bytes[0];
 
-  ttn.sendBytes(payload, sizeof(payload), PORT_INTERVAL);
+  ttn.sendBytes(payload, sizeof(payload), port);
 }
