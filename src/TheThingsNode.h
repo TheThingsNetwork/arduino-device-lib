@@ -29,6 +29,49 @@ enum ttn_color: byte
 
 class TheThingsNode
 {
+  private:
+
+    // private constructor to achieve singleton pattern
+    TheThingsNode();
+    TheThingsNode(TheThingsNode const&); // copy disabled
+    void operator=(TheThingsNode const&); // assigment disabled
+
+    bool intervalEnabled;
+    uint32_t intervalMs;
+    uint32_t intervalSince;
+    bool lightEnabled;
+    uint8_t lightGain;
+    bool temperatureEnabled;
+    bool temperatureSleep;
+    bool motionStarted;
+    unsigned long motionStartedAt;
+    bool motionEnabled;
+    bool buttonEnabled;
+    bool buttonPressed;
+    unsigned long buttonPressedAt;
+    bool wasUSBDisconnected;
+    bool USBDeepSleep;
+    bool wdtStarted;
+
+    void (*wakeCallback)(void);
+    void (*sleepCallback)(void);
+    void (*temperatureCallback)(void);
+    void (*motionStartCallback)(void);
+    void (*motionStopCallback)(unsigned long duration);
+    void (*buttonPressCallback)(void);
+    void (*buttonReleaseCallback)(unsigned long duration);
+    void (*intervalCallback)(void);
+
+    void wakeTemperature();
+    void sleepTemperature();
+    void wakeMotion();
+    void sleepMotion();
+    void writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA);
+    uint8_t readMotion(unsigned char REG_ADDRESS);
+    void WDT_start();
+    void WDT_stop();
+    void deepSleep(void);
+    
   public:
 
     // static method to get the instance 
@@ -84,49 +127,6 @@ class TheThingsNode
     void configUSB(bool deepSleep);
 
     uint16_t getBattery();
-
-  private:
-
-    // private constructor to achieve singleton pattern
-    TheThingsNode();
-    TheThingsNode(TheThingsNode const&); // copy disabled
-    void operator=(TheThingsNode const&); // assigment disabled
-
-    bool intervalEnabled;
-    uint32_t intervalMs;
-    uint32_t intervalSince;
-    bool lightEnabled;
-    uint8_t lightGain;
-    bool temperatureEnabled;
-    bool temperatureSleep;
-    bool motionStarted;
-    unsigned long motionStartedAt;
-    bool motionEnabled;
-    bool buttonEnabled;
-    bool buttonPressed;
-    unsigned long buttonPressedAt;
-    bool wasUSBDisconnected;
-    bool USBDeepSleep;
-    bool wdtStarted;
-
-    void (*wakeCallback)(void);
-    void (*sleepCallback)(void);
-    void (*temperatureCallback)(void);
-    void (*motionStartCallback)(void);
-    void (*motionStopCallback)(unsigned long duration);
-    void (*buttonPressCallback)(void);
-    void (*buttonReleaseCallback)(unsigned long duration);
-    void (*intervalCallback)(void);
-
-    void wakeTemperature();
-    void sleepTemperature();
-    void wakeMotion();
-    void sleepMotion();
-    void writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA);
-    uint8_t readMotion(unsigned char REG_ADDRESS);
-    void WDT_start();
-    void WDT_stop();
-    void deepSleep(void);
 };
 
 #endif
