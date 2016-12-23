@@ -16,7 +16,8 @@ TheThingsNode *node;
 
 enum port : byte
 {
-  PORT_INTERVAL = 1,
+  PORT_SETUP = 1,
+  PORT_INTERVAL,
   PORT_MOTION,
   PORT_BUTTON
 };
@@ -49,6 +50,8 @@ void setup() {
 
   debugSerial.println("-- NODE: STATUS");
   node->showStatus();
+
+  sendData(PORT_SETUP);
 }
 
 void loop() {

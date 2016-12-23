@@ -15,9 +15,10 @@ function Decoder(bytes, port) {
   var decoded = {};
 
   var ports = {
-    1: 'interval',
-    2: 'motion',
-    3: 'button'
+    1: 'setup',
+    2: 'interval',
+    3: 'motion',
+    4: 'button'
   };
 
   decoded.event = ports[port];
