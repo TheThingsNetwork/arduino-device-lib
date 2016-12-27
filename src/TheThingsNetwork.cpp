@@ -3,6 +3,9 @@
 
 #include <TheThingsNetwork.h>
 
+#define debugSerial Serial
+#define loraSerial Serial
+
 #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
 
@@ -890,4 +893,20 @@ void TheThingsNetwork::sleep(unsigned long msec) {
     modemStream->write(SEND_MSG);
     debugPrintLn();
   }
+}
+
+void TheThingsNetwork::setModemSerial(Stream& modemSerial)
+{
+  if (modemSerial.available() == 0)
+    return ;
+}
+
+void TheThingsNetwork::initFor()
+{
+  debugSerial.begin(115200);
+  loraSerial.begin(57600);
+  delay(1000);
+
+  TheThingsNetwork::setModemSerial(loraSerial);
+  TheThingsNetwork::init(loraSerial, debugSerial);
 }
