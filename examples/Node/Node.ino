@@ -1,16 +1,15 @@
 #include <TheThingsNetwork.h>
 #include <TheThingsNode.h>
 
-// These keys are for https://ttn.fyi/activate
-// Replace them if you want to use your own app
-const char *appEui = "70B3D57EF0001CEE";
-const char *appKey = "F2E5C891560FF9CE24AD56E1A69B85DF";
+// Set your AppEUI and AppKey
+const char *appEui = "0000000000000000";
+const char *appKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
 
 // Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
-#define freqPlan REPLACE_ME
+#define freqPlan TTN_FP_EU868
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 TheThingsNode *node;
@@ -24,8 +23,8 @@ void setup() {
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
-  // Test LoRa module
-  ttn.showStatus();
+  // Wait a maximum of 10s for Serial Monitor
+  while (!debugSerial && millis() < 10000);
 
   // Config Node
   node = TheThingsNode::setup();
@@ -40,12 +39,6 @@ void setup() {
   // Test sensors and set LED to GREEN if it works
   node->showStatus();
   node->setColor(TTN_GREEN);
-
-  // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
-
-  debugSerial.println("-- NODE: STATUS");
-  node->showStatus();
 
   debugSerial.println("-- TTN: STATUS");
   ttn.showStatus();
@@ -97,7 +90,7 @@ void sendData(uint8_t port) {
   node->showStatus();
 
   byte* bytes;
-  byte payload[9];
+  byte payload[6];
 
   uint16_t battery = node->getBattery();
   bytes = (byte*) &battery;
