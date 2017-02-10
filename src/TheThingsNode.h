@@ -30,11 +30,9 @@ enum ttn_color: byte
 class TheThingsNode
 {
   private:
-
-    // private constructor to achieve singleton pattern
     TheThingsNode();
-    TheThingsNode(TheThingsNode const&); // copy disabled
-    void operator=(TheThingsNode const&); // assigment disabled
+    TheThingsNode(TheThingsNode const&);
+    void operator=(TheThingsNode const&);
 
     bool intervalEnabled;
     uint32_t intervalMs;
@@ -73,8 +71,6 @@ class TheThingsNode
     void deepSleep(void);
     
   public:
-
-    // static method to get the instance 
     static TheThingsNode* setup() {
       static TheThingsNode node;
       return &node;

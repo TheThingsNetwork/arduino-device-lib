@@ -32,14 +32,14 @@ const char* const compare_table[] PROGMEM = {ok,on,off,accepted,mac_tx_ok,mac_rx
 
 const char eui[] PROGMEM = "EUI: ";
 const char battery[] PROGMEM = "Battery: ";
-const char appEui[] PROGMEM = "AppEui: ";
-const char devEui[] PROGMEM = "DevEui: ";
+const char appEui[] PROGMEM = "AppEUI: ";
+const char devEui[] PROGMEM = "DevEUI: ";
 const char band[] PROGMEM = "Band: ";
 const char data_rate[] PROGMEM = "Data Rate: ";
 const char rx_delay_1[] PROGMEM = "RX Delay 1: ";
 const char rx_delay_2[] PROGMEM = "RX Delay 2: ";
 const char total_airtime[] PROGMEM = "Total Airtime: ";
-const char airtime_added[] PROGMEM = "Airtime added: ";
+const char airtime_added[] PROGMEM = "Airtime Added: ";
 const char version[] PROGMEM = "Version is ";
 const char model[] PROGMEM = ", model is ";
 
@@ -260,7 +260,7 @@ TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn
   this->fsb = fsb;
 }
 
-const char *TheThingsNetwork::readLine() {
+uint32_t TheThingsNetwork::readLine(const byte* buffer, uint32_t size) {
   char get_bytes[TTN_BUFFER_SIZE];
   char get_buffer[TTN_BUFFER_SIZE];
   for (size_t i = TTN_BUFFER_SIZE; i--; ) {
