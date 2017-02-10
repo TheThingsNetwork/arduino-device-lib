@@ -10,12 +10,14 @@ TheThingsNetwork               KEYWORD1
 TheThingsMessage               KEYWORD1
 TheThingsNode                  KEYWORD1
 
+ttn_port_t                     KEYWORD1
+ttn_response_t                 KEYWORD1
+ttn_fp_t                       KEYWORD1
+
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-airtime                        KEYWORD2
-calculateAirtime               KEYWORD2
 showStatus                     KEYWORD2
 onMessage                      KEYWORD2
 provision                      KEYWORD2

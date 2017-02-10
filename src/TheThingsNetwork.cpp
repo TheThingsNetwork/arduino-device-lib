@@ -1,10 +1,18 @@
-// Copyright © 2016 The Things Network
+// Copyright © 2017 The Things Network
 // Use of this source code is governed by the MIT license that can be found in the LICENSE file.
 
-#include <TheThingsNetwork.h>
+#include "TheThingsNetwork.h"
 
-#define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
-#define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
+#define debugPrintLn(...)                \
+  {                                      \
+    if (debugStream)                     \
+      debugStream->println(__VA_ARGS__); \
+  }
+#define debugPrint(...)                \
+  {                                    \
+    if (debugStream)                   \
+      debugStream->print(__VA_ARGS__); \
+  }
 
 #define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
@@ -17,7 +25,7 @@ const char mac_tx_ok[] PROGMEM = "mac_tx_ok";
 const char mac_rx[] PROGMEM = "mac_rx";
 const char rn2483[] PROGMEM = "RN2483";
 
-const char* const compare_table[] PROGMEM = {ok,on,off,accepted,mac_tx_ok,mac_rx,rn2483};
+const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, rn2483};
 
 #define CMP_OK 0
 #define CMP_ON 1
@@ -38,12 +46,10 @@ const char band[] PROGMEM = "Band: ";
 const char data_rate[] PROGMEM = "Data Rate: ";
 const char rx_delay_1[] PROGMEM = "RX Delay 1: ";
 const char rx_delay_2[] PROGMEM = "RX Delay 2: ";
-const char total_airtime[] PROGMEM = "Total Airtime: ";
-const char airtime_added[] PROGMEM = "Airtime Added: ";
 const char version[] PROGMEM = "Version is ";
-const char model[] PROGMEM = ", model is ";
+const char model[] PROGMEM = "Model is ";
 
-const char* const show_table[] PROGMEM = {eui,battery,appEui,devEui,band,data_rate,rx_delay_1,rx_delay_2,total_airtime,airtime_added,version,model};
+const char *const show_table[] PROGMEM = {eui, battery, appEui, devEui, band, data_rate, rx_delay_1, rx_delay_2, version, model};
 
 #define SHOW_EUI 0
 #define SHOW_BATTERY 1
@@ -53,10 +59,8 @@ const char* const show_table[] PROGMEM = {eui,battery,appEui,devEui,band,data_ra
 #define SHOW_DATA_RATE 5
 #define SHOW_RX_DELAY_1 6
 #define SHOW_RX_DELAY_2 7
-#define SHOW_TOTAL_AIRTIME 8
-#define SHOW_AIRTIME_ADDED 9
-#define SHOW_VERSION 10
-#define SHOW_MODEL 11
+#define SHOW_VERSION 8
+#define SHOW_MODEL 9
 
 const char invalid_sf[] PROGMEM = "Invalid SF";
 const char invalid_fp[] PROGMEM = "Invalid frequency plan";
@@ -69,7 +73,7 @@ const char response_is_not_ok[] PROGMEM = "Response is not OK: ";
 const char error_key_length[] PROGMEM = "One or more keys are of invalid length.";
 const char check_configuration[] PROGMEM = "Check your coverage, keys and backend status.";
 
-const char* const error_msg[] PROGMEM = {invalid_sf,invalid_fp,unexpected_response,send_command_failed,join_failed,join_not_accepted,personalize_not_accepted,response_is_not_ok,error_key_length,check_configuration};
+const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration};
 
 #define ERR_INVALID_SF 0
 #define ERR_INVALID_FP 1
@@ -87,7 +91,7 @@ const char join_accepted[] PROGMEM = "Join accepted. Status: ";
 const char successful_transmission[] PROGMEM = "Successful transmission";
 const char successful_transmission_received[] PROGMEM = "Successful transmission. Received ";
 
-const char* const success_msg[] PROGMEM = {personalize_accepted,join_accepted,successful_transmission,successful_transmission_received};
+const char *const success_msg[] PROGMEM = {personalize_accepted, join_accepted, successful_transmission, successful_transmission_received};
 
 #define SCS_PERSONALIZE_ACCEPTED 0
 #define SCS_JOIN_ACCEPTED 1
@@ -103,7 +107,7 @@ const char radio_get_crc[] PROGMEM = "crc";
 const char radio_get_cr[] PROGMEM = "cr";
 const char radio_get_sf[] PROGMEM = "sf";
 
-const char* const radio_table[] PROGMEM = {radio_prefix,radio_set,radio_get,radio_get_bw,radio_get_prlen,radio_get_crc,radio_get_cr,radio_get_sf};
+const char *const radio_table[] PROGMEM = {radio_prefix, radio_set, radio_get, radio_get_bw, radio_get_prlen, radio_get_crc, radio_get_cr, radio_get_sf};
 
 #define RADIO_PREFIX 0
 #define RADIO_SET 1
@@ -127,7 +131,7 @@ const char sys_get_hweui[] PROGMEM = "hweui";
 const char sys_set_get_nvm[] PROGMEM = "nvm";
 const char sys_set_pindig[] PROGMEM = "pindig";
 
-const char* const sys_table[] PROGMEM = {sys_prefix,sys_sleep,sys_reset,sys_erase_fw,sys_factory_rst,sys_set,sys_get,sys_get_ver,sys_get_vdd,sys_get_hweui,sys_set_get_nvm,sys_set_pindig};
+const char *const sys_table[] PROGMEM = {sys_prefix, sys_sleep, sys_reset, sys_erase_fw, sys_factory_rst, sys_set, sys_get, sys_get_ver, sys_get_vdd, sys_get_hweui, sys_set_get_nvm, sys_set_pindig};
 
 #define SYS_PREFIX 0
 #define SYS_SLEEP 1
@@ -153,7 +157,7 @@ const char mac_resume[] PROGMEM = "resume";
 const char mac_set[] PROGMEM = "set";
 const char mac_get[] PROGMEM = "get";
 
-const char* const mac_table[] PROGMEM = {mac_prefix,mac_reset,mac_tx,mac_join,mac_save,mac_force_enable,mac_pause,mac_resume,mac_set,mac_get};
+const char *const mac_table[] PROGMEM = {mac_prefix, mac_reset, mac_tx, mac_join, mac_save, mac_force_enable, mac_pause, mac_resume, mac_set, mac_get};
 
 #define MAC_PREFIX 0
 #define MAC_RESET 1
@@ -185,7 +189,7 @@ const char mac_set_ar[] PROGMEM = "ar";
 const char mac_set_rx2[] PROGMEM = "rx2";
 const char mac_set_ch[] PROGMEM = "ch";
 
-const char* const mac_set_options[] PROGMEM = {mac_set_devaddr,mac_set_deveui,mac_set_appeui,mac_set_nwkskey,mac_set_appskey,mac_set_appkey,mac_set_pwridx,mac_set_dr,mac_set_adr,mac_set_bat,mac_set_retx,mac_set_linkchk,mac_set_rxdelay1,mac_set_rxdelay2,mac_set_band,mac_set_ar,mac_set_rx2,mac_set_ch};
+const char *const mac_set_options[] PROGMEM = {mac_set_devaddr, mac_set_deveui, mac_set_appeui, mac_set_nwkskey, mac_set_appskey, mac_set_appkey, mac_set_pwridx, mac_set_dr, mac_set_adr, mac_set_bat, mac_set_retx, mac_set_linkchk, mac_set_rxdelay1, mac_set_rxdelay2, mac_set_band, mac_set_ar, mac_set_rx2, mac_set_ch};
 
 #define MAC_SET_DEVICEADDRESS 0
 #define MAC_SET_DEVEUI 1
@@ -209,7 +213,7 @@ const char* const mac_set_options[] PROGMEM = {mac_set_devaddr,mac_set_deveui,ma
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
 
-const char* const mac_join_mode[] PROGMEM = {mac_join_mode_otaa,mac_join_mode_abp};
+const char *const mac_join_mode[] PROGMEM = {mac_join_mode_otaa, mac_join_mode_abp};
 
 #define MAC_JOIN_MODE_OTAA 0
 #define MAC_JOIN_MODE_ABP 1
@@ -219,7 +223,7 @@ const char channel_drrange[] PROGMEM = "drrange";
 const char channel_freq[] PROGMEM = "freq";
 const char channel_status[] PROGMEM = "status";
 
-const char* const mac_ch_options[] PROGMEM = {channel_dcycle,channel_drrange,channel_freq,channel_status};
+const char *const mac_ch_options[] PROGMEM = {channel_dcycle, channel_drrange, channel_freq, channel_status};
 
 #define MAC_CHANNEL_DCYCLE 0
 #define MAC_CHANNEL_DRRANGE 1
@@ -229,7 +233,7 @@ const char* const mac_ch_options[] PROGMEM = {channel_dcycle,channel_drrange,cha
 const char mac_tx_type_cnf[] PROGMEM = "cnf";
 const char mac_tx_type_ucnf[] PROGMEM = "uncnf";
 
-const char* const mac_tx_table[] PROGMEM = {mac_tx_type_cnf,mac_tx_type_ucnf};
+const char *const mac_tx_table[] PROGMEM = {mac_tx_type_cnf, mac_tx_type_ucnf};
 
 #define MAC_TX_TYPE_CNF 0
 #define MAC_TX_TYPE_UCNF 1
@@ -244,15 +248,40 @@ const char* const mac_tx_table[] PROGMEM = {mac_tx_type_cnf,mac_tx_type_ucnf};
 #define ERR_MESSAGE 7
 #define SUCCESS_MESSAGE 8
 
-char set_buffer[TTN_BUFFER_SIZE];
-
-void memsetBuffer(size_t i) {
-  for (size_t set = i; set--; ) {
-    set_buffer[set] = 0;
-  }
+int pgmstrcmp(const char *str1, uint8_t str2Index)
+{
+  char str2[128];
+  strcpy_P(str2, (char *)pgm_read_word(&(compare_table[str2Index])));
+  return memcmp(str1, str2, min(strlen(str1), strlen(str2)));
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb) {
+uint8_t digits(uint8_t port)
+{
+  if (port >= 100)
+  {
+    return 3;
+  }
+  else if (port >= 10)
+  {
+    return 2;
+  }
+  return 1;
+}
+
+uint8_t receivedPort(const char *s, size_t length)
+{
+  uint8_t port = 0;
+  while (s[length] != ' ' && s[length] != '\0')
+  {
+    port *= 10;
+    port += s[length] - 48;
+    length++;
+  }
+  return port;
+}
+
+TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb)
+{
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
   this->fp = fp;
@@ -260,306 +289,276 @@ TheThingsNetwork::TheThingsNetwork(Stream& modemStream, Stream& debugStream, ttn
   this->fsb = fsb;
 }
 
-uint32_t TheThingsNetwork::readLine(const byte* buffer, uint32_t size) {
-  char get_bytes[TTN_BUFFER_SIZE];
-  char get_buffer[TTN_BUFFER_SIZE];
-  for (size_t i = TTN_BUFFER_SIZE; i--; ) {
-    get_buffer[i] = '\0';
-    get_bytes[i] = '\0';
-  }
-  while (true) {
-    size_t length = modemStream->readBytesUntil('\n', get_bytes, sizeof(get_bytes));
-    if (length > 0) {
-      for (size_t i = 0; i < (length - 1); i++) {
-        get_buffer[i] = get_bytes[i];
-      }
-      get_buffer[length] = '\0';
-      char *line = get_buffer;
-      delay(1);
-      return (line);
-    }
+void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
+{
+  char buffer[100];
+  strcpy_P(buffer, (char *)pgm_read_word(&(show_table[index])));
+  debugPrint(buffer);
+  if (value)
+  {
+    debugPrintLn(value);
   }
 }
 
-const char *TheThingsNetwork::readValue(uint8_t prefixTable, uint8_t index) {
-  while (modemStream->available()) {
+void TheThingsNetwork::debugPrintMessage(uint8_t type, uint8_t index, const char *output)
+{
+  char buffer[100];
+  switch (type)
+  {
+  case ERR_MESSAGE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(error_msg[index])));
+    break;
+  case SUCCESS_MESSAGE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(success_msg[index])));
+    break;
+  }
+  debugPrint(buffer);
+  if (type == SUCCESS_MESSAGE && index == SCS_SUCCESSFUL_TRANSMISSION_RECEIVED)
+  {
+    debugPrint(output);
+    debugPrintLn(" bytes");
+  }
+  else if (output)
+  {
+    debugPrintLn(output);
+  }
+  else
+  {
+    debugPrintLn();
+  }
+}
+
+void TheThingsNetwork::clearReadBuffer()
+{
+  while (modemStream->available())
+  {
     modemStream->read();
   }
+}
+
+size_t TheThingsNetwork::readLine(char *buffer, size_t size)
+{
+  size_t read = 0;
+  while (read == 0)
+  {
+    read = modemStream->readBytesUntil('\n', buffer, size);
+  }
+  buffer[read - 1] = '\0'; // set \r to \0
+  return read;
+}
+
+size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t index, char *buffer, size_t size)
+{
+  clearReadBuffer();
   sendCommand(prefixTable, 0, true, false);
   sendCommand(prefixTable, index, false, false);
   modemStream->write(SEND_MSG);
-  return readLine();
+  return readLine(buffer, size);
 }
 
-const char *TheThingsNetwork::readValue(uint8_t prefixTable, uint8_t indexTable, uint8_t index) {
-  while (modemStream->available()) {
-    modemStream->read();
-  }
+size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, uint8_t index, char *buffer, size_t size)
+{
+  clearReadBuffer();
   sendCommand(prefixTable, 0, true, false);
   sendCommand(MAC_TABLE, MAC_GET, true, false);
   sendCommand(indexTable, index, false, false);
   modemStream->write(SEND_MSG);
-  return readLine();
+  return readLine(buffer, size);
 }
 
-void TheThingsNetwork::reset(bool adr) {
-  const char *version = readValue(SYS_TABLE, SYS_RESET);
-  valueToShow(SHOW_VERSION, subString(version, 7));
-  const char *model = subString(version, 0, 6);
-  this->model_EU = compareStrings(model, CMP_RN2483) ? true : false;
-  valueToShow(SHOW_MODEL, model);
+void TheThingsNetwork::reset(bool adr)
+{
+  char buffer[100];
+  size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
+  debugPrintLn(buffer);
 
-  const char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
-  sendMacSet(MAC_SET_DEVEUI, devEui);
-  if(adr){
+  buffer[6] = '\0';
+  debugPrintIndex(SHOW_MODEL, buffer);
+  debugPrintIndex(SHOW_VERSION, buffer + 7);
+
+  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
+  sendMacSet(MAC_SET_DEVEUI, buffer);
+  if (adr)
+  {
     sendMacSet(MAC_SET_ADR, "on");
-  } else {
+  }
+  else
+  {
     sendMacSet(MAC_SET_ADR, "off");
   }
 }
 
-void TheThingsNetwork::onMessage(void (*cb)(const byte* payload, size_t length, port_t port)) {
-  this->messageCallback = cb;
+void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port))
+{
+  messageCallback = cb;
 }
 
-bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey) {
+bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey)
+{
   reset();
-  if (bufLength(devAddr) == 8 && bufLength(appSKey) == 32 && bufLength(nwkSKey) == 32) {
-    sendMacSet(MAC_SET_DEVICEADDRESS, devAddr);
-    sendMacSet(MAC_SET_NWKSKEY, nwkSKey);
-    sendMacSet(MAC_SET_APPSKEY, appSKey);
-    return personalize();
+  if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
+    return false;
   }
-  stateMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
-  return false;
+  sendMacSet(MAC_SET_DEVICEADDRESS, devAddr);
+  sendMacSet(MAC_SET_NWKSKEY, nwkSKey);
+  sendMacSet(MAC_SET_APPSKEY, appSKey);
+  return personalize();
 }
 
-bool TheThingsNetwork::personalize() {
-  configureChannels(this->sf, this->fsb);
+bool TheThingsNetwork::personalize()
+{
+  configureChannels(sf, fsb);
   sendJoinSet(MAC_JOIN_MODE_ABP);
-  const char *response = readLine();
-  if (!compareStrings(response, CMP_ACCEPTED)) {
-    stateMessage(ERR_MESSAGE, ERR_PERSONALIZE_NOT_ACCEPTED, response);
-    stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
+
+  char buffer[100];
+  readLine(buffer, sizeof(buffer));
+  if (pgmstrcmp(buffer, CMP_ACCEPTED) != 0)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_PERSONALIZE_NOT_ACCEPTED, buffer);
+    debugPrintMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
     return false;
   }
 
-  fillAirtimeInfo();
-  stateMessage(SUCCESS_MESSAGE, SCS_PERSONALIZE_ACCEPTED, readValue(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS));
+  readResponse(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS, buffer, sizeof(buffer));
+  debugPrintMessage(SUCCESS_MESSAGE, SCS_PERSONALIZE_ACCEPTED, buffer);
   return true;
 }
 
-bool TheThingsNetwork::provision(const char *appEui, const char *appKey) {
-  if (bufLength(appEui) == 16 && bufLength(appKey) == 32) {
-    sendMacSet(MAC_SET_APPEUI, appEui);
-    sendMacSet(MAC_SET_APPKEY, appKey);
-    debugPrint(SENDING);
-    sendCommand(MAC_TABLE, MAC_PREFIX, true);
-    sendCommand(MAC_TABLE, MAC_SAVE, false);
-    modemStream->write(SEND_MSG);
-    debugPrintLn();
-    return true;
-  }
-  stateMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
-  return false;
-}
-
-bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay) {
-  configureChannels(this->sf, this->fsb);
-  int8_t nbr_retries = retries;
-  const char *devEui = readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI);
-  sendMacSet(MAC_SET_DEVEUI, devEui);
-  while (--retries) {
-    if (!sendJoinSet(MAC_JOIN_MODE_OTAA)) {
-      stateMessage(ERR_MESSAGE, ERR_JOIN_FAILED);
-      if ((nbr_retries - retries) >= 3) {
-        stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
-      }
-      delay(retryDelay);
-      continue;
-    }
-    const char *response = readLine();
-    if (!compareStrings(response, CMP_ACCEPTED)) {
-      stateMessage(ERR_MESSAGE, ERR_JOIN_NOT_ACCEPTED, response);
-       if ((nbr_retries - retries) >= 3) {
-         stateMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
-      }
-      delay(retryDelay);
-      continue;
-    }
-    stateMessage(SUCCESS_MESSAGE, SCS_JOIN_ACCEPTED, readValue(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS));
-    valueToShow(SHOW_DEVEUI, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI));
-    fillAirtimeInfo();
-    return true;
-  }
-  return false;
-}
-
-bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay) {
-  reset();
-  if (!provision(appEui, appKey)) {
+bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
+{
+  if (strlen(appEui) != 16 || strlen(appKey) != 32)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
     return false;
   }
-  return join(retries, retryDelay);
+
+  char buffer[17];
+  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
+  sendMacSet(MAC_SET_DEVEUI, buffer);
+
+  sendMacSet(MAC_SET_APPEUI, appEui);
+  sendMacSet(MAC_SET_APPKEY, appKey);
+  debugPrint(SENDING);
+  sendCommand(MAC_TABLE, MAC_PREFIX, true);
+  sendCommand(MAC_TABLE, MAC_SAVE, false);
+  modemStream->write(SEND_MSG);
+  debugPrintLn();
+  return true;
 }
 
-ttn_response_t TheThingsNetwork::sendBytes(const byte* payload, size_t length, port_t port, bool confirm) {
+bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
+{
+  configureChannels(sf, fsb);
+
+  char buffer[100];
+  while (--retries)
+  {
+    if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
+    {
+      debugPrintMessage(ERR_MESSAGE, ERR_JOIN_FAILED);
+      delay(retryDelay);
+      continue;
+    }
+    readLine(buffer, sizeof(buffer));
+    if (pgmstrcmp(buffer, CMP_ACCEPTED) != 0)
+    {
+      debugPrintMessage(ERR_MESSAGE, ERR_JOIN_NOT_ACCEPTED, buffer);
+      debugPrintMessage(ERR_MESSAGE, ERR_CHECK_CONFIGURATION);
+      delay(retryDelay);
+      continue;
+    }
+    readResponse(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS, buffer, sizeof(buffer));
+    debugPrintMessage(SUCCESS_MESSAGE, SCS_JOIN_ACCEPTED, buffer);
+    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI, buffer, sizeof(buffer));
+    debugPrintIndex(SHOW_DEVEUI, buffer);
+    return true;
+  }
+  return false;
+}
+
+bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay)
+{
+  reset();
+  return provision(appEui, appKey) && join(retries, retryDelay);
+}
+
+ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length, port_t port, bool confirm)
+{
   bool send;
-  if (confirm) {
+  if (confirm)
+  {
     send = sendPayload(MAC_TX_TYPE_CNF, port, (uint8_t *)payload, length);
-  } else {
+  }
+  else
+  {
     send = sendPayload(MAC_TX_TYPE_UCNF, port, (uint8_t *)payload, length);
   }
-  if (!send) {
-    stateMessage(ERR_MESSAGE, ERR_SEND_COMMAND_FAILED);
+  if (!send)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_SEND_COMMAND_FAILED);
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
-  const char *response = readLine();
-  float i = this->airtime;
-  trackAirtime(length);
-  if (!isnan(i) && !isinf(i) && !isnan(this->airtime) && !isinf(this->airtime)) {
-    valueToShow(SHOW_AIRTIME_ADDED);
-    debugPrint(this->airtime - i);
-    debugPrintLn(F(" s"));
-    valueToShow(SHOW_TOTAL_AIRTIME);
-  }
-  if (compareStrings(response, CMP_MAC_TX_OK)) {
-    stateMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
+  char response[500];
+  readLine(response, sizeof(response));
+
+  if (pgmstrcmp(response, CMP_MAC_TX_OK) == 0)
+  {
+    debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
     return TTN_SUCCESSFUL_TRANSMISSION;
   }
-  if (compareStrings(response, CMP_MAC_RX, 5)) {
+
+  if (pgmstrcmp(response, CMP_MAC_RX) == 0)
+  {
     port_t downlinkPort = receivedPort(response, 7);
-    const char *data = subString(response, (8 + portLength(downlinkPort)));
-    size_t downlinkLength = bufLength(data) / 2;
-    byte downlink[64];
-    for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2) {
-      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d+1]);
+    char *data = response + 7 + digits(downlinkPort) + 1;
+    size_t downlinkLength = strlen(data) / 2;
+    uint8_t downlink[downlinkLength];
+    for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
+    {
+      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
     }
-    stateMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED, (const char *)itoa(downlinkLength, set_buffer, 10));
-    if (this->messageCallback)
-      this->messageCallback(downlink, downlinkLength, downlinkPort);
+    debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED, data);
+    if (messageCallback)
+    {
+      messageCallback(downlink, downlinkLength, downlinkPort);
+    }
     return TTN_SUCCESSFUL_RECEIVE;
   }
 
-  stateMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE, response);
+  debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE, response);
   return TTN_ERROR_UNEXPECTED_RESPONSE;
 }
 
-size_t TheThingsNetwork::bufLength(const char *data) {
-  size_t length = 0;
-  while (data[length] != '\0') {
-   length++;
-  }
-  return length;
-}
-
-size_t TheThingsNetwork::portLength(size_t port) {
-  size_t length = 0;
-  while (port > 0) {
-    port = port / 10;
-    length += 1;
-  }
-  return length;
-}
-
-const char *TheThingsNetwork::subString(const char *response, int16_t start, int16_t end) {
-  char sub[TTN_BUFFER_SIZE];
-  for (size_t l = TTN_BUFFER_SIZE; l--; ) {
-    sub[l] = '\0';
-  }
-  char *newString;
-  for (size_t i = 0; (end == -2 && response[start] != '\0') || start < end; start++, i++) {
-    sub[i] = response[start];
-  }
-  sub[start] = '\0';
-  delay(1);
-  newString = sub;
-  delay(1);
-  return newString;
-}
-
-uint8_t TheThingsNetwork::receivedPort(const char *response, size_t length) {
-  uint16_t port = 0;
-  while (response[length] != ' ') {
-    port = (port + (response[length] - 48)) * 10;
-    length += 1;
-  }
-  port = port / 10;
-  return port;
-}
-
-int8_t TheThingsNetwork::poll(port_t port, bool confirm) {
-  byte payload[] = { 0x00 };
+int8_t TheThingsNetwork::poll(port_t port, bool confirm)
+{
+  uint8_t payload[] = {0x00};
   return sendBytes(payload, 1, port, confirm);
 }
 
-float TheThingsNetwork::calculateAirtime(size_t payloadSize) {
-  payloadSize = 13 + payloadSize;
-
-  float Tsym = pow(2, this->info.sf) / this->info.band;
-  float Tpreamble = (this->info.ps + 4.25) * Tsym;
-  uint16_t payLoadSymbNb = 8 + (max(ceil((8 * payloadSize - 4 * this->info.sf + 28 + 16 - 20 * this->info.header) / (4 * (this->info.sf - 2 * this->info.de))) * (this->info.cr + 4), 0));
-  float Tpayload = payLoadSymbNb * Tsym;
-  float Tpacket = Tpreamble + Tpayload;
-  return (Tpacket / 1000);
-}
-
-void TheThingsNetwork::fillAirtimeInfo() {
-  this->info = {0, 0, 0, 0, 0, 0};
-
-  const char *message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SF);
-  this->info.sf = message[3] ? (message[2] - 48) * 10 + message[3] - 48 : message[2] - 48;
-
-  message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_BW);
-  this->info.band = (message[0] - 48) * 100 + (message[1] - 48) * 10 + message[2] - 48;
-
-  message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_PRLEN);
-  this->info.ps = this->info.ps + message[0] - 48;
-
-  message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_CRC);
-  this->info.header = compareStrings(message, CMP_ON) ? 1 : 0;
-
-  message = readValue(RADIO_TABLE, RADIO_TABLE, RADIO_GET_CR);
-  this->info.cr = (this->info.cr + message[2] - 48);
-
-  this->info.de = this->info.sf >= 11 ? 1 : 0;
-}
-
-void TheThingsNetwork::trackAirtime(size_t payloadSize) {
-  this->airtime = this->airtime + calculateAirtime(payloadSize);
-}
-
-void TheThingsNetwork::showStatus() {
-  valueToShow(SHOW_EUI, readValue(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI));
-  valueToShow(SHOW_BATTERY, readValue(SYS_TABLE, SYS_TABLE, SYS_GET_VDD));
-  valueToShow(SHOW_APPEUI, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_APPEUI));
-  valueToShow(SHOW_DEVEUI, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI));
-
-  if (this->model_EU) {
-    valueToShow(SHOW_BAND, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_BAND));
-  }
-  valueToShow(SHOW_DATA_RATE, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DR));
-  valueToShow(SHOW_RX_DELAY_1, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY1));
-  valueToShow(SHOW_RX_DELAY_2, readValue(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY2));
-  valueToShow(SHOW_TOTAL_AIRTIME);
-}
-
-void TheThingsNetwork::valueToShow(uint8_t index, const char *value) {
+void TheThingsNetwork::showStatus()
+{
   char buffer[100];
-  strcpy_P(buffer, (char *)pgm_read_word(&(show_table[index])));
-  debugPrint(buffer);
-  if (value && index == SHOW_VERSION) {
-    debugPrint(value);
-  } else if (value) {
-    debugPrintLn(value);
-  } else if (index == SHOW_TOTAL_AIRTIME) {
-    debugPrint(this->airtime);
-    debugPrintLn(F(" s"));
-  }
+  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_EUI, buffer);
+  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_BATTERY, buffer);
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_APPEUI, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_APPEUI, buffer);
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_DEVEUI, buffer);
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DR, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_DATA_RATE, buffer);
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY1, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_RX_DELAY_1, buffer);
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY2, buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-void TheThingsNetwork::configureEU868(uint8_t sf) {
+void TheThingsNetwork::configureEU868(uint8_t sf)
+{
   uint8_t ch;
   char dr[2];
   uint32_t freq = 867100000;
@@ -571,12 +570,15 @@ void TheThingsNetwork::configureEU868(uint8_t sf) {
 
   sendMacSet(MAC_SET_RX2, "3 869525000");
   sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
-  for (ch = 0; ch < 8; ch++) {
-   sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > 2) {
+  for (ch = 0; ch < 8; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    if (ch > 2)
+    {
       size_t length = 8;
       tmp = freq;
-      while (tmp > 0) {
+      while (tmp > 0)
+      {
         buf[length] = (tmp % 10) + 48;
         tmp = tmp / 10;
         length -= 1;
@@ -588,36 +590,39 @@ void TheThingsNetwork::configureEU868(uint8_t sf) {
     }
   }
   sendMacSet(MAC_SET_PWRIDX, TTN_PWRIDX_868);
-  switch (sf) {
-    case 7:
-      dr[0] = '5';
-      break;
-    case 8:
-      dr[0] = '4';
-      break;
-    case 9:
-      dr[0] = '3';
-      break;
-    case 10:
-      dr[0] = '2';
-      break;
-    case 11:
-      dr[0] = '1';
-      break;
-    case 12:
-      dr[0] = '0';
-      break;
-    default:
-      stateMessage(ERR_MESSAGE, ERR_INVALID_SF);
-      break;
+  switch (sf)
+  {
+  case 7:
+    dr[0] = '5';
+    break;
+  case 8:
+    dr[0] = '4';
+    break;
+  case 9:
+    dr[0] = '3';
+    break;
+  case 10:
+    dr[0] = '2';
+    break;
+  case 11:
+    dr[0] = '1';
+    break;
+  case 12:
+    dr[0] = '0';
+    break;
+  default:
+    debugPrintMessage(ERR_MESSAGE, ERR_INVALID_SF);
+    break;
   }
   dr[1] = '\0';
-  if (dr[0] >= '0' && dr[0] <= '5'){
+  if (dr[0] >= '0' && dr[0] <= '5')
+  {
     sendMacSet(MAC_SET_DR, dr);
   }
 }
 
-void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb) {
+void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
+{
   uint8_t ch;
   char dr[2];
   uint8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
@@ -625,143 +630,148 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb) {
   uint8_t ch500 = fsb + 63;
 
   sendMacSet(MAC_SET_PWRIDX, TTN_PWRIDX_915);
-  for (ch = 0; ch < 72; ch++) {
-    if (ch == ch500 || (ch <= chHigh && ch >= chLow)) {
+  for (ch = 0; ch < 72; ch++)
+  {
+    if (ch == ch500 || (ch <= chHigh && ch >= chLow))
+    {
       sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-      if (ch < 63) {
+      if (ch < 63)
+      {
         sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 3");
       }
-    } else {
+    }
+    else
+    {
       sendChSet(MAC_CHANNEL_STATUS, ch, "off");
     }
   }
-  switch (sf) {
-    case 7:
-      dr[0] = '3';
-      break;
-    case 8:
-      dr[0] = '2';
-      break;
-    case 9:
-      dr[0] = '1';
-      break;
-    case 10:
-      dr[0] = '0';
-      break;
-    default:
-      stateMessage(ERR_MESSAGE, ERR_INVALID_SF);
-      break;
+  switch (sf)
+  {
+  case 7:
+    dr[0] = '3';
+    break;
+  case 8:
+    dr[0] = '2';
+    break;
+  case 9:
+    dr[0] = '1';
+    break;
+  case 10:
+    dr[0] = '0';
+    break;
+  default:
+    debugPrintMessage(ERR_MESSAGE, ERR_INVALID_SF);
+    break;
   }
   dr[1] = '\0';
-  if (dr[0] >= '0' && dr[0] < '4'){
+  if (dr[0] >= '0' && dr[0] < '4')
+  {
     sendMacSet(MAC_SET_DR, dr);
   }
 }
 
-void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb) {
-  switch (this->fp) {
-    case TTN_FP_EU868:
-      configureEU868(sf);
-      break;
-    case TTN_FP_US915:
-      configureUS915(sf, fsb);
-      break;
-    default:
-      stateMessage(ERR_MESSAGE, ERR_INVALID_FP);
-      break;
+void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb)
+{
+  switch (fp)
+  {
+  case TTN_FP_EU868:
+    configureEU868(sf);
+    break;
+  case TTN_FP_US915:
+    configureUS915(sf, fsb);
+    break;
+  default:
+    debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
+    break;
   }
   sendMacSet(MAC_SET_RETX, TTN_RETX);
 }
 
-void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool with_space, bool print) {
-  switch(table) {
-    case MAC_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(mac_table[index])));
-      break;
-    case MAC_GET_SET_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(mac_set_options[index])));
-      break;
-    case MAC_JOIN_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(mac_join_mode[index])));
-      break;
-    case MAC_CH_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(mac_ch_options[index])));
-      break;
-    case MAC_TX_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(mac_tx_table[index])));
-      break;
-    case SYS_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(sys_table[index])));
-      break;
-    case RADIO_TABLE:
-      strcpy_P(set_buffer, (char *)pgm_read_word(&(radio_table[index])));
-      break;
-    default:
-      return ;
-      break;
+void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool with_space, bool print)
+{
+  char buffer[500];
+  switch (table)
+  {
+  case MAC_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(mac_table[index])));
+    break;
+  case MAC_GET_SET_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(mac_set_options[index])));
+    break;
+  case MAC_JOIN_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(mac_join_mode[index])));
+    break;
+  case MAC_CH_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(mac_ch_options[index])));
+    break;
+  case MAC_TX_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(mac_tx_table[index])));
+    break;
+  case SYS_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(sys_table[index])));
+    break;
+  case RADIO_TABLE:
+    strcpy_P(buffer, (char *)pgm_read_word(&(radio_table[index])));
+    break;
+  default:
+    return;
   }
-
-  modemStream->write(set_buffer);
-  if (with_space) {
+  modemStream->write(buffer);
+  if (with_space)
+  {
     modemStream->write(" ");
   }
-  if (print) {
-    debugPrint(set_buffer);
+  if (print)
+  {
+    debugPrint(buffer);
     debugPrint(F(" "));
   }
 }
 
-bool TheThingsNetwork::sendMacSet(uint8_t index, const char* setting) {
-  while (modemStream->available()) {
-    modemStream->read();
-  }
+bool TheThingsNetwork::sendMacSet(uint8_t index, const char *setting)
+{
+  clearReadBuffer();
   debugPrint(SENDING);
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
   sendCommand(MAC_GET_SET_TABLE, index, true);
   modemStream->write(setting);
-  debugPrint(setting);
   modemStream->write(SEND_MSG);
-  debugPrintLn();
-
+  debugPrintLn(setting);
   return waitForOk();
 }
 
-bool TheThingsNetwork::waitForOk() {
-  memsetBuffer(TTN_BUFFER_SIZE);
-  uint16_t responseLength = modemStream->readBytesUntil('\n',set_buffer, TTN_BUFFER_SIZE);
-  if (responseLength >= 5) {
-    if (!compareStrings(set_buffer, CMP_ACCEPTED)) {
-      stateMessage(ERR_MESSAGE, ERR_RESPONSE_IS_NOT_OK, set_buffer);
-      return false;
-    }
-  }
-  else if (responseLength >= 2) {
-    if (!compareStrings(set_buffer, CMP_OK)) {
-      stateMessage(ERR_MESSAGE, ERR_RESPONSE_IS_NOT_OK, set_buffer);
-      return false;
-    }
+bool TheThingsNetwork::waitForOk()
+{
+  char buffer[100];
+  readLine(buffer, sizeof(buffer));
+  if (pgmstrcmp(buffer, CMP_OK) != 0)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_RESPONSE_IS_NOT_OK, buffer);
+    return false;
   }
   return true;
 }
 
-bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char* setting) {
-  while(modemStream->available()) {
-    modemStream->read();
-  }
+bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *setting)
+{
+  clearReadBuffer();
   char ch[5];
-  if (channel > 9) {
+  if (channel > 9)
+  {
     ch[0] = ((channel - (channel % 10)) / 10) + 48;
     ch[1] = (channel % 10) + 48;
-  } else {
+    ch[2] = '\0';
+  }
+  else
+  {
     ch[0] = channel + 48;
     ch[1] = '\0';
   }
-  ch[2] = '\0';
   debugPrint(F(SENDING));
-  sendCommand(MAC_TABLE, MAC_PREFIX,true);
-  sendCommand(MAC_TABLE, MAC_SET,true);
-  sendCommand(MAC_GET_SET_TABLE, MAC_SET_CH,true);
+  sendCommand(MAC_TABLE, MAC_PREFIX, true);
+  sendCommand(MAC_TABLE, MAC_SET, true);
+  sendCommand(MAC_GET_SET_TABLE, MAC_SET_CH, true);
   sendCommand(MAC_CH_TABLE, index, true);
   modemStream->write(ch);
   modemStream->write(" ");
@@ -773,10 +783,9 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char* set
   return waitForOk();
 }
 
-bool TheThingsNetwork::sendJoinSet(uint8_t type) {
-  while (modemStream->available()) {
-    modemStream->read();
-  }
+bool TheThingsNetwork::sendJoinSet(uint8_t type)
+{
+  clearReadBuffer();
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_JOIN, true);
@@ -786,44 +795,49 @@ bool TheThingsNetwork::sendJoinSet(uint8_t type) {
   return waitForOk();
 }
 
-bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload, size_t len) {
-  while(modemStream->available()) {
-    modemStream->read();
-  }
+bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload, size_t length)
+{
+  clearReadBuffer();
   debugPrint(F(SENDING));
-  sendCommand(MAC_TABLE, MAC_PREFIX,true);
-  sendCommand(MAC_TABLE, MAC_TX,true);
-  sendCommand(MAC_TX_TABLE, mode,true);
-  char newPort[5];
-  if (port > 99) {
-    newPort[0] = ((port - (port % 100)) / 100) + 48;
-    newPort[1] = (((port % 100) - (port % 10)) / 10) + 48;
-    newPort[2] = (port % 10) + 48;
-  } else if (port > 9) {
-    newPort[0] = ((port - (port % 10)) / 10) + 48;
-    newPort[1] = (port % 10) + 48;
-    newPort[2] = '\0';
-  } else {
-    newPort[0] = port + 48;
-    newPort[1] = '\0';
+  sendCommand(MAC_TABLE, MAC_PREFIX, true);
+  sendCommand(MAC_TABLE, MAC_TX, true);
+  sendCommand(MAC_TX_TABLE, mode, true);
+  char sport[4];
+  if (port > 99)
+  {
+    sport[0] = ((port - (port % 100)) / 100) + 48;
+    sport[1] = (((port % 100) - (port % 10)) / 10) + 48;
+    sport[2] = (port % 10) + 48;
+    sport[3] = '\0';
   }
-  newPort[3] = '\0';
-  modemStream->write(newPort);
-  debugPrint(port);
-  debugPrint(F(" "));
+  else if (port > 9)
+  {
+    sport[0] = ((port - (port % 10)) / 10) + 48;
+    sport[1] = (port % 10) + 48;
+    sport[2] = '\0';
+  }
+  else
+  {
+    sport[0] = port + 48;
+    sport[1] = '\0';
+  }
+  modemStream->write(sport);
   modemStream->print(" ");
+  debugPrint(sport);
+  debugPrint(F(" "));
   uint8_t i = 0;
-  for(i=0;i<len;i++) {
-    if(payload[i] ==0) {
-      modemStream->print("00");
-      debugPrint(F("00"));
-    } else if(payload[i] < 16) {
+  for (i = 0; i < length; i++)
+  {
+    if (payload[i] < 16)
+    {
       modemStream->print("0");
+      modemStream->print(payload[i], HEX);
       debugPrint(F("0"));
-      modemStream->print(payload[i],HEX);
       debugPrint(payload[i], HEX);
-    } else {
-      modemStream->print(payload[i],HEX);
+    }
+    else
+    {
+      modemStream->print(payload[i], HEX);
       debugPrint(payload[i], HEX);
     }
   }
@@ -832,62 +846,20 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t* payload,
   return waitForOk();
 }
 
-bool TheThingsNetwork::compareStrings(const char *str1, uint8_t index, size_t length) {
-  size_t one = 0;
-  char str2[10];
-  strcpy_P(str2, (char *)pgm_read_word(&(compare_table[index])));
-  while (str1[one] != '\0' && str2[one] != '\0') {
-    if (str1[one] != str2[one]) {
-      return false;
-    }
-    one = one + 1;
-    if (one == length) {
-      return true;
-    }
+void TheThingsNetwork::sleep(unsigned long msec)
+{
+  if (msec < 100 || msec >= 4294967296)
+  {
+    return;
   }
-  if (str1[one] == '\r' && str2[one] == '\0') {
-    return true;
-  }
-  else if (str1[one] != str2[one]) {
-    return false;
-  }
-  return true;
-}
 
-void TheThingsNetwork::stateMessage(uint8_t type, uint8_t indexMsg, const char *output) {
-  char buffer[50];
-  switch (type) {
-    case ERR_MESSAGE:
-      strcpy_P(buffer, (char *)pgm_read_word(&(error_msg[indexMsg])));
-      break;
-    case SUCCESS_MESSAGE:
-      strcpy_P(buffer, (char *)pgm_read_word(&(success_msg[indexMsg])));
-      break;
-  }
-  debugPrint(buffer);
-  if (type == SUCCESS_MESSAGE && indexMsg == SCS_SUCCESSFUL_TRANSMISSION_RECEIVED) {
-    debugPrint(output);
-    debugPrintLn(" bytes");
-  } else if (output) {
-    debugPrintLn(output);
-  } else {
-    debugPrintLn();
-  }
-}
+  debugPrint(F(SENDING));
+  sendCommand(SYS_TABLE, SYS_PREFIX, true);
+  sendCommand(SYS_TABLE, SYS_SLEEP, true);
 
-void TheThingsNetwork::sleep(unsigned long msec) {
-  if (100 < msec && msec < 4294967296) {
-    while (modemStream->available()) {
-      modemStream->read();
-    }
-    debugPrint(F(SENDING));
-    sendCommand(SYS_TABLE, SYS_PREFIX, true);
-    sendCommand(SYS_TABLE, SYS_SLEEP, true);
-    char buffer[11];
-    sprintf(buffer, "%ld", msec);
-    modemStream->write(buffer);
-    debugPrint(buffer);
-    modemStream->write(SEND_MSG);
-    debugPrintLn();
-  }
+  char buffer[11];
+  sprintf(buffer, "%ld", msec);
+  modemStream->write(buffer);
+  modemStream->write(SEND_MSG);
+  debugPrintLn(buffer);
 }
