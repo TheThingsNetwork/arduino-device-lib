@@ -24,6 +24,8 @@ THE SOFTWARE.
 // include guard
 #pragma once
 
+#ifdef ARDUINO_ARCH_AVR
+
 //================================================================================
 // General Settings
 //================================================================================
@@ -101,14 +103,22 @@ move the priority down
 Its more likely the user will use pin 4-7
 */
 #if !defined(PCINT_CALLBACK_PORT2)
-#define PCINT_CALLBACK_PORT2 \
-PCINT_CALLBACK(4, 20); \
-PCINT_CALLBACK(5, 21); \
-PCINT_CALLBACK(6, 22); \
-PCINT_CALLBACK(7, 23); \
-PCINT_CALLBACK(0, 16); /* USART RX */ \
-PCINT_CALLBACK(1, 17); /* USART TX */ \
+#define PCINT_CALLBACK_PORT2                 \
+    \
+PCINT_CALLBACK(4, 20);                       \
+    \
+PCINT_CALLBACK(5, 21);                       \
+    \
+PCINT_CALLBACK(6, 22);                       \
+    \
+PCINT_CALLBACK(7, 23);                       \
+    \
+PCINT_CALLBACK(0, 16); /* USART RX */        \
+    \
+PCINT_CALLBACK(1, 17); /* USART TX */        \
+    \
 PCINT_CALLBACK(2, 18); /* Pin Interrupt 0 */ \
+    \
 PCINT_CALLBACK(3, 19); /* Pin Interrupt 1 */
 #endif
 
@@ -142,14 +152,22 @@ Port1 by default deactivated, ordering is fine
 Port2 only has ADCs, ordering is fine
 */
 #if !defined(PCINT_CALLBACK_PORT0)
-#define PCINT_CALLBACK_PORT0 \
-PCINT_CALLBACK(4, 4); \
-PCINT_CALLBACK(5, 5); \
-PCINT_CALLBACK(6, 6); \
-PCINT_CALLBACK(7, 7); \
-PCINT_CALLBACK(0, 0); /* SPI SS */ \
-PCINT_CALLBACK(1, 1); /* SPI SCK */ \
+#define PCINT_CALLBACK_PORT0         \
+    \
+PCINT_CALLBACK(4, 4);                \
+    \
+PCINT_CALLBACK(5, 5);                \
+    \
+PCINT_CALLBACK(6, 6);                \
+    \
+PCINT_CALLBACK(7, 7);                \
+    \
+PCINT_CALLBACK(0, 0); /* SPI SS */   \
+    \
+PCINT_CALLBACK(1, 1); /* SPI SCK */  \
+    \
 PCINT_CALLBACK(2, 2); /* SPI MISO */ \
+    \
 PCINT_CALLBACK(3, 3); /* SPI MOSI */
 #endif
 #endif
@@ -160,14 +178,22 @@ PCINT_CALLBACK(3, 3); /* SPI MOSI */
 Port0 has SPI on lower pins, move the priority down
 Its more likely the user will use pin 8-11 */
 #if !defined(PCINT_CALLBACK_PORT0)
-#define PCINT_CALLBACK_PORT0 \
-PCINT_CALLBACK(4, 4); \
-PCINT_CALLBACK(5, 5); \
-PCINT_CALLBACK(6, 6); \
-PCINT_CALLBACK(7, 7); \
+#define PCINT_CALLBACK_PORT0                \
+    \
+PCINT_CALLBACK(4, 4);                       \
+    \
+PCINT_CALLBACK(5, 5);                       \
+    \
+PCINT_CALLBACK(6, 6);                       \
+    \
+PCINT_CALLBACK(7, 7);                       \
+    \
 PCINT_CALLBACK(0, 0); /* SPI SS / RX LED */ \
-PCINT_CALLBACK(1, 1); /* SPI SCK */ \
-PCINT_CALLBACK(2, 2); /* SPI MISO */ \
+    \
+PCINT_CALLBACK(1, 1); /* SPI SCK */         \
+    \
+PCINT_CALLBACK(2, 2); /* SPI MISO */        \
+    \
 PCINT_CALLBACK(3, 3); /* SPI MOSI */
 #endif
 
@@ -197,14 +223,22 @@ Pretend the User has not soldered the 4 Pinheader
 so only do this for non Arduino boards. */
 #else
 #if !defined(PCINT_CALLBACK_PORT0)
-#define PCINT_CALLBACK_PORT0 \
-PCINT_CALLBACK(4, 4); \
-PCINT_CALLBACK(5, 5); \
-PCINT_CALLBACK(6, 6); \
-PCINT_CALLBACK(7, 7); \
-PCINT_CALLBACK(0, 0); /* SPI SS */ \
-PCINT_CALLBACK(1, 1); /* SPI SCK */ \
+#define PCINT_CALLBACK_PORT0         \
+    \
+PCINT_CALLBACK(4, 4);                \
+    \
+PCINT_CALLBACK(5, 5);                \
+    \
+PCINT_CALLBACK(6, 6);                \
+    \
+PCINT_CALLBACK(7, 7);                \
+    \
+PCINT_CALLBACK(0, 0); /* SPI SS */   \
+    \
+PCINT_CALLBACK(1, 1); /* SPI SCK */  \
+    \
 PCINT_CALLBACK(2, 2); /* SPI MISO */ \
+    \
 PCINT_CALLBACK(3, 3); /* SPI MOSI */
 #endif
 #endif
@@ -220,4 +254,6 @@ The order is also okay. */
 #if defined(PCINT_ENABLE_PORT1)
 #undef PCINT_ENABLE_PORT1
 #endif
+#endif
+
 #endif

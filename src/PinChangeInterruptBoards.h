@@ -24,6 +24,8 @@ THE SOFTWARE.
 // include guard
 #pragma once
 
+#ifdef ARDUINO_ARCH_AVR
+
 //================================================================================
 // Board Definitions
 //================================================================================
@@ -43,9 +45,9 @@ THE SOFTWARE.
 
 // special Port1 case, pins are on 2 HW Pin Ports (E,J)
 #if defined(PCINT_ENABLE_PCINT16) // PortE
-#if defined(PCINT_ENABLE_PCINT17) || defined(PCINT_ENABLE_PCINT18) \
-   || defined(PCINT_ENABLE_PCINT19) || defined(PCINT_ENABLE_PCINT20) \
-|| defined(PCINT_ENABLE_PCINT21) || defined(PCINT_ENABLE_PCINT22) \
+#if defined(PCINT_ENABLE_PCINT17) || defined(PCINT_ENABLE_PCINT18) || defined(PCINT_ENABLE_PCINT19) || defined(PCINT_ENABLE_PCINT20) \
+|| defined(PCINT_ENABLE_PCINT21) || \
+    defined(PCINT_ENABLE_PCINT22) \
 || defined(PCINT_ENABLE_PCINT23) // PortJ
 // PortE and PortJ selected
 #define PCINT_INPUT_PORT1 ((PINE & 0x01) | (PINJ << 1))
@@ -78,7 +80,7 @@ THE SOFTWARE.
 // Attiny 13A
 #define PCINT_INPUT_PORT0 PINB
 #ifndef portInputRegister
-#define portInputRegister(P) ( (volatile uint8_t *)(PINB) )
+#define portInputRegister(P) ((volatile uint8_t *)(PINB))
 #endif
 
 #elif defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
@@ -141,4 +143,6 @@ THE SOFTWARE.
 #define PCINT_INPUT_PORT3 0
 #else
 #define PCINT_INPUT_PORT3_USED
+#endif
+
 #endif
