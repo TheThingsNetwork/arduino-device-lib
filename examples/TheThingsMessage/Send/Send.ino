@@ -15,12 +15,14 @@ TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
 devicedata_t data = api_DeviceData_init_default;
 
-void setup() {
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
@@ -36,7 +38,8 @@ void setup() {
   data.has_humidity = true;
 }
 
-void loop() {
+void loop()
+{
   debugSerial.println("-- LOOP");
 
   // Read the sensors

@@ -23,7 +23,8 @@ void setup()
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
@@ -37,7 +38,8 @@ void setup()
   data.has_water = true;
 }
 
-void loop() {
+void loop()
+{
   // Read sensors
   data.motion = digitalRead(TTN_PIN_LED) == HIGH;
   data.water = 682;
@@ -53,9 +55,11 @@ void loop() {
   delay(10000);
 }
 
-void message(const byte* payload, size_t length, port_t port) {
+void message(const uint8_t *payload, size_t length, port_t port)
+{
   //standard message always received on port 100 or more
-  if (port >= 100) {
+  if (port >= 100)
+  {
     appdata_t appData = api_AppData_init_default;
     TheThingsMessage::decodeAppData(&appData, payload, length);
   }

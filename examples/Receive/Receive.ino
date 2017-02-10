@@ -12,12 +12,14 @@ const char *appKey = "00000000000000000000000000000000";
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
-void setup() {
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   // Set callback for incoming messages
   ttn.onMessage(message);
@@ -29,7 +31,8 @@ void setup() {
   ttn.join(appEui, appKey);
 }
 
-void loop() {
+void loop()
+{
   debugSerial.println("-- LOOP");
 
   // Send single byte to poll for incoming messages
@@ -38,11 +41,13 @@ void loop() {
   delay(10000);
 }
 
-void message(const byte* payload, size_t length, port_t port) {
+void message(const uint8_t *payload, size_t size, port_t port)
+{
   debugSerial.println("-- MESSAGE");
-  debugSerial.print("Received " + String(length) + " bytes on port " + String(port) + ":");
+  debugSerial.print("Received " + String(size) + " bytes on port " + String(port) + ":");
 
-  for (int i = 0; i < length; i++) {
+  for (int i = 0; i < size; i++)
+  {
     debugSerial.print(" " + String(payload[i]));
   }
 

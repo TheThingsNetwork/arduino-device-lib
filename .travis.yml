@@ -18,15 +18,15 @@ before_script:
   # Replace placeholders with actual frequency plan (on Mac OS folow -i by '')
   - find $PWD/examples -type f -name "*.ino" -exec sed -i 's/REPLACE_ME/TTN_FP_EU868/g' {} +
 script:
-  - test/verify arduino:avr:leonardo examples/ABP/ABP.ino
+  - test/verify arduino:avr:leonardo examples/SendABP/SendABP.ino
   - test/verify arduino:avr:leonardo examples/DeviceInfo/DeviceInfo.ino
-  - test/verify arduino:avr:leonardo examples/Message/Receive/Receive.ino
-  - test/verify arduino:avr:leonardo examples/Message/Send/Send.ino
+  - test/verify arduino:avr:leonardo examples/TheThingsMessage/Receive/Receive.ino
+  - test/verify arduino:avr:leonardo examples/TheThingsMessage/Send/Send.ino
   - test/verify sparkfun:avr:promicro:cpu=8MHzatmega32U4 examples/Node/Node.ino
   - test/verify arduino:avr:leonardo examples/PassThrough/PassThrough.ino
   - test/verify arduino:avr:leonardo examples/QuickStart/QuickStart.ino
   - test/verify arduino:avr:leonardo examples/Receive/Receive.ino
-  - test/verify arduino:avr:leonardo examples/Send/Send.ino
+  - test/verify arduino:avr:leonardo examples/SendOTAA/SendOTAA.ino
   - test/verify arduino:avr:leonardo examples/Sensors/DHT/DHT.ino
   - test/verify arduino:avr:leonardo examples/Sensors/LightSensor/LightSensor.ino
   - test/verify arduino:avr:leonardo examples/Workshop/Workshop.ino
