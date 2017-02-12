@@ -41,7 +41,7 @@ private:
   ttn_fp_t fp;
   uint8_t sf;
   uint8_t fsb;
-  char buffer[500];
+  char buffer[512];
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -50,7 +50,7 @@ private:
   size_t readResponse(uint8_t table, uint8_t index, char *buffer, size_t size);
 
   void debugPrintIndex(uint8_t index, const char *value = NULL);
-  void debugPrintMessage(uint8_t type, uint8_t index, const char *output = NULL);
+  void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
   void reset(bool adr = true);
   void configureEU868(uint8_t sf);
@@ -59,8 +59,8 @@ private:
   bool waitForOk();
 
   void sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print = true);
-  bool sendMacSet(uint8_t index, const char *setting);
-  bool sendChSet(uint8_t index, uint8_t channel, const char *setting);
+  bool sendMacSet(uint8_t index, const char *value);
+  bool sendChSet(uint8_t index, uint8_t channel, const char *value);
   bool sendJoinSet(uint8_t type);
   bool sendPayload(uint8_t mode, uint8_t port, uint8_t *payload, size_t len);
   void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
@@ -75,8 +75,8 @@ public:
   bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
   bool personalize();
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false);
-  void sleep(unsigned long mseconds);
-  int8_t poll(port_t port = 1, bool confirm = false);
+  ttn_response_t poll(port_t port = 1, bool confirm = false);
+  void sleep(uint32_t mseconds);
   void saveState();
 };
 

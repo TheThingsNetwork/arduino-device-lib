@@ -268,14 +268,15 @@ uint8_t digits(uint8_t port)
   return 1;
 }
 
-uint8_t receivedPort(const char *s, size_t length)
+uint8_t receivedPort(const char *s)
 {
   uint8_t port = 0;
-  while (s[length] != ' ' && s[length] != '\0')
+  uint8_t i = 0;
+  while (s[i] != ' ' && s[i] != '\0')
   {
     port *= 10;
-    port += s[length] - 48;
-    length++;
+    port += s[i] - 48;
+    i++;
   }
   return port;
 }
@@ -291,34 +292,31 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
 {
-  strcpy_P(buffer, (char *)pgm_read_word(&(show_table[index])));
-  debugPrint(buffer);
+  char message[100];
+  strcpy_P(message, (char *)pgm_read_word(&(show_table[index])));
+  debugPrint(message);
   if (value)
   {
     debugPrintLn(value);
   }
 }
 
-void TheThingsNetwork::debugPrintMessage(uint8_t type, uint8_t index, const char *output)
+void TheThingsNetwork::debugPrintMessage(uint8_t type, uint8_t index, const char *value)
 {
+  char message[100];
   switch (type)
   {
   case ERR_MESSAGE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(error_msg[index])));
+    strcpy_P(message, (char *)pgm_read_word(&(error_msg[index])));
     break;
   case SUCCESS_MESSAGE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(success_msg[index])));
+    strcpy_P(message, (char *)pgm_read_word(&(success_msg[index])));
     break;
   }
-  debugPrint(buffer);
-  if (type == SUCCESS_MESSAGE && index == SCS_SUCCESSFUL_TRANSMISSION_RECEIVED)
+  debugPrint(message);
+  if (value)
   {
-    debugPrint(output);
-    debugPrintLn(" bytes");
-  }
-  else if (output)
-  {
-    debugPrintLn(output);
+    debugPrintLn(value);
   }
   else
   {
@@ -367,8 +365,8 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
 void TheThingsNetwork::reset(bool adr)
 {
   size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
-  debugPrintLn(buffer);
 
+  // buffer contains "RN2xx3 1.x.x ...", splitting model from version
   buffer[6] = '\0';
   debugPrintIndex(SHOW_MODEL, buffer);
   debugPrintIndex(SHOW_VERSION, buffer + 7);
@@ -496,19 +494,16 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
-  char response[500];
-  readLine(response, sizeof(response));
-
-  if (pgmstrcmp(response, CMP_MAC_TX_OK) == 0)
+  readLine(buffer, sizeof(buffer));
+  if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)
   {
     debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
     return TTN_SUCCESSFUL_TRANSMISSION;
   }
-
-  if (pgmstrcmp(response, CMP_MAC_RX) == 0)
+  if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
   {
-    port_t downlinkPort = receivedPort(response, 7);
-    char *data = response + 7 + digits(downlinkPort) + 1;
+    port_t downlinkPort = receivedPort(buffer + 7);
+    char *data = buffer + 7 + digits(downlinkPort) + 1;
     size_t downlinkLength = strlen(data) / 2;
     uint8_t downlink[downlinkLength];
     for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
@@ -523,11 +518,11 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
     return TTN_SUCCESSFUL_RECEIVE;
   }
 
-  debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE, response);
+  debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE, buffer);
   return TTN_ERROR_UNEXPECTED_RESPONSE;
 }
 
-int8_t TheThingsNetwork::poll(port_t port, bool confirm)
+ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
 {
   uint8_t payload[] = {0x00};
   return sendBytes(payload, 1, port, confirm);
@@ -683,54 +678,55 @@ void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb)
 
 void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print)
 {
+  char command[100];
   switch (table)
   {
   case MAC_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(mac_table[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_table[index])));
     break;
   case MAC_GET_SET_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(mac_set_options[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_set_options[index])));
     break;
   case MAC_JOIN_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(mac_join_mode[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_join_mode[index])));
     break;
   case MAC_CH_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(mac_ch_options[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_ch_options[index])));
     break;
   case MAC_TX_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(mac_tx_table[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_tx_table[index])));
     break;
   case SYS_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(sys_table[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(sys_table[index])));
     break;
   case RADIO_TABLE:
-    strcpy_P(buffer, (char *)pgm_read_word(&(radio_table[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(radio_table[index])));
     break;
   default:
     return;
   }
-  modemStream->write(buffer);
+  modemStream->write(command);
   if (appendSpace)
   {
     modemStream->write(" ");
   }
   if (print)
   {
-    debugPrint(buffer);
+    debugPrint(command);
     debugPrint(F(" "));
   }
 }
 
-bool TheThingsNetwork::sendMacSet(uint8_t index, const char *setting)
+bool TheThingsNetwork::sendMacSet(uint8_t index, const char *value)
 {
   clearReadBuffer();
   debugPrint(SENDING);
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
   sendCommand(MAC_GET_SET_TABLE, index, true);
-  modemStream->write(setting);
+  modemStream->write(value);
   modemStream->write(SEND_MSG);
-  debugPrintLn(setting);
+  debugPrintLn(value);
   return waitForOk();
 }
 
@@ -745,7 +741,7 @@ bool TheThingsNetwork::waitForOk()
   return true;
 }
 
-bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *setting)
+bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *value)
 {
   clearReadBuffer();
   char ch[5];
@@ -767,11 +763,11 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *set
   sendCommand(MAC_CH_TABLE, index, true);
   modemStream->write(ch);
   modemStream->write(" ");
-  modemStream->write(setting);
+  modemStream->write(value);
   modemStream->write(SEND_MSG);
   debugPrint(channel);
   debugPrint(F(" "));
-  debugPrintLn(setting);
+  debugPrintLn(value);
   return waitForOk();
 }
 
@@ -838,9 +834,9 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
   return waitForOk();
 }
 
-void TheThingsNetwork::sleep(unsigned long msec)
+void TheThingsNetwork::sleep(uint32_t mseconds)
 {
-  if (msec < 100 || msec >= 4294967296)
+  if (mseconds < 100 || mseconds >= 4294967296)
   {
     return;
   }
@@ -849,7 +845,7 @@ void TheThingsNetwork::sleep(unsigned long msec)
   sendCommand(SYS_TABLE, SYS_PREFIX, true);
   sendCommand(SYS_TABLE, SYS_SLEEP, true);
 
-  sprintf(buffer, "%ld", msec);
+  sprintf(buffer, "%ld", mseconds);
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
