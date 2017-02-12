@@ -36,13 +36,12 @@ enum ttn_fp_t
 class TheThingsNetwork
 {
 private:
-  port_t port;
   Stream *modemStream;
   Stream *debugStream;
-  bool model_EU;
   ttn_fp_t fp;
   uint8_t sf;
   uint8_t fsb;
+  char buffer[500];
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -58,14 +57,14 @@ private:
   void configureUS915(uint8_t sf, uint8_t fsb);
   void configureChannels(uint8_t sf, uint8_t fsb);
   bool waitForOk();
-  
-  void sendCommand(uint8_t table, uint8_t index, bool with_space, bool print = true);
+
+  void sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print = true);
   bool sendMacSet(uint8_t index, const char *setting);
   bool sendChSet(uint8_t index, uint8_t channel, const char *setting);
   bool sendJoinSet(uint8_t type);
   bool sendPayload(uint8_t mode, uint8_t port, uint8_t *payload, size_t len);
   void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
-  
+
 public:
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
   void showStatus();
@@ -78,6 +77,7 @@ public:
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false);
   void sleep(unsigned long mseconds);
   int8_t poll(port_t port = 1, bool confirm = false);
+  void saveState();
 };
 
 #endif
