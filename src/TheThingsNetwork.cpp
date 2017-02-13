@@ -46,10 +46,11 @@ const char band[] PROGMEM = "Band: ";
 const char data_rate[] PROGMEM = "Data Rate: ";
 const char rx_delay_1[] PROGMEM = "RX Delay 1: ";
 const char rx_delay_2[] PROGMEM = "RX Delay 2: ";
-const char version[] PROGMEM = "Version is ";
-const char model[] PROGMEM = "Model is ";
+const char version[] PROGMEM = "Version: ";
+const char model[] PROGMEM = "Model: ";
+const char devaddr[] PROGMEM = "DevAddr: ";
 
-const char *const show_table[] PROGMEM = {eui, battery, appEui, devEui, band, data_rate, rx_delay_1, rx_delay_2, version, model};
+const char *const show_table[] PROGMEM = {eui, battery, appEui, devEui, band, data_rate, rx_delay_1, rx_delay_2, version, model, devaddr};
 
 #define SHOW_EUI 0
 #define SHOW_BATTERY 1
@@ -61,6 +62,7 @@ const char *const show_table[] PROGMEM = {eui, battery, appEui, devEui, band, da
 #define SHOW_RX_DELAY_2 7
 #define SHOW_VERSION 8
 #define SHOW_MODEL 9
+#define SHOW_DEVADDR 10
 
 const char invalid_sf[] PROGMEM = "Invalid SF";
 const char invalid_fp[] PROGMEM = "Invalid frequency plan";
@@ -170,45 +172,45 @@ const char *const mac_table[] PROGMEM = {mac_prefix, mac_reset, mac_tx, mac_join
 #define MAC_SET 8
 #define MAC_GET 9
 
-const char mac_set_devaddr[] PROGMEM = "devaddr";
-const char mac_set_deveui[] PROGMEM = "deveui";
-const char mac_set_appeui[] PROGMEM = "appeui";
-const char mac_set_nwkskey[] PROGMEM = "nwkskey";
-const char mac_set_appskey[] PROGMEM = "appskey";
-const char mac_set_appkey[] PROGMEM = "appkey";
-const char mac_set_pwridx[] PROGMEM = "pwridx";
-const char mac_set_dr[] PROGMEM = "dr";
-const char mac_set_adr[] PROGMEM = "adr";
-const char mac_set_bat[] PROGMEM = "bat";
-const char mac_set_retx[] PROGMEM = "retx";
-const char mac_set_linkchk[] PROGMEM = "linkchk";
-const char mac_set_rxdelay1[] PROGMEM = "rxdelay1";
-const char mac_set_rxdelay2[] PROGMEM = "rxdelay2";
-const char mac_set_band[] PROGMEM = "band";
-const char mac_set_ar[] PROGMEM = "ar";
-const char mac_set_rx2[] PROGMEM = "rx2";
-const char mac_set_ch[] PROGMEM = "ch";
+const char mac_devaddr[] PROGMEM = "devaddr";
+const char mac_deveui[] PROGMEM = "deveui";
+const char mac_appeui[] PROGMEM = "appeui";
+const char mac_nwkskey[] PROGMEM = "nwkskey";
+const char mac_appskey[] PROGMEM = "appskey";
+const char mac_appkey[] PROGMEM = "appkey";
+const char mac_pwridx[] PROGMEM = "pwridx";
+const char mac_dr[] PROGMEM = "dr";
+const char mac_adr[] PROGMEM = "adr";
+const char mac_bat[] PROGMEM = "bat";
+const char mac_retx[] PROGMEM = "retx";
+const char mac_linkchk[] PROGMEM = "linkchk";
+const char mac_rxdelay1[] PROGMEM = "rxdelay1";
+const char mac_rxdelay2[] PROGMEM = "rxdelay2";
+const char mac_band[] PROGMEM = "band";
+const char mac_ar[] PROGMEM = "ar";
+const char mac_rx2[] PROGMEM = "rx2";
+const char mac_ch[] PROGMEM = "ch";
 
-const char *const mac_set_options[] PROGMEM = {mac_set_devaddr, mac_set_deveui, mac_set_appeui, mac_set_nwkskey, mac_set_appskey, mac_set_appkey, mac_set_pwridx, mac_set_dr, mac_set_adr, mac_set_bat, mac_set_retx, mac_set_linkchk, mac_set_rxdelay1, mac_set_rxdelay2, mac_set_band, mac_set_ar, mac_set_rx2, mac_set_ch};
+const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch};
 
-#define MAC_SET_DEVICEADDRESS 0
-#define MAC_SET_DEVEUI 1
-#define MAC_SET_APPEUI 2
-#define MAC_SET_NWKSKEY 3
-#define MAC_SET_APPSKEY 4
-#define MAC_SET_APPKEY 5
-#define MAC_SET_PWRIDX 6
-#define MAC_SET_DR 7
-#define MAC_SET_ADR 8
-#define MAC_SET_BAT 9
-#define MAC_SET_RETX 10
-#define MAC_SET_LINKCHK 11
-#define MAC_SET_RXDELAY1 12
-#define MAC_SET_RXDELAY2 13
-#define MAC_SET_BAND 14
-#define MAC_SET_AR 15
-#define MAC_SET_RX2 16
-#define MAC_SET_CH 17
+#define MAC_DEVADDR 0
+#define MAC_DEVEUI 1
+#define MAC_APPEUI 2
+#define MAC_NWKSKEY 3
+#define MAC_APPSKEY 4
+#define MAC_APPKEY 5
+#define MAC_PWRIDX 6
+#define MAC_DR 7
+#define MAC_ADR 8
+#define MAC_BAT 9
+#define MAC_RETX 10
+#define MAC_LINKCHK 11
+#define MAC_RXDELAY1 12
+#define MAC_RXDELAY2 13
+#define MAC_BAND 14
+#define MAC_AR 15
+#define MAC_RX2 16
+#define MAC_CH 17
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -372,14 +374,14 @@ void TheThingsNetwork::reset(bool adr)
   debugPrintIndex(SHOW_VERSION, buffer + 7);
 
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
-  sendMacSet(MAC_SET_DEVEUI, buffer);
+  sendMacSet(MAC_DEVEUI, buffer);
   if (adr)
   {
-    sendMacSet(MAC_SET_ADR, "on");
+    sendMacSet(MAC_ADR, "on");
   }
   else
   {
-    sendMacSet(MAC_SET_ADR, "off");
+    sendMacSet(MAC_ADR, "off");
   }
 }
 
@@ -405,9 +407,9 @@ bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, con
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
     return false;
   }
-  sendMacSet(MAC_SET_DEVICEADDRESS, devAddr);
-  sendMacSet(MAC_SET_NWKSKEY, nwkSKey);
-  sendMacSet(MAC_SET_APPSKEY, appSKey);
+  sendMacSet(MAC_DEVADDR, devAddr);
+  sendMacSet(MAC_NWKSKEY, nwkSKey);
+  sendMacSet(MAC_APPSKEY, appSKey);
   return personalize();
 }
 
@@ -436,9 +438,9 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
     return false;
   }
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
-  sendMacSet(MAC_SET_DEVEUI, buffer);
-  sendMacSet(MAC_SET_APPEUI, appEui);
-  sendMacSet(MAC_SET_APPKEY, appKey);
+  sendMacSet(MAC_DEVEUI, buffer);
+  sendMacSet(MAC_APPEUI, appEui);
+  sendMacSet(MAC_APPKEY, appKey);
   saveState();
   return true;
 }
@@ -464,8 +466,8 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
     }
     readResponse(MAC_TABLE, MAC_CH_TABLE, MAC_CHANNEL_STATUS, buffer, sizeof(buffer));
     debugPrintMessage(SUCCESS_MESSAGE, SCS_JOIN_ACCEPTED, buffer);
-    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI, buffer, sizeof(buffer));
-    debugPrintIndex(SHOW_DEVEUI, buffer);
+    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DEVADDR, buffer, sizeof(buffer));
+    debugPrintIndex(SHOW_DEVADDR, buffer);
     return true;
   }
   return false;
@@ -479,41 +481,42 @@ bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retri
 
 ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length, port_t port, bool confirm)
 {
-  bool send;
-  if (confirm)
-  {
-    send = sendPayload(MAC_TX_TYPE_CNF, port, (uint8_t *)payload, length);
-  }
-  else
-  {
-    send = sendPayload(MAC_TX_TYPE_UCNF, port, (uint8_t *)payload, length);
-  }
-  if (!send)
+  uint8_t mode = confirm ? MAC_TX_TYPE_CNF : MAC_TX_TYPE_UCNF;
+  if (!sendPayload(mode, port, (uint8_t *)payload, length))
   {
     debugPrintMessage(ERR_MESSAGE, ERR_SEND_COMMAND_FAILED);
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
   readLine(buffer, sizeof(buffer));
+
   if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)
   {
     debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
     return TTN_SUCCESSFUL_TRANSMISSION;
   }
+
   if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
   {
     port_t downlinkPort = receivedPort(buffer + 7);
     char *data = buffer + 7 + digits(downlinkPort) + 1;
     size_t downlinkLength = strlen(data) / 2;
-    uint8_t downlink[downlinkLength];
-    for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
+    if (downlinkLength > 0)
     {
-      downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
+      uint8_t downlink[downlinkLength];
+      for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
+      {
+        downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
+      }
+      debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED, data);
+      if (messageCallback)
+      {
+        messageCallback(downlink, downlinkLength, downlinkPort);
+      }
     }
-    debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION_RECEIVED, data);
-    if (messageCallback)
+    else
     {
-      messageCallback(downlink, downlinkLength, downlinkPort);
+      debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
     }
     return TTN_SUCCESSFUL_RECEIVE;
   }
@@ -534,15 +537,15 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_EUI, buffer);
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_BATTERY, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_APPEUI, buffer, sizeof(buffer));
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_APPEUI, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DEVEUI, buffer, sizeof(buffer));
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DEVEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_DEVEUI, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_DR, buffer, sizeof(buffer));
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DR, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_DATA_RATE, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY1, buffer, sizeof(buffer));
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_RXDELAY1, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_RX_DELAY_1, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_SET_RXDELAY2, buffer, sizeof(buffer));
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_RXDELAY2, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
@@ -557,7 +560,7 @@ void TheThingsNetwork::configureEU868(uint8_t sf)
   char buf[length + 1];
   buf[length + 1] = '\0';
 
-  sendMacSet(MAC_SET_RX2, "3 869525000");
+  sendMacSet(MAC_RX2, "3 869525000");
   sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
   for (ch = 0; ch < 8; ch++)
   {
@@ -578,7 +581,7 @@ void TheThingsNetwork::configureEU868(uint8_t sf)
       freq = freq + 200000;
     }
   }
-  sendMacSet(MAC_SET_PWRIDX, TTN_PWRIDX_868);
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_868);
   switch (sf)
   {
   case 7:
@@ -606,7 +609,7 @@ void TheThingsNetwork::configureEU868(uint8_t sf)
   dr[1] = '\0';
   if (dr[0] >= '0' && dr[0] <= '5')
   {
-    sendMacSet(MAC_SET_DR, dr);
+    sendMacSet(MAC_DR, dr);
   }
 }
 
@@ -618,7 +621,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
   uint8_t chHigh = fsb > 0 ? chLow + 7 : 71;
   uint8_t ch500 = fsb + 63;
 
-  sendMacSet(MAC_SET_PWRIDX, TTN_PWRIDX_915);
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_915);
   for (ch = 0; ch < 72; ch++)
   {
     if (ch == ch500 || (ch <= chHigh && ch >= chLow))
@@ -655,7 +658,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
   dr[1] = '\0';
   if (dr[0] >= '0' && dr[0] < '4')
   {
-    sendMacSet(MAC_SET_DR, dr);
+    sendMacSet(MAC_DR, dr);
   }
 }
 
@@ -673,7 +676,7 @@ void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb)
     debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
     break;
   }
-  sendMacSet(MAC_SET_RETX, TTN_RETX);
+  sendMacSet(MAC_RETX, TTN_RETX);
 }
 
 void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print)
@@ -685,7 +688,7 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpac
     strcpy_P(command, (char *)pgm_read_word(&(mac_table[index])));
     break;
   case MAC_GET_SET_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_set_options[index])));
+    strcpy_P(command, (char *)pgm_read_word(&(mac_options[index])));
     break;
   case MAC_JOIN_TABLE:
     strcpy_P(command, (char *)pgm_read_word(&(mac_join_mode[index])));
@@ -759,7 +762,7 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *val
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
-  sendCommand(MAC_GET_SET_TABLE, MAC_SET_CH, true);
+  sendCommand(MAC_GET_SET_TABLE, MAC_CH, true);
   sendCommand(MAC_CH_TABLE, index, true);
   modemStream->write(ch);
   modemStream->write(" ");
