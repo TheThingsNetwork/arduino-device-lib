@@ -1,5 +1,7 @@
-// Copyright © 2016 The Things Network
+// Copyright © 2017 The Things Network
 // Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+
+#ifdef ARDUINO_ARCH_AVR
 
 #include <Arduino.h>
 #include <TheThingsNode.h>
@@ -18,11 +20,11 @@
 #define TTN_ACCELEROMETER_INT2 9
 
 #define TTN_ADDR_ACC 0x1D
-#define TTN_DR 5  //active data rate
-#define TTN_SR 3  //sleep data rate
-#define TTN_SC 4 //sleep delay
-#define TTN_MT  4 //0.063g/LSB
-#define TTN_MDC 2 //Debounce delay in samples
+#define TTN_DR 5  // active data rate
+#define TTN_SR 3  // sleep data rate
+#define TTN_SC 4  // sleep delay
+#define TTN_MT 4  // 0.063g/LSB
+#define TTN_MDC 2 // debounce delay in samples
 #define TTN_SYSMOD 0x0B
 #define TTN_FF_MT_CFG 0x15
 #define TTN_FF_MT_SRC 0x16
@@ -51,19 +53,17 @@ uint32_t TTN_INTERVAL = 0;
 void TTN_TEMPERATURE_FN()
 {
   TTN_TEMPERATURE = true;
-  
   TTN_TEMPERATURE_SENSOR.clearAlert();
 }
 
 void TTN_MOTION_FN()
 {
   uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
-
   if (trigger == RISING)
   {
     TTN_MOTION_START = true;
   }
-  else if(trigger == FALLING)
+  else if (trigger == FALLING)
   {
     TTN_MOTION_STOP = true;
   }
@@ -72,8 +72,7 @@ void TTN_MOTION_FN()
 void TTN_BUTTON_FN()
 {
   uint8_t trigger = getPinChangeInterruptTrigger(digitalPinToPCINT(TTN_BUTTON));
-
-  if(trigger == FALLING)
+  if (trigger == FALLING)
   {
     TTN_BUTTON_PRESS = true;
   }
@@ -100,36 +99,45 @@ void TheThingsNode::onWake(void (*callback)(void))
 void TheThingsNode::loop()
 {
   // USB is connected and last time we checked it wasn't or visa versa
-  if (this->isUSBConnected() == this->wasUSBDisconnected) {
+  if (this->isUSBConnected() == this->wasUSBDisconnected)
+  {
     this->wasUSBDisconnected = !this->isUSBConnected();
 
     // It is no longer connected
-    if (this->wasUSBDisconnected) {
+    if (this->wasUSBDisconnected)
+    {
       Serial.end();
       WDT_start();
-
-    } else {
+    }
+    else
+    {
 
       // Stop watchdog unless deep sleep is enabled for USB
-      if (!this->USBDeepSleep) {
+      if (!this->USBDeepSleep)
+      {
         WDT_stop();
       }
 
       // Restore communication
-      if (Serial) {
+      if (Serial)
+      {
         Serial.begin(9600);
       }
     }
   }
 
-  if (this->wakeCallback) {
+  if (this->wakeCallback)
+  {
     this->wakeCallback();
   }
 
-  if (TTN_BUTTON_PRESS) {
-    if (!this->buttonPressed) {
+  if (TTN_BUTTON_PRESS)
+  {
+    if (!this->buttonPressed)
+    {
       this->buttonPressedAt = millis();
-      if (this->buttonEnabled && this->buttonPressCallback) {
+      if (this->buttonEnabled && this->buttonPressCallback)
+      {
         this->buttonPressCallback();
       }
       this->buttonPressed = true;
@@ -137,9 +145,12 @@ void TheThingsNode::loop()
     TTN_BUTTON_PRESS = false;
   }
 
-  if (TTN_BUTTON_RELEASE) {
-    if (this->buttonPressed) {
-      if (this->buttonEnabled && this->buttonReleaseCallback) {
+  if (TTN_BUTTON_RELEASE)
+  {
+    if (this->buttonPressed)
+    {
+      if (this->buttonEnabled && this->buttonReleaseCallback)
+      {
         this->buttonReleaseCallback(millis() - this->buttonPressedAt);
       }
       this->buttonPressed = false;
@@ -147,10 +158,13 @@ void TheThingsNode::loop()
     TTN_BUTTON_RELEASE = false;
   }
 
-  if (TTN_MOTION_START) {
-    if (!this->motionStarted) {
+  if (TTN_MOTION_START)
+  {
+    if (!this->motionStarted)
+    {
       this->motionStartedAt = millis();
-      if (this->motionEnabled && this->motionStartCallback) {
+      if (this->motionEnabled && this->motionStartCallback)
+      {
         this->motionStartCallback();
       }
       this->motionStarted = true;
@@ -158,9 +172,12 @@ void TheThingsNode::loop()
     TTN_MOTION_START = false;
   }
 
-  if (TTN_MOTION_STOP) {
-    if (this->motionStarted) {
-      if (this->motionEnabled && this->motionStopCallback) {
+  if (TTN_MOTION_STOP)
+  {
+    if (this->motionStarted)
+    {
+      if (this->motionEnabled && this->motionStopCallback)
+      {
         this->motionStopCallback(millis() - this->motionStartedAt);
       }
       this->motionStarted = false;
@@ -168,32 +185,40 @@ void TheThingsNode::loop()
     TTN_MOTION_STOP = false;
   }
 
-  if (TTN_TEMPERATURE) {
-    if (this->temperatureEnabled && this->temperatureCallback) {
+  if (TTN_TEMPERATURE)
+  {
+    if (this->temperatureEnabled && this->temperatureCallback)
+    {
       this->temperatureCallback();
     }
     TTN_TEMPERATURE = false;
   }
 
-  if (TTN_INTERVAL >= this->intervalMs) {
-    if (this->intervalEnabled && this->intervalCallback) {
+  if (TTN_INTERVAL >= this->intervalMs)
+  {
+    if (this->intervalEnabled && this->intervalCallback)
+    {
       this->intervalCallback();
     }
     TTN_INTERVAL = 0;
   }
 
-  if (this->sleepCallback) {
+  if (this->sleepCallback)
+  {
     this->sleepCallback();
   }
 
-  if (this->isUSBConnected() && !this->USBDeepSleep) {
+  if (this->isUSBConnected() && !this->USBDeepSleep)
+  {
 
-    while (!TTN_BUTTON_PRESS && !TTN_BUTTON_RELEASE && !TTN_MOTION_START && !TTN_MOTION_STOP && !TTN_TEMPERATURE && TTN_INTERVAL < this->intervalMs) {
+    while (!TTN_BUTTON_PRESS && !TTN_BUTTON_RELEASE && !TTN_MOTION_START && !TTN_MOTION_STOP && !TTN_TEMPERATURE && TTN_INTERVAL < this->intervalMs)
+    {
       delay(100);
       TTN_INTERVAL = TTN_INTERVAL + 100;
     }
-
-  } else {
+  }
+  else
+  {
     Serial.flush();
     deepSleep();
   }
@@ -207,29 +232,41 @@ void TheThingsNode::onSleep(void (*callback)(void))
 void TheThingsNode::showStatus()
 {
   Serial.print(F("Light: "));
-  if (this->lightEnabled) {
+  if (this->lightEnabled)
+  {
     Serial.println(String(getLight()));
-  } else {
+  }
+  else
+  {
     Serial.println(F("disabled"));
   }
   Serial.print(F("Temperature: "));
   Serial.println(String(getTemperatureAsFloat()) + F(" C"));
   Serial.print(F("Temperature alert: "));
-  if (this->temperatureEnabled) {
-    Serial.println(hasTemperatureAlert() ? F("Yes") : F("No"));  
-  } else {
+  if (this->temperatureEnabled)
+  {
+    Serial.println(hasTemperatureAlert() ? F("Yes") : F("No"));
+  }
+  else
+  {
     Serial.println(F("disabled"));
   }
   Serial.print(F("Moving: "));
-  if (this->motionEnabled) {
+  if (this->motionEnabled)
+  {
     Serial.println(isMoving() ? F("Yes") : F("No"));
-  } else {
+  }
+  else
+  {
     Serial.println(F("disabled"));
   }
   Serial.print(F("Button pressed: "));
-  if (this->buttonEnabled) {
+  if (this->buttonEnabled)
+  {
     Serial.println(isButtonPressed() ? F("Yes") : F("No"));
-  } else {
+  }
+  else
+  {
     Serial.println(F("disabled"));
   }
   Serial.print(F("Color: "));
@@ -285,22 +322,22 @@ void TheThingsNode::configLight(bool enabled)
   {
     switch (this->lightGain)
     {
-      case 0:
-        digitalWrite(TTN_LDR_GAIN1, LOW);
-        digitalWrite(TTN_LDR_GAIN2, LOW);
-        break;
-      case 1:
-        digitalWrite(TTN_LDR_GAIN1, HIGH);
-        digitalWrite(TTN_LDR_GAIN2, LOW);
-        break;
-      case 2:
-        digitalWrite(TTN_LDR_GAIN1, LOW);
-        digitalWrite(TTN_LDR_GAIN2, HIGH);
-        break;
-      case 3:
-        digitalWrite(TTN_LDR_GAIN1, HIGH);
-        digitalWrite(TTN_LDR_GAIN2, HIGH);
-        break;
+    case 0:
+      digitalWrite(TTN_LDR_GAIN1, LOW);
+      digitalWrite(TTN_LDR_GAIN2, LOW);
+      break;
+    case 1:
+      digitalWrite(TTN_LDR_GAIN1, HIGH);
+      digitalWrite(TTN_LDR_GAIN2, LOW);
+      break;
+    case 2:
+      digitalWrite(TTN_LDR_GAIN1, LOW);
+      digitalWrite(TTN_LDR_GAIN2, HIGH);
+      break;
+    case 3:
+      digitalWrite(TTN_LDR_GAIN1, HIGH);
+      digitalWrite(TTN_LDR_GAIN2, HIGH);
+      break;
     }
   }
   else
@@ -383,7 +420,7 @@ void TheThingsNode::onTemperature(void (*callback)(void))
     {
       callback();
     }
-  } 
+  }
   else
   {
     configTemperature(true);
@@ -430,7 +467,7 @@ void TheThingsNode::configMotion(bool enabled)
     attachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2), TTN_MOTION_FN, CHANGE);
   }
   else
-  {  
+  {
     detachPCINT(digitalPinToPCINT(TTN_ACCELEROMETER_INT2));
     sleepMotion();
   }
@@ -562,28 +599,28 @@ String TheThingsNode::colorToString(ttn_color color)
 {
   switch (color)
   {
-    case TTN_RED:
+  case TTN_RED:
     return String("Red");
     break;
-    case TTN_GREEN:
+  case TTN_GREEN:
     return String("Green");
     break;
-    case TTN_BLUE:
+  case TTN_BLUE:
     return String("Blue");
     break;
-    case TTN_YELLOW:
+  case TTN_YELLOW:
     return String("Yellow");
     break;
-    case TTN_CYAN:
+  case TTN_CYAN:
     return String("Cyan");
     break;
-    case TTN_MAGENTA:
+  case TTN_MAGENTA:
     return String("Magenta");
     break;
-    case TTN_WHITE:
+  case TTN_WHITE:
     return String("White");
     break;
-    case TTN_BLACK:
+  case TTN_BLACK:
     return String("Black");
     break;
   }
@@ -615,28 +652,28 @@ void TheThingsNode::setColor(ttn_color color)
 {
   switch (color)
   {
-    case TTN_RED:
+  case TTN_RED:
     setRGB(true, false, false);
     break;
-    case TTN_GREEN:
+  case TTN_GREEN:
     setRGB(false, true, false);
     break;
-    case TTN_BLUE:
+  case TTN_BLUE:
     setRGB(false, false, true);
     break;
-    case TTN_YELLOW:
+  case TTN_YELLOW:
     setRGB(true, true, false);
     break;
-    case TTN_CYAN:
+  case TTN_CYAN:
     setRGB(false, true, true);
     break;
-    case TTN_MAGENTA:
+  case TTN_MAGENTA:
     setRGB(true, false, true);
     break;
-    case TTN_WHITE:
+  case TTN_WHITE:
     setRGB(true, true, true);
     break;
-    case TTN_BLACK:
+  case TTN_BLACK:
     setRGB(false, false, false);
     break;
   }
@@ -651,7 +688,7 @@ uint16_t TheThingsNode::getBattery()
   digitalWrite(TTN_VBAT_MEAS_EN, LOW);
   uint16_t val = analogRead(TTN_VBAT_MEAS);
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
-  uint16_t batteryVoltage = map(val,0,1024,0,3300) * 2; // *2 for voltage divider
+  uint16_t batteryVoltage = map(val, 0, 1024, 0, 3300) * 2; // *2 for voltage divider
   return batteryVoltage;
 }
 
@@ -663,23 +700,26 @@ void TheThingsNode::configUSB(bool deepSleep)
 {
   this->USBDeepSleep = deepSleep;
 
-  if (this->USBDeepSleep || !isUSBConnected()) {
+  if (this->USBDeepSleep || !isUSBConnected())
+  {
     WDT_start();
-  } else {
+  }
+  else
+  {
     WDT_stop();
   }
 }
 
 bool TheThingsNode::isUSBConnected()
 {
-  return USBSTA&(1<<VBUS);
+  return USBSTA & (1 << VBUS);
 }
 
 /******************************************************************************
  * PRIVATE
  *****************************************************************************/
 
-TheThingsNode::TheThingsNode() 
+TheThingsNode::TheThingsNode()
 {
   configInterval(false, 60000);
 
@@ -700,12 +740,13 @@ TheThingsNode::TheThingsNode()
   setColor(TTN_BLACK);
 
   // TODO: Can we enable/disable this at will to save memory?
-  USBCON|=(1<<OTGPADE);
+  USBCON |= (1 << OTGPADE);
 
   pinMode(TTN_VBAT_MEAS_EN, OUTPUT);
   digitalWrite(TTN_VBAT_MEAS_EN, HIGH);
 
-  if (!isUSBConnected() || this->USBDeepSleep) {
+  if (!isUSBConnected() || this->USBDeepSleep)
+  {
     WDT_start();
   }
 }
@@ -744,21 +785,21 @@ void TheThingsNode::wakeMotion()
   // describes motion interrupt setup for low power:
   // http://arduino.stackexchange.com/questions/1475/setting-up-the-mma8452-to-trigger-interrupt
   writeMotion(TTN_CTRL_REG1, (0 | TTN_DR << 3) | TTN_SR << 6); //DR and SR defined data rate and sleep rate
-  writeMotion(TTN_CTRL_REG2, 0x1F);  //LP mode in sleep and active, autosleep on
-  writeMotion(TTN_ASLP_CNT, TTN_SC);  //defined sleep count
-  writeMotion(TTN_CTRL_REG3, 0x42); //Transient interrupt
-  writeMotion(TTN_CTRL_REG4, 0x20); //Transient interrupt source on
-  writeMotion(TTN_CTRL_REG5, 0x20); //Transient to pin INT1, the rest to INT2
-  writeMotion(TTN_TRANSIENT_CFG, 0x0E); //Flag latch disabled, motion on all axes
-  writeMotion(TTN_TRANSIENT_THS, TTN_MT); //Motion threshold, debounce in inc/dec mode
-  writeMotion(TTN_TRANSIENT_COUNT, TTN_MDC);  //Motion delay
+  writeMotion(TTN_CTRL_REG2, 0x1F);                            //LP mode in sleep and active, autosleep on
+  writeMotion(TTN_ASLP_CNT, TTN_SC);                           //defined sleep count
+  writeMotion(TTN_CTRL_REG3, 0x42);                            //Transient interrupt
+  writeMotion(TTN_CTRL_REG4, 0x20);                            //Transient interrupt source on
+  writeMotion(TTN_CTRL_REG5, 0x20);                            //Transient to pin INT1, the rest to INT2
+  writeMotion(TTN_TRANSIENT_CFG, 0x0E);                        //Flag latch disabled, motion on all axes
+  writeMotion(TTN_TRANSIENT_THS, TTN_MT);                      //Motion threshold, debounce in inc/dec mode
+  writeMotion(TTN_TRANSIENT_COUNT, TTN_MDC);                   //Motion delay
 
   writeMotion(TTN_CTRL_REG1, (0x01 | TTN_DR << 3) | TTN_SR << 6); //Put ACC in active mode
   delay(300);
   readMotion(TTN_TRANSIENT_SRC);
 }
 
-void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned  char DATA)  //SEND data to MMA8652
+void TheThingsNode::writeMotion(unsigned char REG_ADDRESS, unsigned char DATA) //SEND data to MMA8652
 {
   Wire.beginTransmission(TTN_ADDR_ACC);
   Wire.write(REG_ADDRESS);
@@ -779,7 +820,8 @@ uint8_t TheThingsNode::readMotion(unsigned char REG_ADDRESS)
 
 void TheThingsNode::WDT_start()
 {
-  if (this->wdtStarted) {
+  if (this->wdtStarted)
+  {
     return;
   }
 
@@ -795,7 +837,8 @@ void TheThingsNode::WDT_start()
 
 void TheThingsNode::WDT_stop()
 {
-  if (!this->wdtStarted) {
+  if (!this->wdtStarted)
+  {
     return;
   }
 
@@ -803,7 +846,7 @@ void TheThingsNode::WDT_stop()
   MCUSR &= ~(1 << WDRF);
   WDTCSR |= (1 << WDCE) | (1 << WDE);
   WDTCSR = 0x00;
-  WDTCSR = 0 << WDP0 | 1 << WDP1 | 0 << WDP2 | 0 << WDP3; 
+  WDTCSR = 0 << WDP0 | 1 << WDP1 | 0 << WDP2 | 0 << WDP3;
   sei();
 
   this->wdtStarted = true;
@@ -811,14 +854,14 @@ void TheThingsNode::WDT_stop()
 
 void TheThingsNode::deepSleep(void)
 {
-  ADCSRA &= ~_BV(ADEN); 
+  ADCSRA &= ~_BV(ADEN);
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   MCUCR |= (1 << JTD);
   USBCON |= (1 << FRZCLK);
   //USBCON &= ~_BV(USBE);
   PLLCSR &= ~_BV(PLLE);
   sleep_enable();
-  sleep_mode();   //Sweet dreams!
+  sleep_mode(); //Sweet dreams!
 
   //wake up, after ISR we arrive here ->
   sleep_disable();
@@ -826,5 +869,7 @@ void TheThingsNode::deepSleep(void)
   power_all_enable();
   //USBCON |= (1 << USBE);
   USBCON &= ~_BV(FRZCLK);
-  ADCSRA |= (1 << ADEN);  
+  ADCSRA |= (1 << ADEN);
 }
+
+#endif

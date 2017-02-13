@@ -19,12 +19,14 @@ TheThingsNode *node;
 #define PORT_MOTION 3
 #define PORT_BUTTON 4
 
-void setup() {
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   // Config Node
   node = TheThingsNode::setup();
@@ -50,33 +52,39 @@ void setup() {
   sendData(PORT_SETUP);
 }
 
-void loop() {
+void loop()
+{
   node->loop();
 }
 
-void interval() {
+void interval()
+{
   node->setColor(TTN_BLUE);
-  
+
   debugSerial.println("-- SEND: INTERVAL");
   sendData(PORT_INTERVAL);
 }
 
-void wake() {
+void wake()
+{
   node->setColor(TTN_GREEN);
 }
 
-void sleep() {
+void sleep()
+{
   node->setColor(TTN_BLACK);
 }
 
-void onMotionStart() {
+void onMotionStart()
+{
   node->setColor(TTN_BLUE);
 
   debugSerial.print("-- SEND: MOTION");
   sendData(PORT_MOTION);
 }
 
-void onButtonRelease(unsigned long duration) {
+void onButtonRelease(unsigned long duration)
+{
   node->setColor(TTN_BLUE);
 
   debugSerial.print("-- SEND: BUTTON");
@@ -85,25 +93,26 @@ void onButtonRelease(unsigned long duration) {
   sendData(PORT_BUTTON);
 }
 
-void sendData(uint8_t port) {
+void sendData(uint8_t port)
+{
   ttn.showStatus();
   node->showStatus();
 
-  byte* bytes;
+  byte *bytes;
   byte payload[6];
 
   uint16_t battery = node->getBattery();
-  bytes = (byte*) &battery;
+  bytes = (byte *)&battery;
   payload[0] = bytes[1];
   payload[1] = bytes[0];
 
   uint16_t light = node->getLight();
-  bytes = (byte*) &light;
+  bytes = (byte *)&light;
   payload[2] = bytes[1];
   payload[3] = bytes[0];
 
   int16_t temperature = round(node->getTemperatureAsFloat() * 100);
-  bytes = (byte*) &temperature;
+  bytes = (byte *)&temperature;
   payload[4] = bytes[1];
   payload[5] = bytes[0];
 

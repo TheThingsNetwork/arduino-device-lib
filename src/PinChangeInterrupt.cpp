@@ -23,6 +23,8 @@ THE SOFTWARE.
 
 #include "PinChangeInterrupt.h"
 
+#ifdef ARDUINO_ARCH_AVR
+
 // manually include cpp files here to save flash if only 1 ISR is present
 // or if the user knows he just wants to compile all enabled ports.
 #if defined(PCINT_ALINKAGE) && defined(PCINT_COMPILE_ENABLED_ISR)
@@ -82,9 +84,10 @@ void PinChangeInterruptEventPCINT31(void) __attribute__((weak, alias("pcint_null
 
 // useless function for weak implemented/not used functions, extern c needed for the alias
 extern "C" {
-	void pcint_null_callback(void) {
-		// useless
-	}
+void pcint_null_callback(void)
+{
+    // useless
+}
 }
 
 //================================================================================
@@ -92,157 +95,166 @@ extern "C" {
 //================================================================================
 
 // variables to save the last port states and the interrupt settings
-uint8_t oldPorts[PCINT_NUM_USED_PORTS] = { 0 };
-uint8_t fallingPorts[PCINT_NUM_USED_PORTS] = { 0 };
-uint8_t risingPorts[PCINT_NUM_USED_PORTS] = { 0 };
+uint8_t oldPorts[PCINT_NUM_USED_PORTS] = {0};
+uint8_t fallingPorts[PCINT_NUM_USED_PORTS] = {0};
+uint8_t risingPorts[PCINT_NUM_USED_PORTS] = {0};
 
-void enablePinChangeInterruptHelper(const uint8_t pcintPort, const uint8_t pcintMask, const uint8_t arrayPos){
-	// Update the old state to the actual state
-	switch(pcintPort){
+void enablePinChangeInterruptHelper(const uint8_t pcintPort, const uint8_t pcintMask, const uint8_t arrayPos)
+{
+    // Update the old state to the actual state
+    switch (pcintPort)
+    {
 #ifdef PCINT_INPUT_PORT0_USED
-		case 0:
-			oldPorts[arrayPos] = PCINT_INPUT_PORT0;
-		break;
+    case 0:
+	oldPorts[arrayPos] = PCINT_INPUT_PORT0;
+	break;
 #endif
 #ifdef PCINT_INPUT_PORT1_USED
-		case 1:
-			oldPorts[arrayPos] = PCINT_INPUT_PORT1;
-		break;
+    case 1:
+	oldPorts[arrayPos] = PCINT_INPUT_PORT1;
+	break;
 #endif
 #ifdef PCINT_INPUT_PORT2_USED
-		case 2:
-			oldPorts[arrayPos] = PCINT_INPUT_PORT2;
-		break;
+    case 2:
+	oldPorts[arrayPos] = PCINT_INPUT_PORT2;
+	break;
 #endif
 #ifdef PCINT_INPUT_PORT3_USED
-		case 3:
-			oldPorts[arrayPos] = PCINT_INPUT_PORT3;
-		break;
+    case 3:
+	oldPorts[arrayPos] = PCINT_INPUT_PORT3;
+	break;
 #endif
-	}
+    }
 
-	// Pin change mask registers decide which pins are ENABLE as triggers
+// Pin change mask registers decide which pins are ENABLE as triggers
 #ifdef PCMSK0
 #ifdef PCMSK1
-	// Special case for Attinyx4 where PCMSK1 and PCMSK0 are not next to each other
-	if(&PCMSK1 - &PCMSK0 == 1){
+    // Special case for Attinyx4 where PCMSK1 and PCMSK0 are not next to each other
+    if (&PCMSK1 - &PCMSK0 == 1)
+    {
 #endif
-		*(&PCMSK0 + pcintPort) |= pcintMask;
+	*(&PCMSK0 + pcintPort) |= pcintMask;
 #ifdef PCMSK1
-	}
-	else{
-		switch(pcintPort){
-			case 0:
-				PCMSK0 |= pcintMask;
-			break;
-			case 1:
-				PCMSK1 |= pcintMask;
-			break;
+    }
+    else
+    {
+	switch (pcintPort)
+	{
+	case 0:
+	    PCMSK0 |= pcintMask;
+	    break;
+	case 1:
+	    PCMSK1 |= pcintMask;
+	    break;
 #ifdef PCMSK2
-			case 2:
-				PCMSK2 |= pcintMask;
-			break;
+	case 2:
+	    PCMSK2 |= pcintMask;
+	    break;
 #endif
 #ifdef PCMSK3
-			case 3:
-				PCMSK3 |= pcintMask;
-			break;
+	case 3:
+	    PCMSK3 |= pcintMask;
+	    break;
 #endif
-		}
 	}
+    }
 #endif
 #elif defined(PCMSK)
-	*(&PCMSK + pcintPort) |= pcintMask;
+    *(&PCMSK + pcintPort) |= pcintMask;
 #endif
 
-	// PCICR: Pin Change Interrupt Control Register - enables interrupt vectors
+// PCICR: Pin Change Interrupt Control Register - enables interrupt vectors
 #ifdef PCICR
-	PCICR |= (1  << (pcintPort + PCIE0));
+    PCICR |= (1 << (pcintPort + PCIE0));
 #elif defined(GIMSK) && defined(PCIE0) /* e.g. ATtiny X4 */
-	GIMSK |= (1  << (pcintPort + PCIE0));
-#elif defined(GIMSK) && defined(PCIE) /* e.g. ATtiny X5 */
-	GIMSK |= (1  << (pcintPort + PCIE));
+    GIMSK |= (1 << (pcintPort + PCIE0));
+#elif defined(GIMSK) && defined(PCIE)  /* e.g. ATtiny X5 */
+    GIMSK |= (1 << (pcintPort + PCIE));
 #else
 #error MCU has no such a register
 #endif
 }
 
-void disablePinChangeInterruptHelper(const uint8_t pcintPort, const uint8_t pcintMask) {
-	bool disable = false;
+void disablePinChangeInterruptHelper(const uint8_t pcintPort, const uint8_t pcintMask)
+{
+    bool disable = false;
 #ifdef PCMSK0
 #ifdef PCMSK1
-	// Special case for Attinyx4 where PCMSK1 and PCMSK0 are not next to each other
-	if(&PCMSK1 - &PCMSK0 == 1){
+    // Special case for Attinyx4 where PCMSK1 and PCMSK0 are not next to each other
+    if (&PCMSK1 - &PCMSK0 == 1)
+    {
 #endif
-		// disable the mask.
-		*(&PCMSK0 + pcintPort) &= ~pcintMask;
-
-		// if that's the last one, disable the interrupt.
-		if (*(&PCMSK0 + pcintPort) == 0)
-			disable = true;
-#ifdef PCMSK1
-	}
-	else{
-		switch(pcintPort){
-			case 0:
-				// disable the mask.
-				PCMSK0 &= ~pcintMask;
-
-				// if that's the last one, disable the interrupt.
-				if (!PCMSK0)
-					disable = true;
-			break;
-			case 1:
-				// disable the mask.
-				PCMSK1 &= ~pcintMask;
-
-				// if that's the last one, disable the interrupt.
-				if (!PCMSK1)
-					disable = true;
-			break;
-#ifdef PCMSK2
-			case 2:
-				// disable the mask.
-				PCMSK2 &= ~pcintMask;
-
-				// if that's the last one, disable the interrupt.
-				if (!PCMSK2)
-					disable = true;
-			break;
-#endif
-#ifdef PCMSK3
-			case 3:
-				// disable the mask.
-				PCMSK3 &= ~pcintMask;
-
-				// if that's the last one, disable the interrupt.
-				if (!PCMSK3)
-					disable = true;
-			break;
-#endif
-		}
-	}
-#endif
-#elif defined(PCMSK)
 	// disable the mask.
-	*(&PCMSK + pcintPort) &= ~pcintMask;
+	*(&PCMSK0 + pcintPort) &= ~pcintMask;
 
 	// if that's the last one, disable the interrupt.
-	if (*(&PCMSK + pcintPort) == 0)
-		disable = true;
-#endif
-	if(disable)
+	if (*(&PCMSK0 + pcintPort) == 0)
+	    disable = true;
+#ifdef PCMSK1
+    }
+    else
+    {
+	switch (pcintPort)
 	{
+	case 0:
+	    // disable the mask.
+	    PCMSK0 &= ~pcintMask;
+
+	    // if that's the last one, disable the interrupt.
+	    if (!PCMSK0)
+		disable = true;
+	    break;
+	case 1:
+	    // disable the mask.
+	    PCMSK1 &= ~pcintMask;
+
+	    // if that's the last one, disable the interrupt.
+	    if (!PCMSK1)
+		disable = true;
+	    break;
+#ifdef PCMSK2
+	case 2:
+	    // disable the mask.
+	    PCMSK2 &= ~pcintMask;
+
+	    // if that's the last one, disable the interrupt.
+	    if (!PCMSK2)
+		disable = true;
+	    break;
+#endif
+#ifdef PCMSK3
+	case 3:
+	    // disable the mask.
+	    PCMSK3 &= ~pcintMask;
+
+	    // if that's the last one, disable the interrupt.
+	    if (!PCMSK3)
+		disable = true;
+	    break;
+#endif
+	}
+    }
+#endif
+#elif defined(PCMSK)
+    // disable the mask.
+    *(&PCMSK + pcintPort) &= ~pcintMask;
+
+    // if that's the last one, disable the interrupt.
+    if (*(&PCMSK + pcintPort) == 0)
+	disable = true;
+#endif
+    if (disable)
+    {
 #ifdef PCICR
-		PCICR &= ~(1  << (pcintPort + PCIE0));
+	PCICR &= ~(1 << (pcintPort + PCIE0));
 #elif defined(GIMSK) && defined(PCIE0) /* e.g. ATtiny X4 */
-		GIMSK &= ~(1  << (pcintPort + PCIE0));
-#elif defined(GIMSK) && defined(PCIE) /* e.g. ATtiny X5 */
-		GIMSK &= ~(1  << (pcintPort + PCIE));
+	GIMSK &= ~(1 << (pcintPort + PCIE0));
+#elif defined(GIMSK) && defined(PCIE)  /* e.g. ATtiny X5 */
+	GIMSK &= ~(1 << (pcintPort + PCIE));
 #else
 #error MCU has no such a register
 #endif
-	}
+    }
 }
 
 /*
@@ -325,3 +337,5 @@ pop r1
 reti
 }
 */
+
+#endif

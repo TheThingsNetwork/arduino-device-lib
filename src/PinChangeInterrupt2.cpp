@@ -23,53 +23,56 @@ THE SOFTWARE.
 
 #include "PinChangeInterrupt.h"
 
+#ifdef ARDUINO_ARCH_AVR
+
 //================================================================================
 // Interrupt Handler
 //================================================================================
 
 // prevent compilation twice if included from the .cpp to force compile all ISRs
-#if defined(PCINT_ALINKAGE) && defined(PCINT_COMPILE_ENABLED_ISR) && defined(PCINT_INCLUDE_FROM_CPP) \
-	|| !defined(PCINT_ALINKAGE) || !defined(PCINT_COMPILE_ENABLED_ISR)
+#if defined(PCINT_ALINKAGE) && defined(PCINT_COMPILE_ENABLED_ISR) && defined(PCINT_INCLUDE_FROM_CPP) || !defined(PCINT_ALINKAGE) || !defined(PCINT_COMPILE_ENABLED_ISR)
 
 #if (PCINT_USE_PORT2 == true)
 
-void attachPinChangeInterrupt2(void) {
-	// fake function to make the IDE link this file
+void attachPinChangeInterrupt2(void)
+{
+    // fake function to make the IDE link this file
 }
 
-ISR(PCINT2_vect) {
-	// get the new and old pin states for port
-	uint8_t newPort = PCINT_INPUT_PORT2;
+ISR(PCINT2_vect)
+{
+    // get the new and old pin states for port
+    uint8_t newPort = PCINT_INPUT_PORT2;
 
-	// compare with the old value to detect a rising or falling
-	uint8_t arrayPos = getArrayPosPCINT(2);
-	uint8_t change = newPort ^ oldPorts[arrayPos];
-	uint8_t rising = change & newPort;
-	uint8_t falling = change & oldPorts[arrayPos];
+    // compare with the old value to detect a rising or falling
+    uint8_t arrayPos = getArrayPosPCINT(2);
+    uint8_t change = newPort ^ oldPorts[arrayPos];
+    uint8_t rising = change & newPort;
+    uint8_t falling = change & oldPorts[arrayPos];
 
-	// check which pins are triggered, compared with the settings
-	uint8_t risingTrigger = rising & risingPorts[arrayPos];
-	uint8_t fallingTrigger = falling & fallingPorts[arrayPos];
-	uint8_t trigger = risingTrigger | fallingTrigger;
+    // check which pins are triggered, compared with the settings
+    uint8_t risingTrigger = rising & risingPorts[arrayPos];
+    uint8_t fallingTrigger = falling & fallingPorts[arrayPos];
+    uint8_t trigger = risingTrigger | fallingTrigger;
 
-	// save the new state for next comparison
-	oldPorts[arrayPos] = newPort;
+    // save the new state for next comparison
+    oldPorts[arrayPos] = newPort;
 
-	// Execute all functions that should be triggered
-	// This way we can exclude a single function
-	// and the calling is also much faster
-	// We may also reorder the pins for different priority
+// Execute all functions that should be triggered
+// This way we can exclude a single function
+// and the calling is also much faster
+// We may also reorder the pins for different priority
 #if !defined(PCINT_CALLBACK_PORT2)
-	PCINT_CALLBACK(0, 16);
-	PCINT_CALLBACK(1, 17);
-	PCINT_CALLBACK(2, 18);
-	PCINT_CALLBACK(3, 19);
-	PCINT_CALLBACK(4, 20);
-	PCINT_CALLBACK(5, 21);
-	PCINT_CALLBACK(6, 22);
-	PCINT_CALLBACK(7, 23);
+    PCINT_CALLBACK(0, 16);
+    PCINT_CALLBACK(1, 17);
+    PCINT_CALLBACK(2, 18);
+    PCINT_CALLBACK(3, 19);
+    PCINT_CALLBACK(4, 20);
+    PCINT_CALLBACK(5, 21);
+    PCINT_CALLBACK(6, 22);
+    PCINT_CALLBACK(7, 23);
 #else
-	PCINT_CALLBACK_PORT2
+    PCINT_CALLBACK_PORT2
 #endif
 }
 
@@ -95,50 +98,58 @@ Serial.println("#endif");
 */
 #if (PCINT_USE_PCINT16 == true)
 volatile callback callbackPCINT16 = pcint_null_callback;
-void PinChangeInterruptEventPCINT16(void) {
-	callbackPCINT16();
+void PinChangeInterruptEventPCINT16(void)
+{
+    callbackPCINT16();
 }
 #endif
 #if (PCINT_USE_PCINT17 == true)
 volatile callback callbackPCINT17 = pcint_null_callback;
-void PinChangeInterruptEventPCINT17(void) {
-	callbackPCINT17();
+void PinChangeInterruptEventPCINT17(void)
+{
+    callbackPCINT17();
 }
 #endif
 #if (PCINT_USE_PCINT18 == true)
 volatile callback callbackPCINT18 = pcint_null_callback;
-void PinChangeInterruptEventPCINT18(void) {
-	callbackPCINT18();
+void PinChangeInterruptEventPCINT18(void)
+{
+    callbackPCINT18();
 }
 #endif
 #if (PCINT_USE_PCINT19 == true)
 volatile callback callbackPCINT19 = pcint_null_callback;
-void PinChangeInterruptEventPCINT19(void) {
-	callbackPCINT19();
+void PinChangeInterruptEventPCINT19(void)
+{
+    callbackPCINT19();
 }
 #endif
 #if (PCINT_USE_PCINT20 == true)
 volatile callback callbackPCINT20 = pcint_null_callback;
-void PinChangeInterruptEventPCINT20(void) {
-	callbackPCINT20();
+void PinChangeInterruptEventPCINT20(void)
+{
+    callbackPCINT20();
 }
 #endif
 #if (PCINT_USE_PCINT21 == true)
 volatile callback callbackPCINT21 = pcint_null_callback;
-void PinChangeInterruptEventPCINT21(void) {
-	callbackPCINT21();
+void PinChangeInterruptEventPCINT21(void)
+{
+    callbackPCINT21();
 }
 #endif
 #if (PCINT_USE_PCINT22 == true)
 volatile callback callbackPCINT22 = pcint_null_callback;
-void PinChangeInterruptEventPCINT22(void) {
-	callbackPCINT22();
+void PinChangeInterruptEventPCINT22(void)
+{
+    callbackPCINT22();
 }
 #endif
 #if (PCINT_USE_PCINT23 == true)
 volatile callback callbackPCINT23 = pcint_null_callback;
-void PinChangeInterruptEventPCINT23(void) {
-	callbackPCINT23();
+void PinChangeInterruptEventPCINT23(void)
+{
+    callbackPCINT23();
 }
 #endif
 
@@ -147,3 +158,5 @@ void PinChangeInterruptEventPCINT23(void) {
 #endif // PCINT_USE_PORT2
 
 #endif // PCINT_INCLUDE_FROM_CPP
+
+#endif

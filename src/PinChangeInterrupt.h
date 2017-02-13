@@ -29,9 +29,7 @@ THE SOFTWARE.
 
 #include "Arduino.h"
 
-#ifndef ARDUINO_ARCH_AVR
-#error This library can only be used with AVR
-#endif
+#ifdef ARDUINO_ARCH_AVR
 
 //================================================================================
 // General Helper Definitions and Mappings
@@ -68,7 +66,7 @@ if (trigger & (1 << bit)) \
 PinChangeInterruptEventPCINT ## pcint PCINT_MACRO_BRACKETS
 
 // definition used by the user to create custom LowLevel PCINT Events
-#define PinChangeInterruptEvent_Wrapper(n) PinChangeInterruptEventPCINT ## n
+#define PinChangeInterruptEvent_Wrapper(n) PinChangeInterruptEventPCINT##n
 #define PinChangeInterruptEvent(n) PinChangeInterruptEvent_Wrapper(n)
 
 // missing 1.0.6 definition workaround
@@ -100,11 +98,11 @@ PinChangeInterruptEventPCINT ## pcint PCINT_MACRO_BRACKETS
 //================================================================================
 
 // typedef for our callback function pointers
-typedef void(*callback)(void);
+typedef void (*callback)(void);
 
 // useless function for weak implemented/not used functions, extern c needed for the alias
 extern "C" {
-	void pcint_null_callback(void);
+void pcint_null_callback(void);
 }
 
 void PinChangeInterruptEventPCINT0(void);
@@ -144,10 +142,10 @@ extern uint8_t oldPorts[PCINT_NUM_USED_PORTS];
 extern uint8_t fallingPorts[PCINT_NUM_USED_PORTS];
 extern uint8_t risingPorts[PCINT_NUM_USED_PORTS];
 
-
 static inline uint8_t getArrayPosPCINT(uint8_t pcintPort) __attribute__((always_inline));
-uint8_t getArrayPosPCINT(uint8_t pcintPort) {
-	/*
+uint8_t getArrayPosPCINT(uint8_t pcintPort)
+{
+    /*
 	Maps the port to the array.
 	This is needed since you can deactivate ports
 	and the array will dynamically resize to save ram.
@@ -158,90 +156,109 @@ uint8_t getArrayPosPCINT(uint8_t pcintPort) {
 	That's why the function is inline.
 	*/
 
-	if (PCINT_NUM_USED_PORTS == 1) {
-		// only the first element is used for a single port
-		return 0;
+    if (PCINT_NUM_USED_PORTS == 1)
+    {
+	// only the first element is used for a single port
+	return 0;
+    }
+    else if (PCINT_NUM_USED_PORTS == PCINT_NUM_PORTS)
+    {
+	// use all ports and down remap the array position.
+	return pcintPort;
+    }
+    else if (PCINT_NUM_PORTS - PCINT_NUM_USED_PORTS == 1)
+    {
+	// one port is not used
+	if (PCINT_USE_PORT0 == 0)
+	{
+	    // first port is not used, decrease all port numbers
+	    return (pcintPort - 1);
 	}
-	else if (PCINT_NUM_USED_PORTS == PCINT_NUM_PORTS) {
-		// use all ports and down remap the array position.
+	else if (PCINT_HAS_PORT3 == 0)
+	{
+	    // 3 ports (standard)
+	    if (PCINT_USE_PORT2 == 0)
+	    {
+		// last port not used, no mapping needed
 		return pcintPort;
+	    }
+	    else
+	    {
+		// worst case, port in the middle not used, remap
+		return ((pcintPort >> 1) & 0x01);
+		//if (pcintPort == 0) return 0;
+		//else return 1;
+	    }
 	}
-	else if (PCINT_NUM_PORTS - PCINT_NUM_USED_PORTS == 1) {
-		// one port is not used
-		if (PCINT_USE_PORT0 == 0) {
-			// first port is not used, decrease all port numbers
-			return (pcintPort - 1);
-		}
-		else if (PCINT_HAS_PORT3 == 0) {
-			// 3 ports (standard)
-			if (PCINT_USE_PORT2 == 0) {
-				// last port not used, no mapping needed
-				return pcintPort;
-			}
-			else {
-				// worst case, port in the middle not used, remap
-				return ((pcintPort >> 1) & 0x01);
-				//if (pcintPort == 0) return 0;
-				//else return 1;
-			}
-		}
-		else {
-			// 4 ports (special case for a few AVRs)
-			if (PCINT_USE_PORT3 == 0) {
-				// last port not used, no mapping needed
-				return pcintPort;
-			}
-			else {
-				// worst case, one of two ports in the middle not used, remap
-				if (PCINT_USE_PORT1 == 0) {
-					// port1 not used, mapping needed
-					if (pcintPort == 0)
-						return 0;
-					else
-						return pcintPort - 1;
-				}
-				else if (PCINT_USE_PORT2 == 0) {
-					// port2 not used, mapping needed
-					if (pcintPort == 3)
-						return 2;
-					else
-						return pcintPort;
-				}
-			}
-		}
-
-		// use all ports and down remap the array position.
+	else
+	{
+	    // 4 ports (special case for a few AVRs)
+	    if (PCINT_USE_PORT3 == 0)
+	    {
+		// last port not used, no mapping needed
 		return pcintPort;
-	}
-	else if (PCINT_NUM_PORTS - PCINT_NUM_USED_PORTS == 2) {
-		if (PCINT_USE_PORT2 == 0 && PCINT_USE_PORT3 == 0) {
-			// no need for mapping
+	    }
+	    else
+	    {
+		// worst case, one of two ports in the middle not used, remap
+		if (PCINT_USE_PORT1 == 0)
+		{
+		    // port1 not used, mapping needed
+		    if (pcintPort == 0)
+			return 0;
+		    else
+			return pcintPort - 1;
+		}
+		else if (PCINT_USE_PORT2 == 0)
+		{
+		    // port2 not used, mapping needed
+		    if (pcintPort == 3)
+			return 2;
+		    else
 			return pcintPort;
 		}
-		else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT3 == 0) {
-			// 1 offset
-			return (pcintPort - 1);
-		}
-		else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT1 == 0) {
-			// 2 offset
-			return (pcintPort - 2);
-		}
-		else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT2 == 0) {
-			// 2 -> 1
-			return (pcintPort >> 1);
-		}
-		else if (PCINT_USE_PORT1 == 0 && PCINT_USE_PORT2 == 0) {
-			// 3 -> 1
-			return (pcintPort >> 1);
-		}
-		else if (PCINT_USE_PORT1 == 0 && PCINT_USE_PORT3 == 0) {
-			// 3 -> 1, 1 -> 0
-			return (pcintPort >> 1);
-		}
+	    }
 	}
 
-	// error
-	return 0;
+	// use all ports and down remap the array position.
+	return pcintPort;
+    }
+    else if (PCINT_NUM_PORTS - PCINT_NUM_USED_PORTS == 2)
+    {
+	if (PCINT_USE_PORT2 == 0 && PCINT_USE_PORT3 == 0)
+	{
+	    // no need for mapping
+	    return pcintPort;
+	}
+	else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT3 == 0)
+	{
+	    // 1 offset
+	    return (pcintPort - 1);
+	}
+	else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT1 == 0)
+	{
+	    // 2 offset
+	    return (pcintPort - 2);
+	}
+	else if (PCINT_USE_PORT0 == 0 && PCINT_USE_PORT2 == 0)
+	{
+	    // 2 -> 1
+	    return (pcintPort >> 1);
+	}
+	else if (PCINT_USE_PORT1 == 0 && PCINT_USE_PORT2 == 0)
+	{
+	    // 3 -> 1
+	    return (pcintPort >> 1);
+	}
+	else if (PCINT_USE_PORT1 == 0 && PCINT_USE_PORT3 == 0)
+	{
+	    // 3 -> 1, 1 -> 0
+	    return (pcintPort >> 1);
+	}
+    }
+
+    // error
+    return 0;
 }
 
 //================================================================================
@@ -380,238 +397,250 @@ Serial.println("#endif");
 */
 
 // API attach function
-static inline void attachPinChangeInterrupt(const uint8_t pcintNum, void(*userFunc)(void), const uint8_t mode) __attribute__((always_inline));
-void attachPinChangeInterrupt(const uint8_t pcintNum, void(*userFunc)(void), const uint8_t mode) {
-#else // no API attach function
+static inline void attachPinChangeInterrupt(const uint8_t pcintNum, void (*userFunc)(void), const uint8_t mode) __attribute__((always_inline));
+void attachPinChangeInterrupt(const uint8_t pcintNum, void (*userFunc)(void), const uint8_t mode)
+{
+#else  // no API attach function
 static inline void attachPinChangeInterrupt(const uint8_t pcintNum, const uint8_t mode) __attribute__((always_inline));
-void attachPinChangeInterrupt(const uint8_t pcintNum, const uint8_t mode) {
+void attachPinChangeInterrupt(const uint8_t pcintNum, const uint8_t mode)
+{
 #endif // PCINT_API
 
-	// check if pcint is a valid pcint, exclude deactivated ports
-	uint8_t pcintPort = pcintNum / 8;
-	uint8_t pcintBit = pcintNum % 8;
+    // check if pcint is a valid pcint, exclude deactivated ports
+    uint8_t pcintPort = pcintNum / 8;
+    uint8_t pcintBit = pcintNum % 8;
 
-	// port 0
-	if (pcintPort == 0 && PCINT_USE_PORT0 == true) {
-		// use fake functions to make the ISRs compile with .a linkage
+    // port 0
+    if (pcintPort == 0 && PCINT_USE_PORT0 == true)
+    {
+// use fake functions to make the ISRs compile with .a linkage
 #if defined(PCINT_ALINKAGE) && !defined(PCINT_COMPILE_ENABLED_ISR)
-		attachPinChangeInterrupt0();
+	attachPinChangeInterrupt0();
 #endif
 
-		//  attache the function pointers for the API
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT0 == true)
-		if (pcintNum == 0)
-			callbackPCINT0 = userFunc;
+	if (pcintNum == 0)
+	    callbackPCINT0 = userFunc;
 #endif
 #if (PCINT_USE_PCINT1 == true)
-		if (pcintNum == 1)
-			callbackPCINT1 = userFunc;
+	if (pcintNum == 1)
+	    callbackPCINT1 = userFunc;
 #endif
 #if (PCINT_USE_PCINT2 == true)
-		if (pcintNum == 2)
-			callbackPCINT2 = userFunc;
+	if (pcintNum == 2)
+	    callbackPCINT2 = userFunc;
 #endif
 #if (PCINT_USE_PCINT3 == true)
-		if (pcintNum == 3)
-			callbackPCINT3 = userFunc;
+	if (pcintNum == 3)
+	    callbackPCINT3 = userFunc;
 #endif
 #if (PCINT_USE_PCINT4 == true)
-		if (pcintNum == 4)
-			callbackPCINT4 = userFunc;
+	if (pcintNum == 4)
+	    callbackPCINT4 = userFunc;
 #endif
 #if (PCINT_USE_PCINT5 == true)
-		if (pcintNum == 5)
-			callbackPCINT5 = userFunc;
+	if (pcintNum == 5)
+	    callbackPCINT5 = userFunc;
 #endif
 #if (PCINT_USE_PCINT6 == true)
-		if (pcintNum == 6)
-			callbackPCINT6 = userFunc;
+	if (pcintNum == 6)
+	    callbackPCINT6 = userFunc;
 #endif
 #if (PCINT_USE_PCINT7 == true)
-		if (pcintNum == 7)
-			callbackPCINT7 = userFunc;
+	if (pcintNum == 7)
+	    callbackPCINT7 = userFunc;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 1
-	else if (pcintPort == 1 && PCINT_USE_PORT1 == true) {
-		// use fake functions to make the ISRs compile with .a linkage
+    // port 1
+    else if (pcintPort == 1 && PCINT_USE_PORT1 == true)
+    {
+// use fake functions to make the ISRs compile with .a linkage
 #if defined(PCINT_ALINKAGE) && !defined(PCINT_COMPILE_ENABLED_ISR)
-		attachPinChangeInterrupt1();
+	attachPinChangeInterrupt1();
 #endif
 
-		//  attache the function pointers for the API
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT8 == true)
-		if (pcintNum == 8)
-			callbackPCINT8 = userFunc;
+	if (pcintNum == 8)
+	    callbackPCINT8 = userFunc;
 #endif
 #if (PCINT_USE_PCINT9 == true)
-		if (pcintNum == 9)
-			callbackPCINT9 = userFunc;
+	if (pcintNum == 9)
+	    callbackPCINT9 = userFunc;
 #endif
 #if (PCINT_USE_PCINT10 == true)
-		if (pcintNum == 10)
-			callbackPCINT10 = userFunc;
+	if (pcintNum == 10)
+	    callbackPCINT10 = userFunc;
 #endif
 #if (PCINT_USE_PCINT11 == true)
-		if (pcintNum == 11)
-			callbackPCINT11 = userFunc;
+	if (pcintNum == 11)
+	    callbackPCINT11 = userFunc;
 #endif
 #if (PCINT_USE_PCINT12 == true)
-		if (pcintNum == 12)
-			callbackPCINT12 = userFunc;
+	if (pcintNum == 12)
+	    callbackPCINT12 = userFunc;
 #endif
 #if (PCINT_USE_PCINT13 == true)
-		if (pcintNum == 13)
-			callbackPCINT13 = userFunc;
+	if (pcintNum == 13)
+	    callbackPCINT13 = userFunc;
 #endif
 #if (PCINT_USE_PCINT14 == true)
-		if (pcintNum == 14)
-			callbackPCINT14 = userFunc;
+	if (pcintNum == 14)
+	    callbackPCINT14 = userFunc;
 #endif
 #if (PCINT_USE_PCINT15 == true)
-		if (pcintNum == 15)
-			callbackPCINT15 = userFunc;
+	if (pcintNum == 15)
+	    callbackPCINT15 = userFunc;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 2
-	else if (pcintPort == 2 && PCINT_USE_PORT2 == true) {
-		// use fake functions to make the ISRs compile with .a linkage
+    // port 2
+    else if (pcintPort == 2 && PCINT_USE_PORT2 == true)
+    {
+// use fake functions to make the ISRs compile with .a linkage
 #if defined(PCINT_ALINKAGE) && !defined(PCINT_COMPILE_ENABLED_ISR)
-		attachPinChangeInterrupt2();
+	attachPinChangeInterrupt2();
 #endif
-		//  attache the function pointers for the API
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT16 == true)
-		if (pcintNum == 16)
-			callbackPCINT16 = userFunc;
+	if (pcintNum == 16)
+	    callbackPCINT16 = userFunc;
 #endif
 #if (PCINT_USE_PCINT17 == true)
-		if (pcintNum == 17)
-			callbackPCINT17 = userFunc;
+	if (pcintNum == 17)
+	    callbackPCINT17 = userFunc;
 #endif
 #if (PCINT_USE_PCINT18 == true)
-		if (pcintNum == 18)
-			callbackPCINT18 = userFunc;
+	if (pcintNum == 18)
+	    callbackPCINT18 = userFunc;
 #endif
 #if (PCINT_USE_PCINT19 == true)
-		if (pcintNum == 19)
-			callbackPCINT19 = userFunc;
+	if (pcintNum == 19)
+	    callbackPCINT19 = userFunc;
 #endif
 #if (PCINT_USE_PCINT20 == true)
-		if (pcintNum == 20)
-			callbackPCINT20 = userFunc;
+	if (pcintNum == 20)
+	    callbackPCINT20 = userFunc;
 #endif
 #if (PCINT_USE_PCINT21 == true)
-		if (pcintNum == 21)
-			callbackPCINT21 = userFunc;
+	if (pcintNum == 21)
+	    callbackPCINT21 = userFunc;
 #endif
 #if (PCINT_USE_PCINT22 == true)
-		if (pcintNum == 22)
-			callbackPCINT22 = userFunc;
+	if (pcintNum == 22)
+	    callbackPCINT22 = userFunc;
 #endif
 #if (PCINT_USE_PCINT23 == true)
-		if (pcintNum == 23)
-			callbackPCINT23 = userFunc;
+	if (pcintNum == 23)
+	    callbackPCINT23 = userFunc;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 3
-	else if (pcintPort == 3 && PCINT_USE_PORT3 == true) {
-		// use fake functions to make the ISRs compile with .a linkage
+    // port 3
+    else if (pcintPort == 3 && PCINT_USE_PORT3 == true)
+    {
+// use fake functions to make the ISRs compile with .a linkage
 #if defined(PCINT_ALINKAGE) && !defined(PCINT_COMPILE_ENABLED_ISR)
-		attachPinChangeInterrupt3();
+	attachPinChangeInterrupt3();
 #endif
-		//  attache the function pointers for the API
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT24 == true)
-		if (pcintNum == 24)
-			callbackPCINT24 = userFunc;
+	if (pcintNum == 24)
+	    callbackPCINT24 = userFunc;
 #endif
 #if (PCINT_USE_PCINT25 == true)
-		if (pcintNum == 25)
-			callbackPCINT25 = userFunc;
+	if (pcintNum == 25)
+	    callbackPCINT25 = userFunc;
 #endif
 #if (PCINT_USE_PCINT26 == true)
-		if (pcintNum == 26)
-			callbackPCINT26 = userFunc;
+	if (pcintNum == 26)
+	    callbackPCINT26 = userFunc;
 #endif
 #if (PCINT_USE_PCINT27 == true)
-		if (pcintNum == 27)
-			callbackPCINT27 = userFunc;
+	if (pcintNum == 27)
+	    callbackPCINT27 = userFunc;
 #endif
 #if (PCINT_USE_PCINT28 == true)
-		if (pcintNum == 28)
-			callbackPCINT28 = userFunc;
+	if (pcintNum == 28)
+	    callbackPCINT28 = userFunc;
 #endif
 #if (PCINT_USE_PCINT29 == true)
-		if (pcintNum == 29)
-			callbackPCINT29 = userFunc;
+	if (pcintNum == 29)
+	    callbackPCINT29 = userFunc;
 #endif
 #if (PCINT_USE_PCINT30 == true)
-		if (pcintNum == 30)
-			callbackPCINT30 = userFunc;
+	if (pcintNum == 30)
+	    callbackPCINT30 = userFunc;
 #endif
 #if (PCINT_USE_PCINT31 == true)
-		if (pcintNum == 31)
-			callbackPCINT31 = userFunc;
+	if (pcintNum == 31)
+	    callbackPCINT31 = userFunc;
 #endif
 #endif // PCINT_API
-	}
-	else return;
+    }
+    else
+	return;
 
-	// get bitmask and array position
-	uint8_t pcintMask = (1 << pcintBit);
-	uint8_t arrayPos = getArrayPosPCINT(pcintPort);
+    // get bitmask and array position
+    uint8_t pcintMask = (1 << pcintBit);
+    uint8_t arrayPos = getArrayPosPCINT(pcintPort);
 
-	// save settings related to mode and registers
-	if (mode == CHANGE || mode == RISING)
-		risingPorts[arrayPos] |= pcintMask;
-	if (mode == CHANGE || mode == FALLING)
-		fallingPorts[arrayPos] |= pcintMask;
+    // save settings related to mode and registers
+    if (mode == CHANGE || mode == RISING)
+	risingPorts[arrayPos] |= pcintMask;
+    if (mode == CHANGE || mode == FALLING)
+	fallingPorts[arrayPos] |= pcintMask;
 
-	// call the actual hardware attach function
-	enablePinChangeInterruptHelper(pcintPort, pcintMask, arrayPos);
+    // call the actual hardware attach function
+    enablePinChangeInterruptHelper(pcintPort, pcintMask, arrayPos);
 }
 
 // enable interrupt again if temporary disabled
 static inline void enablePinChangeInterrupt(const uint8_t pcintNum) __attribute__((always_inline));
-void enablePinChangeInterrupt(const uint8_t pcintNum) {
-	// get PCINT registers
-	uint8_t pcintPort = pcintNum / 8;
-	uint8_t pcintBit = pcintNum % 8;
+void enablePinChangeInterrupt(const uint8_t pcintNum)
+{
+    // get PCINT registers
+    uint8_t pcintPort = pcintNum / 8;
+    uint8_t pcintBit = pcintNum % 8;
 
-	// check if pcint is a valid pcint, exclude deactivated ports
-	if (pcintPort == 0) {
-		if (PCINT_USE_PORT0 == false)
-			return;
-	}
-	else if (pcintPort == 1) {
-		if (PCINT_USE_PORT1 == false)
-			return;
-	}
-	else if (pcintPort == 2) {
-		if (PCINT_USE_PORT2 == false)
-			return;
-	}
-	else if (pcintPort == 3) {
-		if (PCINT_USE_PORT3 == false)
-			return;
-	}
-	else return;
+    // check if pcint is a valid pcint, exclude deactivated ports
+    if (pcintPort == 0)
+    {
+	if (PCINT_USE_PORT0 == false)
+	    return;
+    }
+    else if (pcintPort == 1)
+    {
+	if (PCINT_USE_PORT1 == false)
+	    return;
+    }
+    else if (pcintPort == 2)
+    {
+	if (PCINT_USE_PORT2 == false)
+	    return;
+    }
+    else if (pcintPort == 3)
+    {
+	if (PCINT_USE_PORT3 == false)
+	    return;
+    }
+    else
+	return;
 
-	// call the actual hardware attach function
-	uint8_t pcintMask = (1 << pcintBit);
-	uint8_t arrayPos = getArrayPosPCINT(pcintPort);
-	enablePinChangeInterruptHelper(pcintPort, pcintMask, arrayPos);
+    // call the actual hardware attach function
+    uint8_t pcintMask = (1 << pcintBit);
+    uint8_t arrayPos = getArrayPosPCINT(pcintPort);
+    enablePinChangeInterruptHelper(pcintPort, pcintMask, arrayPos);
 }
-
 
 //================================================================================
 // Detach Function (partly inlined)
@@ -620,214 +649,226 @@ void enablePinChangeInterrupt(const uint8_t pcintNum) {
 void disablePinChangeInterruptHelper(const uint8_t pcintPort, const uint8_t pcintMask);
 static inline void detachPinChangeInterrupt(const uint8_t pcintNum) __attribute__((always_inline));
 
-void detachPinChangeInterrupt(const uint8_t pcintNum) {
-	// get PCINT registers
-	uint8_t pcintPort = pcintNum / 8;
-	uint8_t pcintBit = pcintNum % 8;
+void detachPinChangeInterrupt(const uint8_t pcintNum)
+{
+    // get PCINT registers
+    uint8_t pcintPort = pcintNum / 8;
+    uint8_t pcintBit = pcintNum % 8;
 
-	// check if pcint is a valid pcint, exclude deactivated ports
-	// port 0
-	if (pcintPort == 0 && PCINT_USE_PORT0 == true) {
-		//  attache the function pointers for the API
+    // check if pcint is a valid pcint, exclude deactivated ports
+    // port 0
+    if (pcintPort == 0 && PCINT_USE_PORT0 == true)
+    {
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT0 == true)
-		if (pcintNum == 0)
-			callbackPCINT0 = pcint_null_callback;
+	if (pcintNum == 0)
+	    callbackPCINT0 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT1 == true)
-		if (pcintNum == 1)
-			callbackPCINT1 = pcint_null_callback;
+	if (pcintNum == 1)
+	    callbackPCINT1 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT2 == true)
-		if (pcintNum == 2)
-			callbackPCINT2 = pcint_null_callback;
+	if (pcintNum == 2)
+	    callbackPCINT2 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT3 == true)
-		if (pcintNum == 3)
-			callbackPCINT3 = pcint_null_callback;
+	if (pcintNum == 3)
+	    callbackPCINT3 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT4 == true)
-		if (pcintNum == 4)
-			callbackPCINT4 = pcint_null_callback;
+	if (pcintNum == 4)
+	    callbackPCINT4 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT5 == true)
-		if (pcintNum == 5)
-			callbackPCINT5 = pcint_null_callback;
+	if (pcintNum == 5)
+	    callbackPCINT5 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT6 == true)
-		if (pcintNum == 6)
-			callbackPCINT6 = pcint_null_callback;
+	if (pcintNum == 6)
+	    callbackPCINT6 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT7 == true)
-		if (pcintNum == 7)
-			callbackPCINT7 = pcint_null_callback;
+	if (pcintNum == 7)
+	    callbackPCINT7 = pcint_null_callback;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 1
-	else if (pcintPort == 1 && PCINT_USE_PORT1 == true) {
-		//  attache the function pointers for the API
+    // port 1
+    else if (pcintPort == 1 && PCINT_USE_PORT1 == true)
+    {
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT8 == true)
-		if (pcintNum == 8)
-			callbackPCINT8 = pcint_null_callback;
+	if (pcintNum == 8)
+	    callbackPCINT8 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT9 == true)
-		if (pcintNum == 9)
-			callbackPCINT9 = pcint_null_callback;
+	if (pcintNum == 9)
+	    callbackPCINT9 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT10 == true)
-		if (pcintNum == 10)
-			callbackPCINT10 = pcint_null_callback;
+	if (pcintNum == 10)
+	    callbackPCINT10 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT11 == true)
-		if (pcintNum == 11)
-			callbackPCINT11 = pcint_null_callback;
+	if (pcintNum == 11)
+	    callbackPCINT11 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT12 == true)
-		if (pcintNum == 12)
-			callbackPCINT12 = pcint_null_callback;
+	if (pcintNum == 12)
+	    callbackPCINT12 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT13 == true)
-		if (pcintNum == 13)
-			callbackPCINT13 = pcint_null_callback;
+	if (pcintNum == 13)
+	    callbackPCINT13 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT14 == true)
-		if (pcintNum == 14)
-			callbackPCINT14 = pcint_null_callback;
+	if (pcintNum == 14)
+	    callbackPCINT14 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT15 == true)
-		if (pcintNum == 15)
-			callbackPCINT15 = pcint_null_callback;
+	if (pcintNum == 15)
+	    callbackPCINT15 = pcint_null_callback;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 2
-	else if (pcintPort == 2 && PCINT_USE_PORT2 == true) {
-		//  attache the function pointers for the API
+    // port 2
+    else if (pcintPort == 2 && PCINT_USE_PORT2 == true)
+    {
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT16 == true)
-		if (pcintNum == 16)
-			callbackPCINT16 = pcint_null_callback;
+	if (pcintNum == 16)
+	    callbackPCINT16 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT17 == true)
-		if (pcintNum == 17)
-			callbackPCINT17 = pcint_null_callback;
+	if (pcintNum == 17)
+	    callbackPCINT17 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT18 == true)
-		if (pcintNum == 18)
-			callbackPCINT18 = pcint_null_callback;
+	if (pcintNum == 18)
+	    callbackPCINT18 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT19 == true)
-		if (pcintNum == 19)
-			callbackPCINT19 = pcint_null_callback;
+	if (pcintNum == 19)
+	    callbackPCINT19 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT20 == true)
-		if (pcintNum == 20)
-			callbackPCINT20 = pcint_null_callback;
+	if (pcintNum == 20)
+	    callbackPCINT20 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT21 == true)
-		if (pcintNum == 21)
-			callbackPCINT21 = pcint_null_callback;
+	if (pcintNum == 21)
+	    callbackPCINT21 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT22 == true)
-		if (pcintNum == 22)
-			callbackPCINT22 = pcint_null_callback;
+	if (pcintNum == 22)
+	    callbackPCINT22 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT23 == true)
-		if (pcintNum == 23)
-			callbackPCINT23 = pcint_null_callback;
+	if (pcintNum == 23)
+	    callbackPCINT23 = pcint_null_callback;
 #endif
 #endif // PCINT_API
-	}
+    }
 
-	// port 3
-	else if (pcintPort == 3 && PCINT_USE_PORT3 == true) {
-		//  attache the function pointers for the API
+    // port 3
+    else if (pcintPort == 3 && PCINT_USE_PORT3 == true)
+    {
+//  attache the function pointers for the API
 #if defined(PCINT_API)
 #if (PCINT_USE_PCINT24 == true)
-		if (pcintNum == 24)
-			callbackPCINT24 = pcint_null_callback;
+	if (pcintNum == 24)
+	    callbackPCINT24 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT25 == true)
-		if (pcintNum == 25)
-			callbackPCINT25 = pcint_null_callback;
+	if (pcintNum == 25)
+	    callbackPCINT25 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT26 == true)
-		if (pcintNum == 26)
-			callbackPCINT26 = pcint_null_callback;
+	if (pcintNum == 26)
+	    callbackPCINT26 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT27 == true)
-		if (pcintNum == 27)
-			callbackPCINT27 = pcint_null_callback;
+	if (pcintNum == 27)
+	    callbackPCINT27 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT28 == true)
-		if (pcintNum == 28)
-			callbackPCINT28 = pcint_null_callback;
+	if (pcintNum == 28)
+	    callbackPCINT28 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT29 == true)
-		if (pcintNum == 29)
-			callbackPCINT29 = pcint_null_callback;
+	if (pcintNum == 29)
+	    callbackPCINT29 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT30 == true)
-		if (pcintNum == 30)
-			callbackPCINT30 = pcint_null_callback;
+	if (pcintNum == 30)
+	    callbackPCINT30 = pcint_null_callback;
 #endif
 #if (PCINT_USE_PCINT31 == true)
-		if (pcintNum == 31)
-			callbackPCINT31 = pcint_null_callback;
+	if (pcintNum == 31)
+	    callbackPCINT31 = pcint_null_callback;
 #endif
 #endif // PCINT_API
-	}
-	else return;
+    }
+    else
+	return;
 
-	// get bitmask and array position
-	uint8_t pcintMask = (1 << pcintBit);
-	uint8_t arrayPos = getArrayPosPCINT(pcintPort);
+    // get bitmask and array position
+    uint8_t pcintMask = (1 << pcintBit);
+    uint8_t arrayPos = getArrayPosPCINT(pcintPort);
 
-	// delete setting
-	risingPorts[arrayPos] &= ~pcintMask;
-	fallingPorts[arrayPos] &= ~pcintMask;
+    // delete setting
+    risingPorts[arrayPos] &= ~pcintMask;
+    fallingPorts[arrayPos] &= ~pcintMask;
 
-	// call the actual hardware disable function
-	disablePinChangeInterruptHelper(pcintPort, pcintMask);
+    // call the actual hardware disable function
+    disablePinChangeInterruptHelper(pcintPort, pcintMask);
 }
 
 static inline void disablePinChangeInterrupt(const uint8_t pcintNum) __attribute__((always_inline));
-void disablePinChangeInterrupt(const uint8_t pcintNum) {
-	// get PCINT registers
-	uint8_t pcintPort = pcintNum / 8;
-	uint8_t pcintBit = pcintNum % 8;
+void disablePinChangeInterrupt(const uint8_t pcintNum)
+{
+    // get PCINT registers
+    uint8_t pcintPort = pcintNum / 8;
+    uint8_t pcintBit = pcintNum % 8;
 
-	// check if pcint is a valid pcint, exclude deactivated ports
-	if (pcintPort == 0) {
-		if (PCINT_USE_PORT0 == false)
-			return;
-	}
-	else if (pcintPort == 1) {
-		if (PCINT_USE_PORT1 == false)
-			return;
-	}
-	else if (pcintPort == 2) {
-		if (PCINT_USE_PORT2 == false)
-			return;
-	}
-	else if (pcintPort == 3) {
-		if (PCINT_USE_PORT3 == false)
-			return;
-	}
-	else return;
+    // check if pcint is a valid pcint, exclude deactivated ports
+    if (pcintPort == 0)
+    {
+	if (PCINT_USE_PORT0 == false)
+	    return;
+    }
+    else if (pcintPort == 1)
+    {
+	if (PCINT_USE_PORT1 == false)
+	    return;
+    }
+    else if (pcintPort == 2)
+    {
+	if (PCINT_USE_PORT2 == false)
+	    return;
+    }
+    else if (pcintPort == 3)
+    {
+	if (PCINT_USE_PORT3 == false)
+	    return;
+    }
+    else
+	return;
 
-	// get bitmask
-	uint8_t pcintMask = (1 << pcintBit);
+    // get bitmask
+    uint8_t pcintMask = (1 << pcintBit);
 
-	// Do not delete mode settings nor detach the user function
-	// Just turn off interrupts
+    // Do not delete mode settings nor detach the user function
+    // Just turn off interrupts
 
-	// call the actual hardware disable function
-	disablePinChangeInterruptHelper(pcintPort, pcintMask);
+    // call the actual hardware disable function
+    disablePinChangeInterruptHelper(pcintPort, pcintMask);
 }
 
 //================================================================================
@@ -835,39 +876,47 @@ void disablePinChangeInterrupt(const uint8_t pcintNum) {
 //================================================================================
 
 static inline uint8_t getPinChangeInterruptTrigger(const uint8_t pcintNum) __attribute__((always_inline));
-uint8_t getPinChangeInterruptTrigger(const uint8_t pcintNum) {
-	// get PCINT registers
-	uint8_t pcintPort = pcintNum / 8;
-	uint8_t pcintBit = pcintNum % 8;
+uint8_t getPinChangeInterruptTrigger(const uint8_t pcintNum)
+{
+    // get PCINT registers
+    uint8_t pcintPort = pcintNum / 8;
+    uint8_t pcintBit = pcintNum % 8;
 
-	// check if pcint is a valid pcint, exclude deactivated ports
-	if (pcintPort == 0) {
-		if (PCINT_USE_PORT0 == false)
-			return CHANGE;
-	}
-	else if (pcintPort == 1) {
-		if (PCINT_USE_PORT1 == false)
-			return CHANGE;
-	}
-	else if (pcintPort == 2) {
-		if (PCINT_USE_PORT2 == false)
-			return CHANGE;
-	}
-	else if (pcintPort == 3) {
-		if (PCINT_USE_PORT3 == false)
-			return CHANGE;
-	}
-	else return CHANGE;
+    // check if pcint is a valid pcint, exclude deactivated ports
+    if (pcintPort == 0)
+    {
+	if (PCINT_USE_PORT0 == false)
+	    return CHANGE;
+    }
+    else if (pcintPort == 1)
+    {
+	if (PCINT_USE_PORT1 == false)
+	    return CHANGE;
+    }
+    else if (pcintPort == 2)
+    {
+	if (PCINT_USE_PORT2 == false)
+	    return CHANGE;
+    }
+    else if (pcintPort == 3)
+    {
+	if (PCINT_USE_PORT3 == false)
+	    return CHANGE;
+    }
+    else
+	return CHANGE;
 
-	uint8_t arrayPos = getArrayPosPCINT(pcintPort);
+    uint8_t arrayPos = getArrayPosPCINT(pcintPort);
 
-	// Check if no mode was set, return an error
-	if(!(risingPorts[arrayPos] & (1 << pcintBit)) && !(fallingPorts[arrayPos] & (1 << pcintBit)))
-		return CHANGE;
+    // Check if no mode was set, return an error
+    if (!(risingPorts[arrayPos] & (1 << pcintBit)) && !(fallingPorts[arrayPos] & (1 << pcintBit)))
+	return CHANGE;
 
-	// specify the CHANGE mode
-	if (oldPorts[arrayPos] & (1 << pcintBit))
-		return RISING;
-	else
-		return FALLING;
+    // specify the CHANGE mode
+    if (oldPorts[arrayPos] & (1 << pcintBit))
+	return RISING;
+    else
+	return FALLING;
 }
+
+#endif
