@@ -453,7 +453,7 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 {
   configureChannels(sf, fsb);
-  while (--retries)
+  while (retries-- >= 0)
   {
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
     {
