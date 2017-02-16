@@ -292,6 +292,11 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
   this->fsb = fsb;
 }
 
+size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
+{
+  return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, size);
+}
+
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
 {
   char message[100];
