@@ -292,6 +292,11 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
   this->fsb = fsb;
 }
 
+size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
+{
+  return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, size);
+}
+
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
 {
   char message[100];
@@ -448,7 +453,7 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 {
   configureChannels(sf, fsb);
-  while (--retries)
+  while (retries-- >= 0)
   {
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
     {

@@ -68,6 +68,7 @@ private:
 public:
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
   void showStatus();
+  size_t getHardwareEui(char *buffer, size_t size);
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
   bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
