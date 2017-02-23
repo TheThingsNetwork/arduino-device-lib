@@ -16,7 +16,6 @@ This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Ardu
 * API References:
     * [TheThingsNetwork](docs/TheThingsNetwork.md)
     * [TheThingsMessage](docs/TheThingsMessage.md)
-    * [TheThingsNode](docs/TheThingsNode.md)
 
 ## Examples
 
