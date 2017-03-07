@@ -33,6 +33,19 @@ enum ttn_fp_t
   TTN_FP_US915
 };
 
+/* BEGIN TEST */
+
+#ifdef DEBUG
+  #warning Debug mode
+  #define debugPrintLn(...) { if (debugStream) debugStream->println(__VA_ARGS__); }
+  #define debugPrint(...) { if (debugStream) debugStream->print(__VA_ARGS__); }
+#else
+  #define debugPrintLn(...)
+  #define debugPrint(...)
+#endif
+
+/* END TEST */
+
 class TheThingsNetwork
 {
 private:
