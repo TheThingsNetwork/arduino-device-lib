@@ -858,3 +858,28 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
 }
+
+void TheThingsNetwork::set_dcycle()
+{
+  int ch;
+  int total_ch = 0;
+  int new_dcycle = 0;
+  String str = "";
+
+  for (ch = 0; ch < 16; ch++) {
+    str.concat(F("mac get ch status "));
+    str.concat(ch);
+    if (readValue(str) == F("on"))
+      total_ch += 1;
+    str = "";
+  }
+  new_dcycle = (100 * total_ch) - 1;
+  for (ch = 0; ch < total_ch; ch++) {
+    str.concat(F("mac set ch dcycle "));
+    str.concat(ch);
+    str.concat(F(" "));
+    str.concat(new_dcycle);
+    sendCommand(str);
+    str = "";
+  }
+}
