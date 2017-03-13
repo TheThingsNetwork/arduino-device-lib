@@ -53,7 +53,6 @@ private:
   void debugPrintIndex(uint8_t index, const char *value = NULL);
   void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
-  void reset(bool adr = true);
   void autoBaud();
   void configureEU868(uint8_t sf);
   void configureUS915(uint8_t sf, uint8_t fsb);
@@ -69,6 +68,7 @@ private:
 
 public:
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+  void reset(bool adr = true);
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);

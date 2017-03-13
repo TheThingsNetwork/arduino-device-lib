@@ -472,6 +472,7 @@ bool TheThingsNetwork::personalize()
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 {
+  reset();
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
@@ -515,7 +516,6 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 
 bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay)
 {
-  reset();
   return provision(appEui, appKey) && join(retries, retryDelay);
 }
 
