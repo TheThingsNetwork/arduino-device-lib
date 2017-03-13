@@ -287,9 +287,15 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
+  this->modemStream->setTimeout(10000);
   this->fp = fp;
   this->sf = sf;
   this->fsb = fsb;
+}
+
+size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
+{
+  return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
 }
 
 size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
@@ -369,8 +375,37 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
   return readLine(buffer, size);
 }
 
+void TheThingsNetwork::autoBaud()
+{
+  // Courtesy of @jpmeijers
+  modemStream->setTimeout(2000);
+  uint8_t attempts = 10;
+  size_t length = 0;
+  while (attempts-- && length == 0)
+  {
+    delay(100);
+    modemStream->write((byte)0x00);
+    modemStream->write(0x55);
+    modemStream->write(SEND_MSG);
+    sendCommand(SYS_TABLE, 0, true, false);
+    sendCommand(SYS_TABLE, SYS_GET, true, false);
+    sendCommand(SYS_TABLE, SYS_GET_VER, false, false);
+    modemStream->write(SEND_MSG);
+    length = modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+  }
+  delay(100);
+  clearReadBuffer();
+  modemStream->setTimeout(10000);
+  baudDetermined = true;
+}
+
 void TheThingsNetwork::reset(bool adr)
 {
+  if (!baudDetermined)
+  {
+    autoBaud();
+  }
+
   size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
   // buffer contains "RN2xx3 1.x.x ...", splitting model from version

@@ -42,6 +42,7 @@ private:
   uint8_t sf;
   uint8_t fsb;
   char buffer[512];
+  bool baudDetermined = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -52,6 +53,7 @@ private:
   void debugPrintIndex(uint8_t index, const char *value = NULL);
   void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
+  void autoBaud();
   void configureEU868(uint8_t sf);
   void configureUS915(uint8_t sf, uint8_t fsb);
   void configureChannels(uint8_t sf, uint8_t fsb);
@@ -69,6 +71,7 @@ public:
   void reset(bool adr = true);
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
+  size_t getAppEui(char *buffer, size_t size);
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
   bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
