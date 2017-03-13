@@ -292,6 +292,11 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
   this->fsb = fsb;
 }
 
+size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
+{
+  return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
+}
+
 size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
 {
   return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, size);
