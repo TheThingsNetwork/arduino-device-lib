@@ -1,7 +1,9 @@
 # API Reference
+
 The `TheThingsNetwork` class enables Arduino devices with supported LoRa modules to communicate via The Things Network.
 
-## Class: TheThingsNetwork
+## Class: `TheThingsNetwork`
+
 Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
 
 ```c
@@ -16,7 +18,32 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint
 - `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
 - `uint8_t fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
 
-## Method: showStatus
+## Method: `reset`
+
+Performs a software reset of the RN module. This does not clear saved state, e.g. provisioned keys.
+
+```c
+void showStatus();
+```
+
+## Method: `getHardwareEui`
+
+Gets the unique hardware EUI, often used as the DevEUI.
+
+```c
+size_t getHardwareEui(char *buffer, size_t size);
+```
+
+## Method: `getAppEui`
+
+Gets the provisioned AppEUI. The AppEUI is set using `provision()` or `join()`.
+
+```c
+size_t getAppEui(char *buffer, size_t size);
+```
+
+## Method: `showStatus`
+
 Writes information about the device and LoRa module to `debugStream`.
 
 ```c
@@ -39,7 +66,8 @@ Total airtime: 0.00 s
 
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
-## Method: onMessage
+## Method: `onMessage`
+
 Sets a function which will be called to process incoming messages. You'll want to do this in your `setup()` function and then define a `void (*cb)(const byte* payload, size_t length, port_t port)` function somewhere else in your sketch.
 
 ```c
@@ -52,7 +80,8 @@ void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
-## Method: join
+## Method: `join`
+
 Activate the device via OTAA (default).
 
 ```c
@@ -69,7 +98,8 @@ Returns `true` or `false` depending on whether it received confirmation that the
 
 Call the method without the first two arguments if the device's LoRa module comes with pre-flashed values.
 
-## Method: personalize
+## Method: `personalize`
+
 Activate the device via ABP.
 
 ```c
@@ -87,7 +117,8 @@ Call the method with no arguments if the device's LoRa module comes with pre-fla
 
 See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/ABP/ABP.ino) example.
 
-## Method: sendBytes
+## Method: `sendBytes`
+
 Send a message to the application using raw bytes.
 
 ```c
@@ -110,7 +141,8 @@ See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/maste
 
 Also in sendBytes, due to TTN's 30 second fair access policy, we update the airtime each time we uplink a message. This airtime is based on a lot of variables but the most important ones are the spreading factor and the size of the message, the higher it is the less messages you can send in 30 seconds (SF7 around 500 messages of 8 bytes, SF12 around 20 messages of 8 bytes).
 
-## Method: poll
+## Method: `poll`
+
 Calls `sendBytes()` with `{ 0x00 }` as payload to poll for incoming messages.
 
 ```c
@@ -124,7 +156,8 @@ Returns the result of `sendBytes()`.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
-## Method: provision
+## Method: `provision`
+
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
@@ -134,18 +167,8 @@ bool provision(const char *appEui, const char *appKey);
 - `const char *appEui`: Application Identifier for the device.
 - `const char *appKey`: Application Key assigned to the device.
 
-## Method: calculateAirtime
-Calculate the uplink time of a message.
+## Method: `sleep`
 
-```c
-float calculateAirtime(size_t payloadSize);
-```
-
-- `size_t payloadSize`: number of bytes you want to send.
-
-Returns the uplink time of the message in seconds.
-
-## Method: sleep
 Sleep the LoRa module for a specified number of milliseconds.
 
 ```c
