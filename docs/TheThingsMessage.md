@@ -1,13 +1,13 @@
 # API Reference
 
-## Class: TheThingsMessage
+## Class: `TheThingsMessage`
 The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
 
 ```c
 #include <TheThingsMessage.h>
 ```
 
-## Type: devicedata_t
+## Type: `devicedata_t`
 
 Create a struct of this type using `api_DeviceData_init_default` as defaults.
 
@@ -41,7 +41,8 @@ You can also add other analog readings.
 
 > **TODO:** Document how this works and include in example.
 
-## Method: encodeDeviceData
+## Method: `encodeDeviceData`
+
 Encode the message you want to send.
 
 ```c
@@ -60,7 +61,8 @@ size_t size;
 TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
 ```
 
-## Method: decodeAppData
+## Method: `decodeAppData`
+
 Decode the message you received.
 
 ```c
