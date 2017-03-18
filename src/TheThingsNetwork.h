@@ -12,8 +12,9 @@
 #define TTN_DEFAULT_FSB 2
 #define TTN_RETX "7"
 
-#define TTN_PWRIDX_868 "1"
-#define TTN_PWRIDX_915 "5"
+#define TTN_PWRIDX_EU868 "1"
+#define TTN_PWRIDX_US915 "5"
+#define TTN_PWRIDX_AS920_923 "0"
 
 #define TTN_BUFFER_SIZE 300
 
@@ -30,7 +31,8 @@ enum ttn_response_t
 enum ttn_fp_t
 {
   TTN_FP_EU868,
-  TTN_FP_US915
+  TTN_FP_US915,
+  TTN_FP_AS920_923
 };
 
 class TheThingsNetwork
@@ -56,6 +58,7 @@ private:
   void autoBaud();
   void configureEU868(uint8_t sf);
   void configureUS915(uint8_t sf, uint8_t fsb);
+  void configureAS920_923(uint8_t sf);
   void configureChannels(uint8_t sf, uint8_t fsb);
   bool waitForOk();
 
