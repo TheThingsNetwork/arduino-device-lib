@@ -408,10 +408,11 @@ void TheThingsNetwork::reset(bool adr)
 
   size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
-  // buffer contains "RN2xx3 1.x.x ...", splitting model from version
-  buffer[6] = '\0';
-  debugPrintIndex(SHOW_MODEL, buffer);
-  debugPrintIndex(SHOW_VERSION, buffer + 7);
+  // buffer contains "RN2xx3[xx] x.x.x ...", splitting model from version
+  char *model = strtok(buffer, " ");
+  debugPrintIndex(SHOW_MODEL, model);
+  char *version = strtok(NULL, " ");
+  debugPrintIndex(SHOW_VERSION, version);
 
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   sendMacSet(MAC_DEVEUI, buffer);
@@ -652,6 +653,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
 
 void TheThingsNetwork::configureAS920_923(uint8_t sf)
 {
+  // TODO: Check if this is necessary and a valid command. RX2 is SF10 at 923.2
   sendMacSet(MAC_RX2, "2 923200000");
   sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
 
