@@ -14,7 +14,7 @@
 
 #define TTN_PWRIDX_EU868 "1"
 #define TTN_PWRIDX_US915 "5"
-#define TTN_PWRIDX_AS920_923 "0"
+#define TTN_PWRIDX_AS920_923 "1"  // TODO: should be 0, but the current RN2903AS firmware doesn't accept that value (probably still using EU868: 1=14dBm)
 
 #define TTN_BUFFER_SIZE 300
 

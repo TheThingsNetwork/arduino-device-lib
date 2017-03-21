@@ -483,7 +483,15 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
   sendMacSet(MAC_DEVEUI, buffer);
   sendMacSet(MAC_APPEUI, appEui);
   sendMacSet(MAC_APPKEY, appKey);
-  saveState();
+  switch (fp)
+  {
+  case TTN_FP_AS920_923:
+    // TODO: temporarily removed 'mac save' because RN2903AS crashes on this command!
+    break;
+  default:
+    saveState();
+    break;
+  }
   return true;
 }
 
@@ -603,7 +611,7 @@ void TheThingsNetwork::configureEU868(uint8_t sf)
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
     if (ch > 2)
     {
-      sprintf(buf, "%d", freq);
+      sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
       sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
       sendChSet(MAC_CHANNEL_STATUS, ch, "on");
@@ -653,9 +661,8 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
 
 void TheThingsNetwork::configureAS920_923(uint8_t sf)
 {
-  // TODO: Check if this is necessary and a valid command. RX2 is SF10 at 923.2
+  sendMacSet(MAC_ADR, "off");  // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
-  sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
 
   char buf[10];
   uint32_t freq = 922000000;
@@ -665,13 +672,19 @@ void TheThingsNetwork::configureAS920_923(uint8_t sf)
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
     if (ch > 1)
     {
-      sprintf(buf, "%d", freq);
+      sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
       sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
       sendChSet(MAC_CHANNEL_STATUS, ch, "on");
       freq = freq + 200000;
     }
   }
+  // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
+  //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
+  //sendChSet(MAC_CHANNEL_FREQ, 8, "922100000");
+  //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
+  //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
+  // TODO: Add FSK channel
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS920_923);
   if (sf >= 7 && sf <= 12)
   {
