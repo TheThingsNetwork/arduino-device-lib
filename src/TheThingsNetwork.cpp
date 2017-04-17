@@ -424,6 +424,7 @@ void TheThingsNetwork::reset(bool adr)
   {
     sendMacSet(MAC_ADR, "off");
   }
+  this->adr = adr;
 }
 
 void TheThingsNetwork::saveState()
@@ -442,7 +443,7 @@ void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size,
 
 bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey)
 {
-  reset();
+  reset(adr);
   if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
@@ -473,7 +474,7 @@ bool TheThingsNetwork::personalize()
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 {
-  reset();
+  reset(adr);
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
@@ -661,7 +662,7 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
 
 void TheThingsNetwork::configureAS920_923(uint8_t sf)
 {
-  sendMacSet(MAC_ADR, "off");  // TODO: remove when ADR is implemented for this plan
+  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
   char buf[10];

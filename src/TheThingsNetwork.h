@@ -14,7 +14,7 @@
 
 #define TTN_PWRIDX_EU868 "1"
 #define TTN_PWRIDX_US915 "5"
-#define TTN_PWRIDX_AS920_923 "1"  // TODO: should be 0, but the current RN2903AS firmware doesn't accept that value (probably still using EU868: 1=14dBm)
+#define TTN_PWRIDX_AS920_923 "1" // TODO: should be 0, but the current RN2903AS firmware doesn't accept that value (probably still using EU868: 1=14dBm)
 
 #define TTN_BUFFER_SIZE 300
 
@@ -43,6 +43,7 @@ private:
   ttn_fp_t fp;
   uint8_t sf;
   uint8_t fsb;
+  bool adr;
   char buffer[512];
   bool baudDetermined = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
