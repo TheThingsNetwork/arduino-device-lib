@@ -15,6 +15,8 @@
 #define TTN_PWRIDX_EU868 "1"
 #define TTN_PWRIDX_US915 "5"
 #define TTN_PWRIDX_AS920_923 "1" // TODO: should be 0, but the current RN2903AS firmware doesn't accept that value (probably still using EU868: 1=14dBm)
+#define TTN_PWRIDX_AS923_925 "1" // TODO: should be 0
+#define TTN_PWRIDX_KR920_923 "1" // TODO: should be 0
 
 #define TTN_BUFFER_SIZE 300
 
@@ -32,7 +34,9 @@ enum ttn_fp_t
 {
   TTN_FP_EU868,
   TTN_FP_US915,
-  TTN_FP_AS920_923
+  TTN_FP_AS920_923,
+  TTN_FP_AS923_925,
+  TTN_FP_KR920_923
 };
 
 class TheThingsNetwork
@@ -60,6 +64,8 @@ private:
   void configureEU868();
   void configureUS915(uint8_t fsb);
   void configureAS920_923();
+  void configureAS923_925();
+  void configureKR920_923();
   void configureChannels(uint8_t fsb);
   bool setSF(uint8_t sf);
   bool waitForOk();
