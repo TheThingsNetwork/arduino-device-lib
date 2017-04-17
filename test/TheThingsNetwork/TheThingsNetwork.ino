@@ -12,9 +12,10 @@ const char *appSKey = "00000000000000000000000000000000";
 
 TheThingsNetwork ttn(loraSerial, debugSerial, TTN_FP_EU868);
 
-TheThingsNetwork ttn2(loraSerial, debugSerial, TTN_FP_EU868, 10);
+TheThingsNetwork ttn2(loraSerial, debugSerial, TTN_FP_US915, 10);
 
-TheThingsNetwork ttn3(loraSerial, debugSerial, TTN_FP_EU868, 10, 4);
+TheThingsNetwork ttn3(loraSerial, debugSerial, TTN_FP_AS923_925, 10, 4);
+
 
 void setup()
 {
