@@ -457,7 +457,8 @@ bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, con
 
 bool TheThingsNetwork::personalize()
 {
-  configureChannels(sf, fsb);
+  configureChannels(fsb);
+  setSF(sf);
   sendJoinSet(MAC_JOIN_MODE_ABP);
   readLine(buffer, sizeof(buffer));
   if (pgmstrcmp(buffer, CMP_ACCEPTED) != 0)
@@ -498,7 +499,8 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 {
-  configureChannels(sf, fsb);
+  configureChannels(fsb);
+  setSF(sf);
   while (retries == -1 || retries-- >= 0)
   {
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
@@ -529,8 +531,13 @@ bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retri
   return provision(appEui, appKey) && join(retries, retryDelay);
 }
 
-ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length, port_t port, bool confirm)
+ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length, port_t port, bool confirm, uint8_t sf)
 {
+  if (sf != 0)
+  {
+    setSF(sf);
+  }
+
   uint8_t mode = confirm ? MAC_TX_TYPE_CNF : MAC_TX_TYPE_UCNF;
   if (!sendPayload(mode, port, (uint8_t *)payload, length))
   {
@@ -599,7 +606,7 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-void TheThingsNetwork::configureEU868(uint8_t sf)
+void TheThingsNetwork::configureEU868()
 {
   sendMacSet(MAC_RX2, "3 869525000");
   sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
@@ -620,16 +627,9 @@ void TheThingsNetwork::configureEU868(uint8_t sf)
     }
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_EU868);
-  if (sf >= 7 && sf <= 12)
-  {
-    char dr[2];
-    dr[0] = '0' + (12 - sf);
-    dr[1] = '\0';
-    sendMacSet(MAC_DR, dr);
-  }
 }
 
-void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
+void TheThingsNetwork::configureUS915(uint8_t fsb)
 {
   uint8_t ch;
   uint8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
@@ -651,16 +651,9 @@ void TheThingsNetwork::configureUS915(uint8_t sf, uint8_t fsb)
     }
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_US915);
-  if (sf >= 7 && sf <= 10)
-  {
-    char dr[2];
-    dr[0] = '0' + (10 - sf);
-    dr[1] = '\0';
-    sendMacSet(MAC_DR, dr);
-  }
 }
 
-void TheThingsNetwork::configureAS920_923(uint8_t sf)
+void TheThingsNetwork::configureAS920_923()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
@@ -687,33 +680,45 @@ void TheThingsNetwork::configureAS920_923(uint8_t sf)
   //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
   // TODO: Add FSK channel
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS920_923);
-  if (sf >= 7 && sf <= 12)
-  {
-    char dr[2];
-    dr[0] = '0' + (12 - sf);
-    dr[1] = '\0';
-    sendMacSet(MAC_DR, dr);
-  }
 }
 
-void TheThingsNetwork::configureChannels(uint8_t sf, uint8_t fsb)
+void TheThingsNetwork::configureChannels(uint8_t fsb)
 {
   switch (fp)
   {
   case TTN_FP_EU868:
-    configureEU868(sf);
+    configureEU868();
     break;
   case TTN_FP_US915:
-    configureUS915(sf, fsb);
+    configureUS915(fsb);
     break;
   case TTN_FP_AS920_923:
-    configureAS920_923(sf);
+    configureAS920_923();
     break;
   default:
     debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
     break;
   }
   sendMacSet(MAC_RETX, TTN_RETX);
+}
+
+bool TheThingsNetwork::setSF(uint8_t sf)
+{
+  uint8_t dr;
+  switch (fp)
+  {
+  case TTN_FP_EU868:
+  case TTN_FP_AS920_923:
+    dr = 12 - sf;
+    break;
+  case TTN_FP_US915:
+    dr = 10 - sf;
+    break;
+  }
+  char s[2];
+  s[0] = '0' + dr;
+  s[1] = '\0';
+  return sendMacSet(MAC_DR, s);
 }
 
 void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print)
