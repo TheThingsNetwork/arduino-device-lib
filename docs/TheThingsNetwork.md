@@ -15,8 +15,8 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint
 - `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
 - `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
-- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `12` for `TTN_FP_US915`. Defaults to `7`.
-- `uint8_t fsb = 2`: Optional custom front-side bus. Can be `1` to `8`. Defaults to `2`.
+- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `10` for `TTN_FP_US915`. Defaults to `7`.
+- `uint8_t fsb = 2`: Optional custom frequency subband. Can be `1` to `8`. Defaults to `2` (for US915).
 
 ## Method: `reset`
 
@@ -122,13 +122,14 @@ See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master
 Send a message to the application using raw bytes.
 
 ```c
-ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false);
+ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
 ```
 
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `port_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `TTN_ERROR_UNEXPECTED_RESPONSE`.
+- `uint8_t sf = 0`: Override the spreading factor (SF). If the default value `0` is passed, the SF is not changed from the constructor or previous value.
 
 Returns a success or error code and logs the related error message:
 
