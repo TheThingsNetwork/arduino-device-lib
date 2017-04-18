@@ -10,7 +10,9 @@ bool TheThingsMessage::decodeAppData(appdata_t *receiveData, const byte *payload
   {
     return false;
   }
-  receiveData->light ? digitalWrite(TTN_PIN_LED, HIGH) : digitalWrite(TTN_PIN_LED, LOW);
+#ifdef LED_BUILTIN
+  receiveData->light ? digitalWrite(LED_BUILTIN, HIGH) : digitalWrite(LED_BUILTIN, LOW);
+#endif
   return true;
 }
 

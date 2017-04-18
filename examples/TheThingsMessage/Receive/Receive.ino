@@ -17,7 +17,7 @@ devicedata_t data = api_DeviceData_init_default;
 
 void setup()
 {
-  pinMode(TTN_PIN_LED, INPUT);
+  pinMode(LED_BUILTIN, INPUT);
 
   loraSerial.begin(57600);
   debugSerial.begin(9600);
@@ -41,7 +41,7 @@ void setup()
 void loop()
 {
   // Read sensors
-  data.motion = digitalRead(TTN_PIN_LED) == HIGH;
+  data.motion = digitalRead(LED_BUILTIN) == HIGH;
   data.water = 682;
 
   // Encode data
