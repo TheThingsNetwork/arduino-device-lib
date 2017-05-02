@@ -488,6 +488,8 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
   switch (fp)
   {
   case TTN_FP_AS920_923:
+  case TTN_FP_AS923_925:
+  case TTN_FP_KR920_923:
     // TODO: temporarily removed 'mac save' because RN2903AS crashes on this command!
     break;
   default:
@@ -678,8 +680,60 @@ void TheThingsNetwork::configureAS920_923()
   //sendChSet(MAC_CHANNEL_FREQ, 8, "922100000");
   //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
   //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
-  // TODO: Add FSK channel
+  // TODO: Add FSK channel on 921800000
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS920_923);
+}
+
+void TheThingsNetwork::configureAS923_925()
+{
+  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  sendMacSet(MAC_RX2, "2 923200000");
+
+  char buf[10];
+  uint32_t freq = 923200000;
+  uint8_t ch;
+  for (ch = 0; ch < 8; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    if (ch > 1)
+    {
+      sprintf(buf, "%lu", freq);
+      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      freq = freq + 200000;
+    }
+  }
+  // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
+  //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
+  //sendChSet(MAC_CHANNEL_FREQ, 8, "924500000");
+  //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
+  //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
+  // TODO: Add FSK channel on 924800000
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS923_925);
+}
+
+void TheThingsNetwork::configureKR920_923()
+{
+  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  sendMacSet(MAC_RX2, "0 921900000"); // KR still uses SF12 for now. Might change to SF9 later.
+
+  char buf[10];
+  uint32_t freq = 922100000;
+  uint8_t ch;
+  for (ch = 0; ch < 8; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    if (ch > 1)
+    {
+      sprintf(buf, "%lu", freq);
+      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      freq = freq + 200000;
+    }
+  }
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
 
 void TheThingsNetwork::configureChannels(uint8_t fsb)
@@ -695,6 +749,12 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
   case TTN_FP_AS920_923:
     configureAS920_923();
     break;
+  case TTN_FP_AS923_925:
+    configureAS923_925();
+    break;
+  case TTN_FP_KR920_923:
+    configureKR920_923();
+    break;
   default:
     debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
     break;
@@ -709,6 +769,8 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   {
   case TTN_FP_EU868:
   case TTN_FP_AS920_923:
+  case TTN_FP_AS923_925:
+  case TTN_FP_KR920_923:
     dr = 12 - sf;
     break;
   case TTN_FP_US915:

@@ -12,10 +12,10 @@ Include and instantiate the TheThingsNetwork class. The constructor initialize t
 TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint8_t sf = 7, uint8_t fsb = 2);
 ```
 
-- `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
-- `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
-- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
-- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `10` for `TTN_FP_US915`. Defaults to `7`.
+- `Stream& modemStream`: Stream for the LoRa modem (see comments at the end of this document).
+- `Stream& debugStream`: Stream to write debug logs to (see comments at the end of this document).
+- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868`, `TTN_FP_US915`, `TTN_FP_AS920_923`, `TTN_FP_AS923_925` or `TTN_FP_KR920_923` depending on the region you deploy in. See [the wiki](https://www.thethingsnetwork.org/wiki/LoRaWAN/Frequencies/Frequency-Plans).
+- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `10` for `TTN_FP_US915` and `7` to `12` for other frequency plans. Defaults to `7`.
 - `uint8_t fsb = 2`: Optional custom frequency subband. Can be `1` to `8`. Defaults to `2` (for US915).
 
 ## Method: `reset`
@@ -174,3 +174,68 @@ void sleep(unsigned long mseconds);
 ```
 
 - `unsigned long mseconds`: number of milliseconds to sleep.
+
+# Comments
+## Serial ports (Stream objects)
+The Stream objects (Serial ports) need to be initialized at the correct baud rates at the start of your `setup()` function. See [our examples](https://github.com/TheThingsNetwork/arduino-device-lib/blob/asian-frequency-plans/examples) for more details. For example:
+```
+  loraSerial.begin(57600);
+  debugSerial.begin(9600);
+```
+
+### TheThingsUno
+At the top of your sketch use
+```
+#define loraSerial Serial1
+#define debugSerial Serial
+```
+And in your `setup()` function use
+```
+void setup()
+{
+  loraSerial.begin(57600);
+  debugSerial.begin(9600);
+  ...
+}
+```
+
+### SodaqOne
+At the top of your sketch use
+```
+#define loraSerial Serial1
+#define debugSerial SerialUSB
+```
+And in your `setup()` function use
+```
+void setup()
+{
+  loraSerial.begin(57600);
+  debugSerial.begin(9600);
+  ...
+}
+```
+
+### Arduino Uno, Arduino Nano or other devices using SoftwareSerial
+The Arduino Uno only has one hardware serial port which is used to communicate over USB to the computer. When connecting an RN2483/RN2903 to the Arduino Uno, one has to make use of SoftwareSerial. If you connected the RN2483/RN2903 to the Arduino using the same pinout as [described on the forum](https://www.thethingsnetwork.org/forum/t/how-to-build-your-first-ttn-node-arduino-rn2483/1574), you can make use of the following code.
+
+At the top of your sketch use
+```
+#include <SoftwareSerial.h>
+
+#define debugSerial Serial
+
+SoftwareSerial loraSerial(10, 11); // RX, TX
+```
+And in your `setup()` function use
+```
+void setup()
+{
+  loraSerial.begin(9600);
+  debugSerial.begin(9600);
+  ...
+}
+```
+
+SoftwareSerial does not operate correctly at high baud rates. We normally use it at 9600 baud. Because the RN2483 and RN2903 normally operates at 57600 baud, we need to switch it to 9600 baud so that we can communicate with it using 9600 baud. Luckily this is done automatically inside TheThingsNetwork Arduino library, so you as user do not have to worry about this.
+
+If you connected the RN2483/RN2903 to different pins on the Arduino, you can change the line `SoftwareSerial loraSerial(10, 11); // RX, TX` to specify the correct RX and TX pins (from the Arduino's perspective).
