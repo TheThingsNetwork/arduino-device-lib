@@ -1,10 +1,10 @@
 # API Reference
 
-The `TheThingsNetwork` class enables Arduino devices with supported LoRa modules to communicate via The Things Network.
+The `TheThingsNetwork` class enables Arduino devices with supported LoRaWAN modules to communicate via The Things Network. Currently supported LoRaWAN modules are the Microchip RN2483 and the RN2903.
 
 ## Class: `TheThingsNetwork`
 
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency plan and the frequency sub-band.
 
 ```c
 #include <TheThingsNetwork.h>
@@ -16,7 +16,7 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint
 - `Stream& debugStream`: Stream to write debug logs to (see comments at the end of this document).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
 - `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `10` for `TTN_FP_US915`. Defaults to `7`.
-- `uint8_t fsb = 2`: Optional custom frequency subband. Can be `1` to `8`. Defaults to `2` (for US915).
+- `uint8_t fsb = 2`: Optional custom frequency sub-band. Can be `1` to `8`. Defaults to `2` (for US915).
 
 ## Method: `reset`
 
@@ -176,14 +176,23 @@ void sleep(unsigned long mseconds);
 - `unsigned long mseconds`: number of milliseconds to sleep.
 
 # Comments
-## Serial ports (Stream objects)
-The Stream objects (Serial ports) need to be initialized at the correct baud rates at the start of your `setup()` function. See [our examples](https://github.com/TheThingsNetwork/arduino-device-lib/blob/asian-frequency-plans/examples) for more details. For example:
+## Serial ports
+The RN2483 and RN2903 make use of a serial interface to communicate with your device's main processor. Serial interfaces are similar to the RS232 serial port on older computers. The most microcontrollers have hardware Universal Asynchronous Receiver/Transmitters (UARTs) or also called HardwareSerial ports. Serial communication is offloaded to these UARTs so that the main processor does not have to waste time on this slow task. A UART can only support one serial interface at a time, and most processors only have one or two UARTs. Therefore if you already used the available UARTs to communicate with, for example, your computer and a GPS, you do not have any left for the RN2483/RN2903. 
+
+When you run out of UARTs, you can still use serial communication handled in software. In this case it is not offloaded to dedicated hardware, and the main processor needs to handle the communication. This is called Software Serial. Depending on how the software serial is implemented, you can have as many as you want, as long as you have free GPIO pins on your device. Note that not all GPIO pins support all types of software serial. Examples of software serial is the default Arduino [SoftwareSerial](https://www.arduino.cc/en/Reference/SoftwareSerial) library, and the [AltSoftSerial](https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html) library.
+
+### Stream objects
+In the Arduino world serial ports are abstracted as stream objects. All stream objects have the same functions, even if lower down they use different physical connections (UART, SoftwareSerial, AltSoftSerial). This library does not care what you use, as long as it extends the Stream object.
+
+The Stream objects need to be initialized at the correct baud rates at the start of your `setup()` function. See [our examples](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples) for more details. For example:
 ```
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 ```
 
 ### TheThingsUno
+TheThingsUno is basically the same as an Arduino Leonardo with Serial1 connected to the RN2483/RN2903. Therefore if you use an Arduino Leonardo, and connect your RN2483/RN2903 to the Serial1 pins, you can use the same configuration than for TheThingsUno.
+
 At the top of your sketch use
 ```
 #define loraSerial Serial1
@@ -199,7 +208,7 @@ void setup()
 }
 ```
 
-### SodaqOne
+### SODAQ One
 At the top of your sketch use
 ```
 #define loraSerial Serial1
@@ -236,6 +245,8 @@ void setup()
 }
 ```
 
-SoftwareSerial does not operate correctly at high baud rates. We normally use it at 9600 baud. Because the RN2483 and RN2903 normally operates at 57600 baud, we need to switch it to 9600 baud so that we can communicate with it using 9600 baud. Luckily this is done automatically inside TheThingsNetwork Arduino library, so you as user do not have to worry about this.
+SoftwareSerial does not operate correctly at high baud rates. We normally use it at 9600 baud. Because the RN2483 and RN2903 normally operates at 57600 baud, we need to switch it to 9600 baud so that we can communicate with it using 9600 baud. This is done automatically inside TheThingsNetwork Arduino library. Changing of the baud rate of the RN2483/RN2903 is not always very reliable. Power cycling the device, or a reset, might be necessary.
 
 If you connected the RN2483/RN2903 to different pins on the Arduino, you can change the line `SoftwareSerial loraSerial(10, 11); // RX, TX` to specify the correct RX and TX pins (from the Arduino's perspective).
+
+When using the [AltSoftSerial](https://github.com/PaulStoffregen/AltSoftSerial) library the pins you can use for software serial is fixed according to which device you use. You therefore do not have a choice which pins to use, and you may lose some other functionality, but this library seems to be more stable than the default SoftwareSerial library.
