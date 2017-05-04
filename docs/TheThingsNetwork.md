@@ -1,10 +1,10 @@
 # API Reference
 
-The `TheThingsNetwork` class enables Arduino devices with supported LoRa modules to communicate via The Things Network.
+The `TheThingsNetwork` class enables Arduino devices with supported LoRaWAN modules to communicate via The Things Network. Currently supported LoRaWAN modules are the Microchip RN2483 and the RN2903.
 
 ## Class: `TheThingsNetwork`
 
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the front-side Bus and the frequency plan.
+Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency plan and the frequency sub-band.
 
 ```c
 #include <TheThingsNetwork.h>
@@ -12,11 +12,11 @@ Include and instantiate the TheThingsNetwork class. The constructor initialize t
 TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint8_t sf = 7, uint8_t fsb = 2);
 ```
 
-- `Stream& modemStream`: Stream for the LoRa modem (for The Things Node/Uno use `Serial1` and data rate `57600`).
-- `Stream& debugStream`: Stream to write debug logs to (for The Things Node/Uno use `Serial` and data rate `9600`).
+- `Stream& modemStream`: Stream for the LoRa modem ([see notes](https://www.thethingsnetwork.org/docs/devices/arduino/usage.html)).
+- `Stream& debugStream`: Stream to write debug logs to ([see notes](https://www.thethingsnetwork.org/docs/devices/arduino/usage.html)).
 - `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
 - `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `10` for `TTN_FP_US915`. Defaults to `7`.
-- `uint8_t fsb = 2`: Optional custom frequency subband. Can be `1` to `8`. Defaults to `2` (for US915).
+- `uint8_t fsb = 2`: Optional custom frequency sub-band. Can be `1` to `8`. Defaults to `2` (for US915).
 
 ## Method: `reset`
 
