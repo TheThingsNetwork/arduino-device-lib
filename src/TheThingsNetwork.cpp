@@ -657,6 +657,10 @@ void TheThingsNetwork::configureUS915(uint8_t fsb)
 
 void TheThingsNetwork::configureAS920_923()
 {
+  /* RN2903AS 1.0.3rc9 defaults
+   * CH0 = 923.2MHz
+   * CH1 = 923.4MHz
+   */
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
@@ -686,11 +690,15 @@ void TheThingsNetwork::configureAS920_923()
 
 void TheThingsNetwork::configureAS923_925()
 {
+  /* RN2903AS 1.0.3rc9 defaults
+   * CH0 = 923.2MHz
+   * CH1 = 923.4MHz
+   */
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
   char buf[10];
-  uint32_t freq = 923200000;
+  uint32_t freq = 923600000;
   uint8_t ch;
   for (ch = 0; ch < 8; ch++)
   {
@@ -718,20 +726,21 @@ void TheThingsNetwork::configureKR920_923()
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "0 921900000"); // KR still uses SF12 for now. Might change to SF9 later.
 
+  //disable two default LoRaWAN channels
+  sendChSet(MAC_CHANNEL_STATUS, 0, "off");
+  sendChSet(MAC_CHANNEL_STATUS, 1, "off");
+
   char buf[10];
   uint32_t freq = 922100000;
   uint8_t ch;
-  for (ch = 0; ch < 8; ch++)
+  for (ch = 2; ch < 9; ch++)
   {
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > 1)
-    {
-      sprintf(buf, "%lu", freq);
-      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-      freq = freq + 200000;
-    }
+    sprintf(buf, "%lu", freq);
+    sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+    freq = freq + 200000;
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
