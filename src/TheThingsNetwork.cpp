@@ -501,8 +501,16 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 {
   configureChannels(fsb);
   setSF(sf);
-  while (retries == -1 || retries-- >= 0)
+  while (retries == -1 || retries >= 0)
   {
+    debugPrint("JOIN Retries LEFT: ");
+    debugPrintLn(retries);
+    if (retries > 0){
+      retries--;
+    }
+    if (retries == 0){
+      retries=-99;
+    }
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
     {
       debugPrintMessage(ERR_MESSAGE, ERR_JOIN_FAILED);
