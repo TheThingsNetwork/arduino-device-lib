@@ -23,8 +23,10 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint
 Performs a software reset of the RN module. This does not clear saved state, e.g. provisioned keys.
 
 ```c
-void showStatus();
+void reset(bool adr);
 ```
+
+- `bool adr`: Enable/disable Adaptive Data Rate.
 
 ## Method: `getHardwareEui`
 
