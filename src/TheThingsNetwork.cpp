@@ -499,10 +499,12 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
 
 bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
 {
+  int8_t attempts = 0;
   configureChannels(fsb);
   setSF(sf);
-  while (retries == -1 || retries-- >= 0)
+  while (retries == -1 || attempts <= retries)
   {
+    attempts++;
     if (!sendJoinSet(MAC_JOIN_MODE_OTAA))
     {
       debugPrintMessage(ERR_MESSAGE, ERR_JOIN_FAILED);
