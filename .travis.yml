@@ -26,6 +26,7 @@ script:
   - test/verify arduino:avr:leonardo examples/SendOTAA/SendOTAA.ino
   - test/verify arduino:avr:leonardo examples/Sensors/DHT/DHT.ino
   - test/verify arduino:avr:leonardo examples/Sensors/LightSensor/LightSensor.ino
+  - test/verify arduino:avr:leonardo examples/Uno/Uno.ino
   - test/verify arduino:avr:leonardo examples/Workshop/Workshop.ino
   - test/verify arduino:avr:leonardo test/TheThingsMessage/TheThingsMessage.ino
   - test/verify arduino:avr:leonardo test/TheThingsNetwork/TheThingsNetwork.ino
