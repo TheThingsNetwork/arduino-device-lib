@@ -591,6 +591,11 @@ void TheThingsNetwork::showStatus()
 {
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_EUI, buffer);
+  if(strlen(buffer)<16)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE);
+    return;
+  }
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_BATTERY, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
