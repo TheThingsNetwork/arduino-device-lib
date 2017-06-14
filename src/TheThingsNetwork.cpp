@@ -348,7 +348,6 @@ void TheThingsNetwork::clearReadBuffer()
 size_t TheThingsNetwork::readLine(char *buffer, size_t size)
 {
   size_t read = 0;
-  //TODO: add protection against an infinite loop here
   while (read == 0)
   {
     read = modemStream->readBytesUntil('\n', buffer, size);
