@@ -348,6 +348,7 @@ void TheThingsNetwork::clearReadBuffer()
 size_t TheThingsNetwork::readLine(char *buffer, size_t size)
 {
   size_t read = 0;
+  //TODO: add protection against an infinite loop here
   while (read == 0)
   {
     read = modemStream->readBytesUntil('\n', buffer, size);
@@ -434,6 +435,7 @@ void TheThingsNetwork::saveState()
   sendCommand(MAC_TABLE, MAC_SAVE, false);
   modemStream->write(SEND_MSG);
   debugPrintLn();
+  waitForOk();
 }
 
 void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port))
