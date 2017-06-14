@@ -485,17 +485,7 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
   sendMacSet(MAC_DEVEUI, buffer);
   sendMacSet(MAC_APPEUI, appEui);
   sendMacSet(MAC_APPKEY, appKey);
-  switch (fp)
-  {
-  case TTN_FP_AS920_923:
-  case TTN_FP_AS923_925:
-  case TTN_FP_KR920_923:
-    // TODO: temporarily removed 'mac save' because RN2903AS crashes on this command!
-    break;
-  default:
-    saveState();
-    break;
-  }
+  saveState();
   return true;
 }
 
