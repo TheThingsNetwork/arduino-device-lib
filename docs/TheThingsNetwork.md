@@ -14,9 +14,9 @@ TheThingsNetwork ttn(Stream& modemStream, Stream& debugStream, fp_ttn_t fp, uint
 
 - `Stream& modemStream`: Stream for the LoRa modem ([see notes](https://www.thethingsnetwork.org/docs/devices/arduino/usage.html)).
 - `Stream& debugStream`: Stream to write debug logs to ([see notes](https://www.thethingsnetwork.org/docs/devices/arduino/usage.html)).
-- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868` or `TTN_FP_US915` depending on the region you deploy in.
-- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `12` for `TTN_FP_EU868` and `7` to `10` for `TTN_FP_US915`. Defaults to `7`.
-- `uint8_t fsb = 2`: Optional custom frequency sub-band. Can be `1` to `8`. Defaults to `2` (for US915).
+- `fp_ttn_fp fp`: The frequency plan: `TTN_FP_EU868`, `TTN_FP_US915`, `TTN_FP_AS920_923`, `TTN_FP_AS923_925` or `TTN_FP_KR920_923` depending on the region you deploy in. See [the wiki](https://www.thethingsnetwork.org/wiki/LoRaWAN/Frequencies/Frequency-Plans).
+- `uint8_t sf = 7`: Optional custom spreading factor. Can be `7` to `10` for `TTN_FP_US915` and `7` to `12` for other frequency plans. Defaults to `7`.
+- `uint8_t fsb = 2`: Optional custom frequency subband. Can be `1` to `8`. Defaults to `2` (for US915).
 
 ## Method: `reset`
 
