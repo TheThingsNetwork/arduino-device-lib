@@ -349,11 +349,9 @@ size_t TheThingsNetwork::readLine(char *buffer, size_t size)
 {
   size_t read = 0;
   uint8_t loops = 10;
-  //Try a maximum of 10x1000ms to read data.
-  while (read == 0 && loops>0)
+  while (read == 0 && loops > 0)
   {
     loops--;
-    //readBytesUntil will timeout after 1000ms if nothing is read.
     read = modemStream->readBytesUntil('\n', buffer, size);
   }
   buffer[read - 1] = '\0'; // set \r to \0
