@@ -10,7 +10,7 @@
 
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
-#define TTN_RETX "7"
+#define TTN_RETX "0"
 
 #define TTN_PWRIDX_EU868 "1"
 #define TTN_PWRIDX_US915 "5"
