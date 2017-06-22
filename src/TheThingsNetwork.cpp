@@ -587,7 +587,7 @@ void TheThingsNetwork::showStatus()
 {
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_EUI, buffer);
-  if(strlen(buffer) < 16)
+  if (strlen(buffer) < 16)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE);
     return;
