@@ -53,7 +53,7 @@ private:
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
-  size_t readLine(char *buffer, size_t size);
+  size_t readLine(char *buffer, size_t size, uint8_t attempts = 10);
   size_t readResponse(uint8_t prefixTable, uint8_t indexTable, uint8_t index, char *buffer, size_t size);
   size_t readResponse(uint8_t table, uint8_t index, char *buffer, size_t size);
 

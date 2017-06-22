@@ -345,11 +345,12 @@ void TheThingsNetwork::clearReadBuffer()
   }
 }
 
-size_t TheThingsNetwork::readLine(char *buffer, size_t size)
+size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts)
 {
   size_t read = 0;
-  while (read == 0)
+  while (read == 0 && attempts > 0)
   {
+    attempts--;
     read = modemStream->readBytesUntil('\n', buffer, size);
   }
   buffer[read - 1] = '\0'; // set \r to \0
@@ -434,7 +435,6 @@ void TheThingsNetwork::saveState()
   sendCommand(MAC_TABLE, MAC_SAVE, false);
   modemStream->write(SEND_MSG);
   debugPrintLn();
-  waitForOk();
 }
 
 void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port))
@@ -587,6 +587,11 @@ void TheThingsNetwork::showStatus()
 {
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_EUI, buffer);
+  if (strlen(buffer) < 16)
+  {
+    debugPrintMessage(ERR_MESSAGE, ERR_UNEXPECTED_RESPONSE);
+    return;
+  }
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_BATTERY, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
