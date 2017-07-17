@@ -958,3 +958,8 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
 }
+
+void TheThingsNetwork::wake()
+{ 
+	autoBaud();
+}
