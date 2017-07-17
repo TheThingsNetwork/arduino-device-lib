@@ -93,6 +93,7 @@ public:
   ttn_response_t poll(port_t port = 1, bool confirm = false);
   void sleep(uint32_t mseconds);
   void saveState();
+  void wake();
 };
 
 #endif
