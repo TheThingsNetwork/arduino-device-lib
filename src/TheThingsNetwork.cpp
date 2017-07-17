@@ -944,7 +944,7 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
 
 void TheThingsNetwork::sleep(uint32_t mseconds)
 {
-  if (mseconds < 100 || mseconds >= 4294967296)
+  if (mseconds < 100)
   {
     return;
   }
@@ -953,7 +953,7 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   sendCommand(SYS_TABLE, SYS_PREFIX, true);
   sendCommand(SYS_TABLE, SYS_SLEEP, true);
 
-  sprintf(buffer, "%ld", mseconds);
+  sprintf(buffer, "%lu", mseconds);
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
