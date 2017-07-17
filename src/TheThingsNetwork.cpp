@@ -961,5 +961,5 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
 
 void TheThingsNetwork::wake()
 { 
-	autoBaud();
+  autoBaud();
 }
