@@ -401,10 +401,8 @@ void TheThingsNetwork::autoBaud()
 
 void TheThingsNetwork::reset(bool adr)
 {
-  size_t length;
-  
   autoBaud();
-  length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
+  size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
   autoBaud();
   length = readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));  
