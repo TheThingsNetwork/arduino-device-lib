@@ -93,6 +93,9 @@ public:
   ttn_response_t poll(port_t port = 1, bool confirm = false);
   void sleep(uint32_t mseconds);
   void saveState();
+  void linkcheck(uint16_t seconds);
+  uint8_t linkcheckGateways();  
+  uint8_t linkcheckMargin();
 };
 
 #endif
