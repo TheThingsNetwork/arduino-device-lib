@@ -963,6 +963,11 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   debugPrintLn(buffer);
 }
 
+void TheThingsNetwork::wake()
+{ 
+  autoBaud();
+}
+
 void TheThingsNetwork::linkcheck(uint16_t seconds)
 {
   clearReadBuffer();
