@@ -975,7 +975,7 @@ void TheThingsNetwork::linkcheck(uint16_t seconds)
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
-  return waitForOk();  
+  waitForOk();  
 }
 
 uint8_t TheThingsNetwork::linkcheckGateways()
