@@ -193,3 +193,19 @@ void linkCheck(uint16_t seconds);
 ```
 
 - `uint16_t seconds`: the time interval in seconds. A value of 0 will disable the link check process.
+
+## Method: `getLinkCheckGateways`
+
+Gets the number of gateways that successfully received the last Link Check Request frame.
+
+```c
+uint8_t getLinkCheckGateways();
+```
+
+## Method: `getLinkCheckMargin`
+
+Gets the demodulation margin as received in the last Link Check Answer frame.
+
+```c
+uint8_t getLinkCheckMargin();
+```
