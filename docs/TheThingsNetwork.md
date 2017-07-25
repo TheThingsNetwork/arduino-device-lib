@@ -184,3 +184,12 @@ Wake up the LoRa module from sleep before the expiration of the defined time.
 void wake();
 ```
 
+## Method: `linkCheck`
+
+Sets the time interval for the link check process to be triggered.
+
+```c
+void linkCheck(uint16_t seconds);
+```
+
+- `uint16_t seconds`: the time interval in seconds. A value of 0 will disable the link check process.
