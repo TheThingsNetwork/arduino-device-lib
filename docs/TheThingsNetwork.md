@@ -175,3 +175,12 @@ void sleep(unsigned long mseconds);
 ```
 
 - `unsigned long mseconds`: number of milliseconds to sleep.
+
+## Method: `wake`
+
+Wake up the LoRa module from sleep before the expiration of the defined time.
+
+```c
+void wake();
+```
+
