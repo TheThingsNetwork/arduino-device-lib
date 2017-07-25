@@ -968,7 +968,7 @@ void TheThingsNetwork::wake()
   autoBaud();
 }
 
-void TheThingsNetwork::linkcheck(uint16_t seconds)
+void TheThingsNetwork::linkCheck(uint16_t seconds)
 {
   clearReadBuffer();
   debugPrint(SENDING);
@@ -983,16 +983,14 @@ void TheThingsNetwork::linkcheck(uint16_t seconds)
   waitForOk();  
 }
 
-uint8_t TheThingsNetwork::linkcheckGateways()
+uint8_t TheThingsNetwork::getLinkCheckGateways()
 {
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_GWNB, buffer, sizeof(buffer));
-
   return strtol(buffer, NULL, 10);
 }
 
-uint8_t TheThingsNetwork::linkcheckMargin()
+uint8_t TheThingsNetwork::getLinkCheckMargin()
 {
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_MRGN, buffer, sizeof(buffer));
-
   return strtol(buffer, NULL, 10);
 }
