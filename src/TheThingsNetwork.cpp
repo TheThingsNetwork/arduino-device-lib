@@ -190,8 +190,10 @@ const char mac_band[] PROGMEM = "band";
 const char mac_ar[] PROGMEM = "ar";
 const char mac_rx2[] PROGMEM = "rx2";
 const char mac_ch[] PROGMEM = "ch";
+const char mac_gwnb[] PROGMEM = "gwnb";
+const char mac_mrgn[] PROGMEM = "mrgn";
 
-const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch};
+const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -211,6 +213,8 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_AR 15
 #define MAC_RX2 16
 #define MAC_CH 17
+#define MAC_GWNB 18
+#define MAC_MRGN 19
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -962,4 +966,31 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
 void TheThingsNetwork::wake()
 { 
   autoBaud();
+}
+
+void TheThingsNetwork::linkCheck(uint16_t seconds)
+{
+  clearReadBuffer();
+  debugPrint(SENDING);
+  sendCommand(MAC_TABLE, MAC_PREFIX, true);
+  sendCommand(MAC_TABLE, MAC_SET, true);
+  sendCommand(MAC_GET_SET_TABLE, MAC_LINKCHK, true);
+
+  sprintf(buffer, "%u", seconds);
+  modemStream->write(buffer);
+  modemStream->write(SEND_MSG);
+  debugPrintLn(buffer);
+  waitForOk();  
+}
+
+uint8_t TheThingsNetwork::getLinkCheckGateways()
+{
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_GWNB, buffer, sizeof(buffer));
+  return strtol(buffer, NULL, 10);
+}
+
+uint8_t TheThingsNetwork::getLinkCheckMargin()
+{
+  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_MRGN, buffer, sizeof(buffer));
+  return strtol(buffer, NULL, 10);
 }

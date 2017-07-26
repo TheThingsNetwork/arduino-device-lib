@@ -94,6 +94,9 @@ public:
   void sleep(uint32_t mseconds);
   void wake();
   void saveState();
+  void linkCheck(uint16_t seconds);
+  uint8_t getLinkCheckGateways();  
+  uint8_t getLinkCheckMargin();
 };
 
 #endif
