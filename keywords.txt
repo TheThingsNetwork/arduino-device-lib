@@ -55,6 +55,7 @@ setBlue												KEYWORD2
 setColor											KEYWORD2
 getUSB												KEYWORD2
 getBattery										KEYWORD2
+getVDD    										KEYWORD2
 
 encodeDeviceData							KEYWORD2
 decodeAppData									KEYWORD2

@@ -307,6 +307,14 @@ size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
   return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, size);
 }
 
+uint16_t TheThingsNetwork::getVDD()
+{
+  if (readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return 0;
+}
+
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
 {
   char message[100];
