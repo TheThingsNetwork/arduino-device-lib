@@ -387,6 +387,16 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
   return readLine(buffer, size);
 }
 
+size_t TheThingsNetwork::checkComm()
+{
+    // Send sys get ver check we have an answer
+    sendCommand(SYS_TABLE, 0, true, false);
+    sendCommand(SYS_TABLE, SYS_GET, true, false);
+    sendCommand(SYS_TABLE, SYS_GET_VER, false, false);
+    modemStream->write(SEND_MSG);
+    return modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+}
+
 void TheThingsNetwork::autoBaud()
 {
   // Courtesy of @jpmeijers
@@ -396,19 +406,45 @@ void TheThingsNetwork::autoBaud()
   while (attempts-- && length == 0)
   {
     delay(100);
+    // Send break + Autobaud 
     modemStream->write((byte)0x00);
     modemStream->write(0x55);
     modemStream->write(SEND_MSG);
-    sendCommand(SYS_TABLE, 0, true, false);
-    sendCommand(SYS_TABLE, SYS_GET, true, false);
-    sendCommand(SYS_TABLE, SYS_GET_VER, false, false);
-    modemStream->write(SEND_MSG);
-    length = modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+    // check we can talk
+    length = checkComm();
+    
+    // We succeded talking to the module ?
+    baudDetermined = length ? true : false;
   }
   delay(100);
   clearReadBuffer();
   modemStream->setTimeout(10000);
-  baudDetermined = true;
+}
+
+void TheThingsNetwork::wake()
+{  
+  HardwareSerial *pLora = (HardwareSerial*) modemStream;
+  
+  // If sleeping
+  if (sleeping) 
+  {
+    // Send a 0 at lower speed to be sure always received
+    // as a character a 57600 baud rate
+    pLora->flush();
+    pLora->begin(2400);
+    pLora->write((uint8_t) 0x00);
+    pLora->flush();
+    delay(20);
+    // set baudrate back to normal and send autobaud
+    pLora->begin(57600);
+    pLora->write((uint8_t)0x55);
+    pLora->flush();
+    pLora->write(SEND_MSG);
+    if (checkComm()>0) {
+      baudDetermined = true;
+      sleeping = false;
+    }
+  }
 }
 
 void TheThingsNetwork::reset(bool adr)
@@ -969,11 +1005,10 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
-}
 
-void TheThingsNetwork::wake()
-{ 
-  autoBaud();
+  // to be determined back on wake up
+  baudDetermined = false;
+  sleeping = true;
 }
 
 void TheThingsNetwork::linkCheck(uint16_t seconds)

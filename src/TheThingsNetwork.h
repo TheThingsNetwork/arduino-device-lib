@@ -50,6 +50,7 @@ private:
   bool adr;
   char buffer[512];
   bool baudDetermined = false;
+  bool sleeping = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -60,6 +61,7 @@ private:
   void debugPrintIndex(uint8_t index, const char *value = NULL);
   void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
+  size_t checkComm();
   void autoBaud();
   void configureEU868();
   void configureUS915(uint8_t fsb);
