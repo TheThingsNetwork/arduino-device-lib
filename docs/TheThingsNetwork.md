@@ -209,3 +209,12 @@ Gets the demodulation margin as received in the last Link Check Answer frame.
 ```c
 uint8_t getLinkCheckMargin();
 ```
+
+## Method: `getVDD`
+
+Returns the voltage in millivolt (mV) measured by the RN2xxx LoRa module. It's for information only since we don't know how it's measured but looks like accurate.
+
+```c
+uint16_t getVDD();
+```
+
