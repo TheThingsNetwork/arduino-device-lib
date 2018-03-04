@@ -410,7 +410,7 @@ void TheThingsNetwork::autoBaud()
     length = checkModuleAvailable();
     
     // We succeded talking to the module ?
-    baudDetermined = length > 0 ? true : false;
+    baudDetermined = length > 0 ;
   }
   delay(100);
   clearReadBuffer();
