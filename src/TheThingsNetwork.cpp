@@ -390,11 +390,7 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
 size_t TheThingsNetwork::checkModuleAvailable()
 {
     // Send sys get ver check we have an answer
-    sendCommand(SYS_TABLE, 0, true, false);
-    sendCommand(SYS_TABLE, SYS_GET, true, false);
-    sendCommand(SYS_TABLE, SYS_GET_VER, false, false);
-    modemStream->write(SEND_MSG);
-    return modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+    return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));  
 }
 
 void TheThingsNetwork::autoBaud()
