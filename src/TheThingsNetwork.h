@@ -61,7 +61,7 @@ private:
   void debugPrintIndex(uint8_t index, const char *value = NULL);
   void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
-  size_t checkComm();
+  size_t checkModuleAvailable();
   void autoBaud();
   void configureEU868();
   void configureUS915(uint8_t fsb);

@@ -387,7 +387,7 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
   return readLine(buffer, size);
 }
 
-size_t TheThingsNetwork::checkComm()
+size_t TheThingsNetwork::checkModuleAvailable()
 {
     // Send sys get ver check we have an answer
     sendCommand(SYS_TABLE, 0, true, false);
@@ -411,10 +411,10 @@ void TheThingsNetwork::autoBaud()
     modemStream->write(0x55);
     modemStream->write(SEND_MSG);
     // check we can talk
-    length = checkComm();
+    length = checkModuleAvailable();
     
     // We succeded talking to the module ?
-    baudDetermined = length ? true : false;
+    baudDetermined = length > 0 ? true : false;
   }
   delay(100);
   clearReadBuffer();
@@ -440,7 +440,7 @@ void TheThingsNetwork::wake()
     pLora->write((uint8_t)0x55);
     pLora->flush();
     pLora->write(SEND_MSG);
-    if (checkComm()>0) {
+    if (checkModuleAvailable()>0) {
       baudDetermined = true;
       sleeping = false;
     }
