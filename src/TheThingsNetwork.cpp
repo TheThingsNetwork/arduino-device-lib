@@ -436,7 +436,7 @@ void TheThingsNetwork::wake()
     pLora->write((uint8_t)0x55);
     pLora->flush();
     pLora->write(SEND_MSG);
-    if (checkModuleAvailable()>0) {
+    if (checkModuleAvailable() > 0) {
       baudDetermined = true;
       sleeping = false;
     }
