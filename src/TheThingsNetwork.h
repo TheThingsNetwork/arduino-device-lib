@@ -20,6 +20,14 @@
 
 #define TTN_BUFFER_SIZE 300
 
+#if defined(ARDUINO_ARCH_AVR)
+typedef HardwareSerial SerialType;
+#elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
+typedef Uart SerialType;
+#else
+typedef Stream SerialType;
+#endif
+
 typedef uint8_t port_t;
 
 enum ttn_response_t
@@ -42,7 +50,7 @@ enum ttn_fp_t
 class TheThingsNetwork
 {
 private:
-  Stream *modemStream;
+  SerialType *modemStream;
   Stream *debugStream;
   ttn_fp_t fp;
   uint8_t sf;
@@ -80,7 +88,7 @@ private:
   void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
 
 public:
-  TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+  TheThingsNetwork(SerialType &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
   void reset(bool adr = true);
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);

@@ -287,7 +287,7 @@ uint8_t receivedPort(const char *s)
   return port;
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb)
+TheThingsNetwork::TheThingsNetwork(SerialType &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb)
 {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
@@ -419,23 +419,21 @@ void TheThingsNetwork::autoBaud()
 
 void TheThingsNetwork::wake()
 {  
-  HardwareSerial *pLora = (HardwareSerial*) modemStream;
-  
   // If sleeping
   if (sleeping) 
   {
     // Send a 0 at lower speed to be sure always received
     // as a character a 57600 baud rate
-    pLora->flush();
-    pLora->begin(2400);
-    pLora->write((uint8_t) 0x00);
-    pLora->flush();
+    modemStream->flush();
+    modemStream->begin(2400);
+    modemStream->write((uint8_t) 0x00);
+    modemStream->flush();
     delay(20);
     // set baudrate back to normal and send autobaud
-    pLora->begin(57600);
-    pLora->write((uint8_t)0x55);
-    pLora->flush();
-    pLora->write(SEND_MSG);
+    modemStream->begin(57600);
+    modemStream->write((uint8_t)0x55);
+    modemStream->flush();
+    modemStream->write(SEND_MSG);
     if (checkModuleAvailable() > 0) {
       baudDetermined = true;
       sleeping = false;
