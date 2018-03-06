@@ -8,6 +8,9 @@
 #include <Stream.h>
 #include <avr/pgmspace.h>
 
+// If you need to use soft serial library you need to uncomment this line
+//#define USE_SOFT_SERIAL
+
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
 #define TTN_RETX "7"
@@ -20,6 +23,10 @@
 
 #define TTN_BUFFER_SIZE 300
 
+#ifdef USE_SOFT_SERIAL
+#include <AltSoftSerial.h>
+typedef AltSoftSerial SerialType;
+#else
 #if defined(ARDUINO_ARCH_AVR)
 typedef HardwareSerial SerialType;
 #elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
@@ -27,6 +34,7 @@ typedef Uart SerialType;
 #else
 typedef Stream SerialType;
 #endif
+#endif // USE_SOFT_SERIAL
 
 typedef uint8_t port_t;
 
@@ -58,7 +66,6 @@ private:
   bool adr;
   char buffer[512];
   bool baudDetermined = false;
-  bool sleeping = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -71,6 +78,7 @@ private:
 
   size_t checkModuleAvailable();
   void autoBaud();
+  void configureChannelsFreq(uint32_t freq, uint8_t begin, uint8_t end, uint8_t start);
   void configureEU868();
   void configureUS915(uint8_t fsb);
   void configureAS920_923();
@@ -103,6 +111,7 @@ public:
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
   ttn_response_t poll(port_t port = 1, bool confirm = false);
   void sleep(uint32_t mseconds);
+  bool isSleeping();
   void wake();
   void saveState();
   void linkCheck(uint16_t seconds);
