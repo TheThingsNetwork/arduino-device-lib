@@ -23,18 +23,18 @@
 
 #define TTN_BUFFER_SIZE 300
 
-#ifdef USE_SOFT_SERIAL
-#include <AltSoftSerial.h>
-typedef AltSoftSerial SerialType;
-#else
-#if defined(ARDUINO_ARCH_AVR)
+// The Things Industries devices
+#if defined(ARDUINO_THINGS_NODE) || defined (ARDUINO_THINGS_UNO)
 typedef HardwareSerial SerialType;
+
+#elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
+typedef HardwareSerial SerialType;
+
 #elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
 typedef Uart SerialType;
 #else
 typedef Stream SerialType;
 #endif
-#endif // USE_SOFT_SERIAL
 
 typedef uint8_t port_t;
 
