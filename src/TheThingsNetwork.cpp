@@ -430,12 +430,16 @@ void TheThingsNetwork::wake()
     // Send a 0 at lower speed to be sure always received
     // as a character a 57600 baud rate
     modemStream->flush();
+#ifdef HARDWARE_UART
     modemStream->begin(2400);
+#endif
     modemStream->write((uint8_t) 0x00);
     modemStream->flush();
     delay(20);
     // set baudrate back to normal and send autobaud
+#ifdef HARDWARE_UART
     modemStream->begin(57600);
+#endif
     modemStream->write((uint8_t)0x55);
     modemStream->flush();
     modemStream->write(SEND_MSG);
@@ -646,16 +650,16 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-// Puting this common fonction save 238 bytes of flash
-void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t begin, uint8_t end, uint8_t start)
+// Puting this common fonction saves 238 bytes of flash
+void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr)
 {
   uint8_t ch;
   char buf[10];
 
-  for (ch = begin; ch < end; ch++)
+  for (ch = first; ch <= last; ch++)
   {
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > start)
+    if (ch > first_dr)
     {
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
@@ -704,7 +708,6 @@ void TheThingsNetwork::configureAS920_923()
    * CH0 = 923.2MHz
    * CH1 = 923.4MHz
    */
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
   configureChannelsFreq(922000000, 0, 8, 1);

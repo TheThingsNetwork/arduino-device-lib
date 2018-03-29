@@ -8,9 +8,6 @@
 #include <Stream.h>
 #include <avr/pgmspace.h>
 
-// If you need to use soft serial library you need to uncomment this line
-//#define USE_SOFT_SERIAL
-
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
 #define TTN_RETX "7"
@@ -23,15 +20,18 @@
 
 #define TTN_BUFFER_SIZE 300
 
-// The Things Industries devices
+// The Things Products devices
 #if defined(ARDUINO_THINGS_NODE) || defined (ARDUINO_THINGS_UNO)
 typedef HardwareSerial SerialType;
+#define HARDWARE_UART
 
 #elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
 typedef HardwareSerial SerialType;
+#define HARDWARE_UART
 
 #elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
 typedef Uart SerialType;
+#define HARDWARE_UART
 #else
 typedef Stream SerialType;
 #endif
@@ -78,7 +78,7 @@ private:
 
   size_t checkModuleAvailable();
   void autoBaud();
-  void configureChannelsFreq(uint32_t freq, uint8_t begin, uint8_t end, uint8_t start);
+  void configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr);
   void configureEU868();
   void configureUS915(uint8_t fsb);
   void configureAS920_923();
