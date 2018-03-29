@@ -409,8 +409,8 @@ void TheThingsNetwork::autoBaud()
     // check we can talk
     length = checkModuleAvailable();
     
-    // We succeded talking to the module ?
-    baudDetermined = length > 0 ;
+    // We succeeded talking to the module ?
+    baudDetermined = (length > 0) ;
   }
   delay(100);
   clearReadBuffer();
@@ -419,13 +419,13 @@ void TheThingsNetwork::autoBaud()
 
 bool TheThingsNetwork::isSleeping()
 {  
-  return baudDetermined ? false : true ;
+  return !baudDetermined;
 }
 
 void TheThingsNetwork::wake()
 {  
   // If sleeping
-  if (!baudDetermined) 
+  if (isSleeping()) 
   {
     // Send a 0 at lower speed to be sure always received
     // as a character a 57600 baud rate
@@ -650,7 +650,7 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-// Puting this common fonction saves 238 bytes of flash
+// Puting this common function saves 238 bytes of flash
 void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr)
 {
   uint8_t ch;
