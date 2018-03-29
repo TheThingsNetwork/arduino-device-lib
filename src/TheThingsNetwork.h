@@ -29,9 +29,6 @@ typedef HardwareSerial SerialType;
 typedef HardwareSerial SerialType;
 #define HARDWARE_UART
 
-#elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
-typedef Uart SerialType;
-#define HARDWARE_UART
 #else
 typedef Stream SerialType;
 #endif
