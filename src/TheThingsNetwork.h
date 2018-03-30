@@ -21,14 +21,10 @@
 #define TTN_BUFFER_SIZE 300
 
 // The Things Products devices
-#if defined(ARDUINO_THINGS_NODE) || defined (ARDUINO_THINGS_UNO)
+// Things Node only need this, we won't impact Things Uno user
+#if defined(ARDUINO_THINGS_NODE) 
 typedef HardwareSerial SerialType;
 #define HARDWARE_UART
-
-#elif defined(ARDUINO_ARCH_SAM) || defined(ARDUINO_ARCH_SAMD)
-typedef HardwareSerial SerialType;
-#define HARDWARE_UART
-
 #else
 typedef Stream SerialType;
 #endif
