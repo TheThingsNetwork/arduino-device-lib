@@ -748,7 +748,38 @@ void TheThingsNetwork::configureKR920_923()
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
+void TheThingsNetwork::configureIN865_867()
+{
+  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  sendMacSet(MAC_RX2, "2 866550000"); //  SF10  
+  //disable two default LoRaWAN channels
+  sendChSet(MAC_CHANNEL_STATUS, 0, "off");
+  sendChSet(MAC_CHANNEL_STATUS, 1, "off");
+  sendChSet(MAC_CHANNEL_STATUS, 2, "off");
 
+
+  char buf[10];
+  uint32_t freq = 865062500;
+  uint8_t ch;
+  for (ch = 3; ch < 6; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sprintf(buf, "%lu", freq);
+    sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 6");
+    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+    switch(ch)
+		{
+		case 4:
+			freq = 865402500;
+			break;
+		case 5:
+			freq = 865985000;
+			break;
+ 		}
+  }
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
+}
 void TheThingsNetwork::configureChannels(uint8_t fsb)
 {
   switch (fp)
@@ -768,6 +799,9 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
   case TTN_FP_KR920_923:
     configureKR920_923();
     break;
+  case TTN_FP_IN865_867:
+    configureIN865_867();
+    break;
   default:
     debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
     break;
@@ -781,6 +815,7 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   switch (fp)
   {
   case TTN_FP_EU868:
+  case TTN_FP_IN865_867:
   case TTN_FP_AS920_923:
   case TTN_FP_AS923_925:
   case TTN_FP_KR920_923:
