@@ -752,11 +752,10 @@ void TheThingsNetwork::configureIN865_867()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 866550000"); //  SF10  
-  //disable two default LoRaWAN channels
+  //disable three default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
   sendChSet(MAC_CHANNEL_STATUS, 2, "off");
-
 
   char buf[10];
   uint32_t freq = 865062500;
@@ -769,15 +768,15 @@ void TheThingsNetwork::configureIN865_867()
     sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 6");
     sendChSet(MAC_CHANNEL_STATUS, ch, "on");
     switch(ch)
-		{
-		case 4:
-			freq = 865402500;
-			break;
-		case 5:
-			freq = 865985000;
-			break;
- 		}
-  }
+    {
+      case 4:
+      freq = 865402500;
+      break;
+      case 5:
+      freq = 865985000;
+      break;
+    }
+ }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
 }
 void TheThingsNetwork::configureChannels(uint8_t fsb)
