@@ -650,16 +650,18 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-// Puting this common function saves 238 bytes of flash
-void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr)
+void TheThingsNetwork::configureEU868()
 {
-  uint8_t ch;
-  char buf[10];
+  sendMacSet(MAC_RX2, "3 869525000");
+  sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
 
-  for (ch = first; ch <= last; ch++)
+  char buf[10];
+  uint32_t freq = 867100000;
+  uint8_t ch;
+  for (ch = 0; ch < 8; ch++)
   {
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > first_dr)
+    if (ch > 2)
     {
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
@@ -668,13 +670,6 @@ void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t first, uint8
       freq = freq + 200000;
     }
   }
-}
-
-void TheThingsNetwork::configureEU868()
-{
-  sendMacSet(MAC_RX2, "3 869525000");
-  sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
-  configureChannelsFreq(867100000, 0, 8, 2);
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_EU868);
 }
 
@@ -708,9 +703,24 @@ void TheThingsNetwork::configureAS920_923()
    * CH0 = 923.2MHz
    * CH1 = 923.4MHz
    */
+  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
-  configureChannelsFreq(922000000, 0, 8, 1);
+  char buf[10];
+  uint32_t freq = 922000000;
+  uint8_t ch;
+  for (ch = 0; ch < 8; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    if (ch > 1)
+    {
+      sprintf(buf, "%lu", freq);
+      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      freq = freq + 200000;
+    }
+  }
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
   //sendChSet(MAC_CHANNEL_FREQ, 8, "922100000");
@@ -729,7 +739,21 @@ void TheThingsNetwork::configureAS923_925()
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
-  configureChannelsFreq(923600000, 0, 8, 1);
+  char buf[10];
+  uint32_t freq = 923600000;
+  uint8_t ch;
+  for (ch = 0; ch < 8; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    if (ch > 1)
+    {
+      sprintf(buf, "%lu", freq);
+      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      freq = freq + 200000;
+    }
+  }
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
   //sendChSet(MAC_CHANNEL_FREQ, 8, "924500000");
@@ -748,7 +772,18 @@ void TheThingsNetwork::configureKR920_923()
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
 
-  configureChannelsFreq(922100000, 2, 9, 0);
+  char buf[10];
+  uint32_t freq = 922100000;
+  uint8_t ch;
+  for (ch = 2; ch < 9; ch++)
+  {
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sprintf(buf, "%lu", freq);
+    sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
+    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+    freq = freq + 200000;
+  }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
 
@@ -868,13 +903,24 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *val
 {
   clearReadBuffer();
   char ch[5];
-  sprintf(ch, "%d ", channel);
+  if (channel > 9)
+  {
+    ch[0] = ((channel - (channel % 10)) / 10) + 48;
+    ch[1] = (channel % 10) + 48;
+    ch[2] = '\0';
+  }
+  else
+  {
+    ch[0] = channel + 48;
+    ch[1] = '\0';
+  }
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
   sendCommand(MAC_GET_SET_TABLE, MAC_CH, true);
   sendCommand(MAC_CH_TABLE, index, true);
   modemStream->write(ch);
+  modemStream->write(" ");
   modemStream->write(value);
   modemStream->write(SEND_MSG);
   debugPrint(channel);
@@ -902,16 +948,44 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_TX, true);
   sendCommand(MAC_TX_TABLE, mode, true);
-  char buf[5];
-  sprintf(buf, "%d ", port);
-  modemStream->write(buf);
-  debugPrint(buf);
+  char sport[4];
+  if (port > 99)
+  {
+    sport[0] = ((port - (port % 100)) / 100) + 48;
+    sport[1] = (((port % 100) - (port % 10)) / 10) + 48;
+    sport[2] = (port % 10) + 48;
+    sport[3] = '\0';
+  }
+  else if (port > 9)
+  {
+    sport[0] = ((port - (port % 10)) / 10) + 48;
+    sport[1] = (port % 10) + 48;
+    sport[2] = '\0';
+  }
+  else
+  {
+    sport[0] = port + 48;
+    sport[1] = '\0';
+  }
+  modemStream->write(sport);
+  modemStream->print(" ");
+  debugPrint(sport);
+  debugPrint(F(" "));
   uint8_t i = 0;
   for (i = 0; i < length; i++)
   {
-    sprintf(buf, "%02X", payload[i] );
-    modemStream->print(buf);
-    debugPrint(buf);
+    if (payload[i] < 16)
+    {
+      modemStream->print("0");
+      modemStream->print(payload[i], HEX);
+      debugPrint(F("0"));
+      debugPrint(payload[i], HEX);
+    }
+    else
+    {
+      modemStream->print(payload[i], HEX);
+      debugPrint(payload[i], HEX);
+    }
   }
   modemStream->write(SEND_MSG);
   debugPrintLn();

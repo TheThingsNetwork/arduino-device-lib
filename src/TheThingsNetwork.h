@@ -71,7 +71,6 @@ private:
 
   size_t checkModuleAvailable();
   void autoBaud();
-  void configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr);
   void configureEU868();
   void configureUS915(uint8_t fsb);
   void configureAS920_923();
