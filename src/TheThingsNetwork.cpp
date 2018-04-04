@@ -287,7 +287,7 @@ uint8_t receivedPort(const char *s)
   return port;
 }
 
-TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb)
+TheThingsNetwork::TheThingsNetwork(SerialType &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf, uint8_t fsb)
 {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
@@ -387,6 +387,12 @@ size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t indexTable, u
   return readLine(buffer, size);
 }
 
+size_t TheThingsNetwork::checkModuleAvailable()
+{
+    // Send sys get ver check we have an answer
+    return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));  
+}
+
 void TheThingsNetwork::autoBaud()
 {
   // Courtesy of @jpmeijers
@@ -396,19 +402,51 @@ void TheThingsNetwork::autoBaud()
   while (attempts-- && length == 0)
   {
     delay(100);
+    // Send break + Autobaud 
     modemStream->write((byte)0x00);
     modemStream->write(0x55);
     modemStream->write(SEND_MSG);
-    sendCommand(SYS_TABLE, 0, true, false);
-    sendCommand(SYS_TABLE, SYS_GET, true, false);
-    sendCommand(SYS_TABLE, SYS_GET_VER, false, false);
-    modemStream->write(SEND_MSG);
-    length = modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+    // check we can talk
+    length = checkModuleAvailable();
+    
+    // We succeeded talking to the module ?
+    baudDetermined = (length > 0) ;
   }
   delay(100);
   clearReadBuffer();
   modemStream->setTimeout(10000);
-  baudDetermined = true;
+}
+
+bool TheThingsNetwork::isSleeping()
+{  
+  return !baudDetermined;
+}
+
+void TheThingsNetwork::wake()
+{  
+  // If sleeping
+  if (isSleeping()) 
+  {
+    // Send a 0 at lower speed to be sure always received
+    // as a character a 57600 baud rate
+    modemStream->flush();
+#ifdef HARDWARE_UART
+    modemStream->begin(2400);
+#endif
+    modemStream->write((uint8_t) 0x00);
+    modemStream->flush();
+    delay(20);
+    // set baudrate back to normal and send autobaud
+#ifdef HARDWARE_UART
+    modemStream->begin(57600);
+#endif
+    modemStream->write((uint8_t)0x55);
+    modemStream->flush();
+    modemStream->write(SEND_MSG);
+    if (checkModuleAvailable() > 0) {
+      baudDetermined = true;
+    }
+  }
 }
 
 void TheThingsNetwork::reset(bool adr)
@@ -612,18 +650,16 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-void TheThingsNetwork::configureEU868()
+// Puting this common function saves 238 bytes of flash
+void TheThingsNetwork::configureChannelsFreq(uint32_t freq, uint8_t first, uint8_t last, uint8_t first_dr)
 {
-  sendMacSet(MAC_RX2, "3 869525000");
-  sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
-
-  char buf[10];
-  uint32_t freq = 867100000;
   uint8_t ch;
-  for (ch = 0; ch < 8; ch++)
+  char buf[10];
+
+  for (ch = first; ch <= last; ch++)
   {
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > 2)
+    if (ch > first_dr)
     {
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
@@ -632,6 +668,13 @@ void TheThingsNetwork::configureEU868()
       freq = freq + 200000;
     }
   }
+}
+
+void TheThingsNetwork::configureEU868()
+{
+  sendMacSet(MAC_RX2, "3 869525000");
+  sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
+  configureChannelsFreq(867100000, 0, 8, 2);
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_EU868);
 }
 
@@ -665,24 +708,9 @@ void TheThingsNetwork::configureAS920_923()
    * CH0 = 923.2MHz
    * CH1 = 923.4MHz
    */
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
-  char buf[10];
-  uint32_t freq = 922000000;
-  uint8_t ch;
-  for (ch = 0; ch < 8; ch++)
-  {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > 1)
-    {
-      sprintf(buf, "%lu", freq);
-      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-      freq = freq + 200000;
-    }
-  }
+  configureChannelsFreq(922000000, 0, 8, 1);
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
   //sendChSet(MAC_CHANNEL_FREQ, 8, "922100000");
@@ -701,21 +729,7 @@ void TheThingsNetwork::configureAS923_925()
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, "2 923200000");
 
-  char buf[10];
-  uint32_t freq = 923600000;
-  uint8_t ch;
-  for (ch = 0; ch < 8; ch++)
-  {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    if (ch > 1)
-    {
-      sprintf(buf, "%lu", freq);
-      sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-      sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-      freq = freq + 200000;
-    }
-  }
+  configureChannelsFreq(923600000, 0, 8, 1);
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
   //sendChSet(MAC_CHANNEL_FREQ, 8, "924500000");
@@ -734,18 +748,7 @@ void TheThingsNetwork::configureKR920_923()
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
 
-  char buf[10];
-  uint32_t freq = 922100000;
-  uint8_t ch;
-  for (ch = 2; ch < 9; ch++)
-  {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    sprintf(buf, "%lu", freq);
-    sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-    freq = freq + 200000;
-  }
+  configureChannelsFreq(922100000, 2, 9, 0);
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
 
@@ -865,24 +868,13 @@ bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *val
 {
   clearReadBuffer();
   char ch[5];
-  if (channel > 9)
-  {
-    ch[0] = ((channel - (channel % 10)) / 10) + 48;
-    ch[1] = (channel % 10) + 48;
-    ch[2] = '\0';
-  }
-  else
-  {
-    ch[0] = channel + 48;
-    ch[1] = '\0';
-  }
+  sprintf(ch, "%d ", channel);
   debugPrint(F(SENDING));
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_SET, true);
   sendCommand(MAC_GET_SET_TABLE, MAC_CH, true);
   sendCommand(MAC_CH_TABLE, index, true);
   modemStream->write(ch);
-  modemStream->write(" ");
   modemStream->write(value);
   modemStream->write(SEND_MSG);
   debugPrint(channel);
@@ -910,44 +902,16 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
   sendCommand(MAC_TABLE, MAC_PREFIX, true);
   sendCommand(MAC_TABLE, MAC_TX, true);
   sendCommand(MAC_TX_TABLE, mode, true);
-  char sport[4];
-  if (port > 99)
-  {
-    sport[0] = ((port - (port % 100)) / 100) + 48;
-    sport[1] = (((port % 100) - (port % 10)) / 10) + 48;
-    sport[2] = (port % 10) + 48;
-    sport[3] = '\0';
-  }
-  else if (port > 9)
-  {
-    sport[0] = ((port - (port % 10)) / 10) + 48;
-    sport[1] = (port % 10) + 48;
-    sport[2] = '\0';
-  }
-  else
-  {
-    sport[0] = port + 48;
-    sport[1] = '\0';
-  }
-  modemStream->write(sport);
-  modemStream->print(" ");
-  debugPrint(sport);
-  debugPrint(F(" "));
+  char buf[5];
+  sprintf(buf, "%d ", port);
+  modemStream->write(buf);
+  debugPrint(buf);
   uint8_t i = 0;
   for (i = 0; i < length; i++)
   {
-    if (payload[i] < 16)
-    {
-      modemStream->print("0");
-      modemStream->print(payload[i], HEX);
-      debugPrint(F("0"));
-      debugPrint(payload[i], HEX);
-    }
-    else
-    {
-      modemStream->print(payload[i], HEX);
-      debugPrint(payload[i], HEX);
-    }
+    sprintf(buf, "%02X", payload[i] );
+    modemStream->print(buf);
+    debugPrint(buf);
   }
   modemStream->write(SEND_MSG);
   debugPrintLn();
@@ -969,11 +933,9 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
-}
 
-void TheThingsNetwork::wake()
-{ 
-  autoBaud();
+  // to be determined back on wake up
+  baudDetermined = false;
 }
 
 void TheThingsNetwork::linkCheck(uint16_t seconds)
