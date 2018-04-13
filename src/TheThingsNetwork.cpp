@@ -760,21 +760,21 @@ void TheThingsNetwork::configureIN865_867()
   char buf[10];
   uint32_t freq = 865062500;
   uint8_t ch;
-  for (ch = 3; ch < 6; ch++)
+  for (ch = 3; ch < 7; ch++)
   {
     sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
     sprintf(buf, "%lu", freq);
     sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 6");
+    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
     sendChSet(MAC_CHANNEL_STATUS, ch, "on");
     switch(ch)
     {
       case 4:
-      freq = 865402500;
-      break;
+      	freq = 865402500;
+      	break;
       case 5:
-      freq = 865985000;
-      break;
+      	freq = 865985000;
+      	break;
     }
  }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
