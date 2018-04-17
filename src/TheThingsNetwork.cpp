@@ -776,7 +776,7 @@ void TheThingsNetwork::configureIN865_867()
       	freq = 865985000;
       	break;
     }
- }
+  }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
 }
 void TheThingsNetwork::configureChannels(uint8_t fsb)
