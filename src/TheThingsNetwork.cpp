@@ -748,11 +748,13 @@ void TheThingsNetwork::configureKR920_923()
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
 }
+
 void TheThingsNetwork::configureIN865_867()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 866550000"); //  SF10  
-  //disable three default LoRaWAN channels
+  sendMacSet(MAC_RX2, "2 866550000"); // SF10
+  
+  // Disable the three default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
   sendChSet(MAC_CHANNEL_STATUS, 2, "off");
@@ -779,6 +781,7 @@ void TheThingsNetwork::configureIN865_867()
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
 }
+
 void TheThingsNetwork::configureChannels(uint8_t fsb)
 {
   switch (fp)
