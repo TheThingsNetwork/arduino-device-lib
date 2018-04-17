@@ -769,12 +769,12 @@ void TheThingsNetwork::configureIN865_867()
     sendChSet(MAC_CHANNEL_STATUS, ch, "on");
     switch(ch)
     {
-      case 4:
-      	freq = 865402500;
-      	break;
-      case 5:
-      	freq = 865985000;
-      	break;
+    case 4:
+      freq = 865402500;
+      break;
+    case 5:
+      freq = 865985000;
+      break;
     }
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
