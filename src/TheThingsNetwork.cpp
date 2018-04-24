@@ -752,33 +752,31 @@ void TheThingsNetwork::configureKR920_923()
 void TheThingsNetwork::configureIN865_867()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 866550000"); // SF10
+  sendMacSet(MAC_RX2, "2 866550000"); // SF10  
   
   // Disable the three default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
   sendChSet(MAC_CHANNEL_STATUS, 2, "off");
 
-  char buf[10];
-  uint32_t freq = 865062500;
-  uint8_t ch;
-  for (ch = 3; ch < 7; ch++)
-  {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
-    sprintf(buf, "%lu", freq);
-    sendChSet(MAC_CHANNEL_FREQ, ch, buf);
-    sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
-    switch(ch)
-    {
-    case 4:
-      freq = 865402500;
-      break;
-    case 5:
-      freq = 865985000;
-      break;
-    }
-  }
+  // Channel 3
+  sendChSet(MAC_CHANNEL_DCYCLE, 3, "299");
+  sendChSet(MAC_CHANNEL_FREQ, 3, "865062500");
+  sendChSet(MAC_CHANNEL_DRRANGE, 3, "0 5");
+  sendChSet(MAC_CHANNEL_STATUS, 3, "on");
+
+  // Channel 4
+  sendChSet(MAC_CHANNEL_DCYCLE, 4, "299");
+  sendChSet(MAC_CHANNEL_FREQ, 4, "865402500");
+  sendChSet(MAC_CHANNEL_DRRANGE, 4, "0 5");
+  sendChSet(MAC_CHANNEL_STATUS, 4, "on");
+
+  // Channel 5
+  sendChSet(MAC_CHANNEL_DCYCLE, 5, "299");
+  sendChSet(MAC_CHANNEL_FREQ, 5, "865985000");
+  sendChSet(MAC_CHANNEL_DRRANGE, 5, "0 5");
+  sendChSet(MAC_CHANNEL_STATUS, 5, "on");
+
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
 }
 
