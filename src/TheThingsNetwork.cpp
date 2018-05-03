@@ -659,6 +659,30 @@ void TheThingsNetwork::configureUS915(uint8_t fsb)
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_US915);
 }
 
+void TheThingsNetwork::configureAU915(uint8_t fsb)
+{
+  uint8_t ch;
+  uint8_t chLow = fsb > 0 ? (fsb - 1) * 8 : 0;
+  uint8_t chHigh = fsb > 0 ? chLow + 7 : 71;
+  uint8_t ch500 = fsb + 63;
+  for (ch = 0; ch < 72; ch++)
+  {
+    if (ch == ch500 || (ch <= chHigh && ch >= chLow))
+    {
+      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      if (ch < 63)
+      {
+        sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 3");
+      }
+    }
+    else
+    {
+      sendChSet(MAC_CHANNEL_STATUS, ch, "off");
+    }
+  }
+  sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AU915);
+}
+
 void TheThingsNetwork::configureAS920_923()
 {
   /* RN2903AS 1.0.3rc9 defaults
@@ -759,6 +783,9 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
   case TTN_FP_US915:
     configureUS915(fsb);
     break;
+  case TTN_FP_AU915:
+    configureAU915(fsb);
+    break;
   case TTN_FP_AS920_923:
     configureAS920_923();
     break;
@@ -784,6 +811,7 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   case TTN_FP_AS920_923:
   case TTN_FP_AS923_925:
   case TTN_FP_KR920_923:
+  case TTN_FP_AU915:
     dr = 12 - sf;
     break;
   case TTN_FP_US915:
