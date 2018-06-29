@@ -846,10 +846,10 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   case TTN_FP_AS920_923:
   case TTN_FP_AS923_925:
   case TTN_FP_KR920_923:
-  case TTN_FP_AU915:
     dr = 12 - sf;
     break;
   case TTN_FP_US915:
+  case TTN_FP_AU915:
     dr = 10 - sf;
     break;
   }
