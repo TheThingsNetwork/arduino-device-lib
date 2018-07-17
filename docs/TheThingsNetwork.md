@@ -64,7 +64,7 @@ RX Delay 1: 1000
 RX Delay 2: 2000
 ```
 
-See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
+See the [DeviceInfo](../examples/DeviceInfo/DeviceInfo.ino) example.
 
 ## Method: `onMessage`
 
@@ -78,7 +78,7 @@ void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
 - `size_t length`: Number of bytes.
 - `port_t port`: The port addressed.
 
-See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
+See the [Receive](../examples/Receive/Receive.ino) example.
 
 ## Method: `join`
 
@@ -115,7 +115,7 @@ Returns `true` or `false` depending on whether the activation was successful.
 
 Call the method with no arguments if the device's LoRa module comes with pre-flashed values.
 
-See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/ABP/ABP.ino) example.
+See the [SendABP](../examples/SendABP/SendABP.ino) example.
 
 ## Method: `sendBytes`
 
@@ -138,7 +138,7 @@ Returns a success or error code and logs the related error message:
 * `TTN_SUCCESSFUL_RECEIVE`: Successful transmission. Received \<N> bytes
 * `TTN_ERROR_UNEXPECTED_RESPONSE`: Unexpected response: \<Response>
 
-See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Send/Send.ino) example.
+See the [SendOTAA](../examples/SendOTAA/SendOTAA.ino) example.
 
 ## Method: `poll`
 
@@ -153,7 +153,7 @@ int8_t poll(port_t port = 1, bool confirm = false);
 
 Returns the result of `sendBytes()`.
 
-See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
+See the [Receive](../examples/Receive/Receive.ino) example.
 
 ## Method: `provision`
 
@@ -217,4 +217,3 @@ Returns the voltage in millivolt (mV) measured by the RN2xxx LoRa module. It's f
 ```c
 uint16_t getVDD();
 ```
-
