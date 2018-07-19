@@ -115,7 +115,7 @@ Returns `true` or `false` depending on whether the activation was successful.
 
 Call the method with no arguments if the device's LoRa module comes with pre-flashed values.
 
-See the [ABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/ABP/ABP.ino) example.
+See the [SendABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/SendABP/SendABP.ino) example.
 
 ## Method: `sendBytes`
 
@@ -138,7 +138,7 @@ Returns a success or error code and logs the related error message:
 * `TTN_SUCCESSFUL_RECEIVE`: Successful transmission. Received \<N> bytes
 * `TTN_ERROR_UNEXPECTED_RESPONSE`: Unexpected response: \<Response>
 
-See the [Send](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Send/Send.ino) example.
+See the [SendOTAA](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/SendOTAA/SendOTAA.ino) example.
 
 ## Method: `poll`
 
@@ -217,4 +217,3 @@ Returns the voltage in millivolt (mV) measured by the RN2xxx LoRa module. It's f
 ```c
 uint16_t getVDD();
 ```
-
