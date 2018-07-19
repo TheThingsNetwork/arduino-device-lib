@@ -6,88 +6,88 @@
 # Class (KEYWORD1)
 #######################################
 
-TheThingsNetwork							KEYWORD1
-TheThingsMessage							KEYWORD1
-TheThingsNode									KEYWORD1
+TheThingsNetwork	KEYWORD1
+TheThingsMessage	KEYWORD1
+TheThingsNode	KEYWORD1
 
-ttn_port_t										KEYWORD1
-ttn_response_t								KEYWORD1
-ttn_fp_t											KEYWORD1
+ttn_port_t	KEYWORD1
+ttn_response_t	KEYWORD1
+ttn_fp_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-showStatus										KEYWORD2
-onMessage											KEYWORD2
-provision											KEYWORD2
-join													KEYWORD2
-personalize										KEYWORD2
-sendBytes											KEYWORD2
-poll													KEYWORD2
+showStatus	KEYWORD2
+onMessage	KEYWORD2
+provision	KEYWORD2
+join	KEYWORD2
+personalize	KEYWORD2
+sendBytes	KEYWORD2
+poll	KEYWORD2
 
-encodeSensorData							KEYWORD2
-decodeAppData									KEYWORD2
+encodeSensorData	KEYWORD2
+decodeAppData	KEYWORD2
 
-getLight											KEYWORD2
-configLight										KEYWORD2
-getTemperatureAsInt						KEYWORD2
-getTemperatureAsFloat					KEYWORD2
-configTemperature							KEYWORD2
-onTemperatureAlert						KEYWORD2
-configTemperatureAlert				KEYWORD2
-onMotionStart									KEYWORD2
-onMotionStop									KEYWORD2
-isMoving											KEYWORD2
-configMotion									KEYWORD2
-onButtonPress									KEYWORD2
-onButtonRelease								KEYWORD2
-isButtonPressed								KEYWORD2
-getRed												KEYWORD2
-getGreen											KEYWORD2
-getBlue												KEYWORD2
-getColor											KEYWORD2
-colorToString									KEYWORD2
-setRGB												KEYWORD2
-setRed												KEYWORD2
-setGreen											KEYWORD2
-setBlue												KEYWORD2
-setColor											KEYWORD2
-getUSB												KEYWORD2
-getBattery										KEYWORD2
-getVDD    										KEYWORD2
+getLight	KEYWORD2
+configLight	KEYWORD2
+getTemperatureAsInt	KEYWORD2
+getTemperatureAsFloat	KEYWORD2
+configTemperature	KEYWORD2
+onTemperatureAlert	KEYWORD2
+configTemperatureAlert	KEYWORD2
+onMotionStart	KEYWORD2
+onMotionStop	KEYWORD2
+isMoving	KEYWORD2
+configMotion	KEYWORD2
+onButtonPress	KEYWORD2
+onButtonRelease	KEYWORD2
+isButtonPressed	KEYWORD2
+getRed	KEYWORD2
+getGreen	KEYWORD2
+getBlue	KEYWORD2
+getColor	KEYWORD2
+colorToString	KEYWORD2
+setRGB	KEYWORD2
+setRed	KEYWORD2
+setGreen	KEYWORD2
+setBlue	KEYWORD2
+setColor	KEYWORD2
+getUSB	KEYWORD2
+getBattery	KEYWORD2
+getVDD	KEYWORD2
 
-encodeDeviceData							KEYWORD2
-decodeAppData									KEYWORD2
+encodeDeviceData	KEYWORD2
+decodeAppData	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-TTN_DEFAULT_SF								LITERAL1
-TTN_DEFAULT_FSB								LITERAL1
-TTN_RETX											LITERAL1
-TTN_PWRIDX_868								LITERAL1
-TTN_PWRIDX_915								LITERAL1
-TTN_BUFFER_SIZE								LITERAL1
+TTN_DEFAULT_SF	LITERAL1
+TTN_DEFAULT_FSB	LITERAL1
+TTN_RETX	LITERAL1
+TTN_PWRIDX_868	LITERAL1
+TTN_PWRIDX_915	LITERAL1
+TTN_BUFFER_SIZE	LITERAL1
 TTN_ERROR_SEND_COMMAND_FAILED	LITERAL1
 TTN_ERROR_UNEXPECTED_RESPONSE	LITERAL1
-TTN_SUCCESSFUL_TRANSMISSION		LITERAL1
-TTN_SUCCESSFUL_RECEIVE				LITERAL1
-TTN_FP_EU868									LITERAL1
-TTN_FP_US915									LITERAL1
-TTN_FP_AS920_923							LITERAL1
-TTN_FP_AS923_925							LITERAL1
-TTN_FP_KR920_923							LITERAL1
+TTN_SUCCESSFUL_TRANSMISSION	LITERAL1
+TTN_SUCCESSFUL_RECEIVE	LITERAL1
+TTN_FP_EU868	LITERAL1
+TTN_FP_US915	LITERAL1
+TTN_FP_AS920_923	LITERAL1
+TTN_FP_AS923_925	LITERAL1
+TTN_FP_KR920_923	LITERAL1
 
-TTN_PIN_LED										LITERAL1
+TTN_PIN_LED	LITERAL1
 
-TTN_COLOR											LITERAL1
-TTN_RED												LITERAL1
-TTN_GREEN											LITERAL1
-TTN_BLUE											LITERAL1
-TTN_YELLOW										LITERAL1
-TTN_CYAN											LITERAL1
-TTN_MAGENTA										LITERAL1
-TTN_WHITE											LITERAL1
-TTN_BLACK											LITERAL1
+TTN_COLOR	LITERAL1
+TTN_RED	LITERAL1
+TTN_GREEN	LITERAL1
+TTN_BLUE	LITERAL1
+TTN_YELLOW	LITERAL1
+TTN_CYAN	LITERAL1
+TTN_MAGENTA	LITERAL1
+TTN_WHITE	LITERAL1
+TTN_BLACK	LITERAL1
