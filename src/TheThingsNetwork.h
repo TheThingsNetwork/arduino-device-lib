@@ -6,7 +6,11 @@
 
 #include <Arduino.h>
 #include <Stream.h>
+#ifdef ARDUINO_ARCH_AVR
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
 
 #define TTN_DEFAULT_SF 7
 #define TTN_DEFAULT_FSB 2
