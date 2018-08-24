@@ -369,11 +369,8 @@ size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts = 
     this->radioModuleInvalidState = true; // Inform the application about the radio module is not responsive.
     return 0;
   }
-  else
-  {
-    buffer[read - 1] = '\0'; // set \r to \0
-    return read;
-  }
+  buffer[read - 1] = '\0'; // set \r to \0
+  return read;
 }
 
 size_t TheThingsNetwork::readResponse(uint8_t prefixTable, uint8_t index, char *buffer, size_t size)
