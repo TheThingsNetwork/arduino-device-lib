@@ -364,11 +364,13 @@ size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts = 
   {
     read = modemStream->readBytesUntil('\n', buffer, size);
   }
-  if(attempts<=0){ // If attempts is activated return 0 and set RN state marker
+  if(attempts<=0)
+  { // If attempts is activated return 0 and set RN state marker
     this->radioModuleInvalidState = true; // Inform the application about the radio module is not responsive.
     return 0;
   }
-  else{
+  else
+  {
     buffer[read - 1] = '\0'; // set \r to \0
     return read;
   }
