@@ -54,7 +54,7 @@ private:
   bool adr;
   char buffer[512];
   bool baudDetermined = false;
-  bool radioModuleInvalidState = false;
+  bool needsHardReset = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();

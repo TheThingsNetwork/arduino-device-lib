@@ -366,9 +366,9 @@ size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts) /
   }
   if(attempts<=0)
   { // If attempts is activated return 0 and set RN state marker
-    this->radioModuleInvalidState = true; // Inform the application about the radio module is not responsive.
+    this->needsHardReset = true; // Inform the application about the radio module is not responsive.
     debugPrintLn('No response from RN module. Soft resetting RN Module');
-    this->reset(true);
+    
     return 0;
   }
   buffer[read - 1] = '\0'; // set \r to \0
@@ -443,7 +443,7 @@ void TheThingsNetwork::reset(bool adr)
     sendMacSet(MAC_ADR, "off");
   }
   this->adr = adr;
-  this->radioModuleInvalidState = false;
+  this->needsHardReset = false;
 }
 
 void TheThingsNetwork::saveState()
