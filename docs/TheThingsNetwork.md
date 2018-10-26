@@ -26,6 +26,14 @@ Performs a software reset of the RN module. This does not clear saved state, e.g
 void reset(bool adr);
 ```
 
+## Method: `hardReset`
+
+Performs a hardware reset of the RN module. Input parameter is the pin which the reset pin from the module is connected to. This does clear saved state, e.g. provisioned keys.
+
+```c
+void hardResetuint8_t resetPin);
+```
+
 - `bool adr`: Enable/disable Adaptive Data Rate.
 
 ## Method: `getHardwareEui`
