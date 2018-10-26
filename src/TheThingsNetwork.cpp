@@ -446,6 +446,16 @@ void TheThingsNetwork::reset(bool adr)
   this->needsHardReset = false;
 }
 
+void TheThingsNetwork::resetHard(uint8_t resetPin){
+  digitalWrite(resetPin, LOW);
+  unsigned long time_now = milis();
+  int period = 1000;
+  while(millis() < time_now + period){
+    // wait
+  }
+  digitalWrite(resetPin, HIGH);
+}
+
 void TheThingsNetwork::saveState()
 {
   debugPrint(SENDING);

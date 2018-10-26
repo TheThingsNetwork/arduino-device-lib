@@ -54,7 +54,6 @@ private:
   bool adr;
   char buffer[512];
   bool baudDetermined = false;
-  bool needsHardReset = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
 
   void clearReadBuffer();
@@ -85,8 +84,11 @@ private:
   void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
 
 public:
+  bool needsHardReset = false;
+
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
   void reset(bool adr = true);
+  void resetHard(uint8_t resetPin);
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
