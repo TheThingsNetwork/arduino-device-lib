@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include <Stream.h>
-#ifdef ARDUINO_ARCH_AVR
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD)
 #include <avr/pgmspace.h>
 #else
 #include <pgmspace.h>
