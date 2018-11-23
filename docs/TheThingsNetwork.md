@@ -186,7 +186,7 @@ void wake();
 
 ## Method: `linkCheck`
 
-Sets the time interval for the link check process to be triggered.
+Sets the time interval for the link check process to be triggered. When the interval expires, the next uplink will include a Link Check Request MAC command. When using this method, it should be called after joining has completed.
 
 ```c
 void linkCheck(uint16_t seconds);
