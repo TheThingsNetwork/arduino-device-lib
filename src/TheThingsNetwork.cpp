@@ -357,7 +357,7 @@ void TheThingsNetwork::clearReadBuffer()
   }
 }
 
-size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts) // Default timeout value 10s and is set in class initiator
+size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts)
 {
   size_t read = 0;
   while (!read && attempts--)
