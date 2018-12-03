@@ -26,6 +26,15 @@
 
 #define TTN_BUFFER_SIZE 300
 
+// The Things Products devices
+// Things Node only need this, we won't impact Things Uno user
+#if defined(ARDUINO_THINGS_NODE) 
+typedef HardwareSerial SerialType;
+#define HARDWARE_UART
+#else
+typedef Stream SerialType;
+#endif
+
 typedef uint8_t port_t;
 
 enum ttn_response_t
@@ -50,7 +59,7 @@ enum ttn_fp_t
 class TheThingsNetwork
 {
 private:
-  Stream *modemStream;
+  SerialType *modemStream;
   Stream *debugStream;
   ttn_fp_t fp;
   uint8_t sf;
@@ -68,6 +77,7 @@ private:
   void debugPrintIndex(uint8_t index, const char *value = NULL);
   void debugPrintMessage(uint8_t type, uint8_t index, const char *value = NULL);
 
+  size_t checkModuleAvailable();
   void autoBaud();
   void configureEU868();
   void configureUS915(uint8_t fsb);
@@ -88,7 +98,7 @@ private:
   void sendGetValue(uint8_t table, uint8_t prefix, uint8_t index);
 
 public:
-  TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+  TheThingsNetwork(SerialType &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
   void reset(bool adr = true);
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
@@ -103,6 +113,7 @@ public:
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
   ttn_response_t poll(port_t port = 1, bool confirm = false);
   void sleep(uint32_t mseconds);
+  bool isSleeping();
   void wake();
   void saveState();
   void linkCheck(uint16_t seconds);
