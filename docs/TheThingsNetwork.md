@@ -26,6 +26,8 @@ Performs a software reset of the RN module. This does not clear saved state, e.g
 void reset(bool adr);
 ```
 
+- `bool adr`: Enable/disable Adaptive Data Rate.
+
 ## Method: `hardReset`
 
 Performs a hardware reset of the RN module. Input parameter is the pin which the reset pin from the module is connected to. This does clear saved state, e.g. provisioned keys.
@@ -34,7 +36,7 @@ Performs a hardware reset of the RN module. Input parameter is the pin which the
 void hardReset(uint8_t resetPin);
 ```
 
-- `bool adr`: Enable/disable Adaptive Data Rate.
+- `uint8_t resetPin`: The output pin that is connection to the module's reset pin.
 
 ## Method: `getHardwareEui`
 
