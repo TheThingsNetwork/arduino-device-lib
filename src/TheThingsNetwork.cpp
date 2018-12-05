@@ -449,8 +449,8 @@ void TheThingsNetwork::resetHard(uint8_t resetPin){
   digitalWrite(resetPin, LOW);
   unsigned long time_now = millis();
   int period = 1000;
+  // Non I/O blocking wait function
   while(millis() < time_now + period){
-    // wait
   }
   digitalWrite(resetPin, HIGH);
 }
