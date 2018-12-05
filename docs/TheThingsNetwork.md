@@ -36,7 +36,7 @@ Performs a hardware reset of the RN module. Input parameter is the pin which the
 void hardReset(uint8_t resetPin);
 ```
 
-- `uint8_t resetPin`: The output pin that is connection to the module's reset pin.
+- `uint8_t resetPin`: The output pin that is connected to the module's reset pin.
 
 ## Method: `getHardwareEui`
 
