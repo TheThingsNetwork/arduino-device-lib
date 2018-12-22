@@ -31,6 +31,7 @@ void reset(bool adr);
 ## Method: `hardReset`
 
 Performs a hardware reset of the RN module. Input parameter is the pin which the reset pin from the module is connected to. This does clear saved state, e.g. provisioned keys.
+The `resetPin` should be configured as output and set to high.
 
 ```c
 void hardReset(uint8_t resetPin);
