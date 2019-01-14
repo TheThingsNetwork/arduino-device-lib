@@ -357,12 +357,18 @@ void TheThingsNetwork::clearReadBuffer()
   }
 }
 
-size_t TheThingsNetwork::readLine(char *buffer, size_t size)
+size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts)
 {
   size_t read = 0;
-  while (read == 0)
+  while (!read && attempts--)
   {
     read = modemStream->readBytesUntil('\n', buffer, size);
+  }
+  if (attempts<=0)
+  { // If attempts is activated return 0 and set RN state marker
+    this->needsHardReset = true; // Inform the application about the radio module is not responsive.
+    debugPrintLn("No response from RN module.");
+    return 0;
   }
   buffer[read - 1] = '\0'; // set \r to \0
   return read;
@@ -417,7 +423,7 @@ void TheThingsNetwork::reset(bool adr)
   size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
   autoBaud();
-  length = readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));  
+  length = readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));
 
   // buffer contains "RN2xx3[xx] x.x.x ...", splitting model from version
   char *model = strtok(buffer, " ");
@@ -436,6 +442,13 @@ void TheThingsNetwork::reset(bool adr)
     sendMacSet(MAC_ADR, "off");
   }
   this->adr = adr;
+  this->needsHardReset = false;
+}
+
+void TheThingsNetwork::resetHard(uint8_t resetPin){
+  digitalWrite(resetPin, LOW);
+  delay(1000);
+  digitalWrite(resetPin, HIGH);
 }
 
 void TheThingsNetwork::saveState()
@@ -776,8 +789,8 @@ void TheThingsNetwork::configureKR920_923()
 void TheThingsNetwork::configureIN865_867()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 866550000"); // SF10  
-  
+  sendMacSet(MAC_RX2, "2 866550000"); // SF10
+
   // Disable the three default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
   sendChSet(MAC_CHANNEL_STATUS, 1, "off");
@@ -1035,7 +1048,7 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
 }
 
 void TheThingsNetwork::wake()
-{ 
+{
   autoBaud();
 }
 
@@ -1051,7 +1064,7 @@ void TheThingsNetwork::linkCheck(uint16_t seconds)
   modemStream->write(buffer);
   modemStream->write(SEND_MSG);
   debugPrintLn(buffer);
-  waitForOk();  
+  waitForOk();
 }
 
 uint8_t TheThingsNetwork::getLinkCheckGateways()

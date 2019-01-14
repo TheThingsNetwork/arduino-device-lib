@@ -28,6 +28,16 @@ void reset(bool adr);
 
 - `bool adr`: Enable/disable Adaptive Data Rate.
 
+## Method: `hardReset`
+
+Performs a hardware reset of the RN module. Input parameter is the pin which the reset pin from the module is connected to. This does clear saved state, e.g. provisioned keys.
+
+```c
+void hardReset(uint8_t resetPin);
+```
+
+- `uint8_t resetPin`: The output pin that is connected to the module's reset pin. The output pin should be configured as output and set to high by the user.
+
 ## Method: `getHardwareEui`
 
 Gets the unique hardware EUI, often used as the DevEUI.
