@@ -420,7 +420,7 @@ void TheThingsNetwork::autoBaud()
 void TheThingsNetwork::reset(bool adr)
 {
   autoBaud();
-  size_t length = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
+  size_t length __attribute__((unused)) = readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
   autoBaud();
   length = readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));
