@@ -3,7 +3,7 @@
 
 #ifndef PB_API_APPDATA_PB_H_INCLUDED
 #define PB_API_APPDATA_PB_H_INCLUDED
-#include <pb.h>
+#include "pb.h"
 
 /* @@protoc_insertion_point(includes) */
 #if PB_PROTO_HEADER_VERSION != 30
