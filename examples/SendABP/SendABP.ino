@@ -1,8 +1,9 @@
 #include <TheThingsNetwork.h>
 
-// Set your AppEUI and AppKey
-const char *appEui = "0000000000000000";
-const char *appKey = "00000000000000000000000000000000";
+// Set your DevAddr, NwkSKey, AppSKey and the frequency plan
+const char *devAddr = "00000000";
+const char *nwkSKey = "00000000000000000000000000000000";
+const char *appSKey = "00000000000000000000000000000000";
 
 #define loraSerial Serial1
 #define debugSerial Serial
@@ -21,14 +22,11 @@ void setup()
   while (!debugSerial && millis() < 10000)
     ;
 
-  // Set callback for incoming messages
-  ttn.onMessage(message);
+  debugSerial.println("-- PERSONALIZE");
+  ttn.personalize(devAddr, nwkSKey, appSKey);
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
-
-  debugSerial.println("-- JOIN");
-  ttn.join(appEui, appKey);
 }
 
 void loop()
@@ -43,26 +41,4 @@ void loop()
   ttn.sendBytes(payload, sizeof(payload));
 
   delay(10000);
-}
-
-void message(const byte *payload, size_t length, port_t port)
-{
-  debugSerial.println("-- MESSAGE");
-
-  // Only handle messages of a single byte
-  if (length != 1)
-  {
-    return;
-  }
-
-  if (payload[0] == 0)
-  {
-    debugSerial.println("LED: off");
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-  else if (payload[0] == 1)
-  {
-    debugSerial.println("LED: on");
-    digitalWrite(LED_BUILTIN, HIGH);
-  }
 }

@@ -10,6 +10,9 @@ const char *appKey = "00000000000000000000000000000000";
 #define loraSerial Serial1
 #define debugSerial Serial
 
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
+
 #define DHTPIN 2
 
 //Choose your DHT sensor moddel
@@ -19,14 +22,16 @@ const char *appKey = "00000000000000000000000000000000";
 
 DHT dht(DHTPIN, DHTTYPE);
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
-void setup() {
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
@@ -37,7 +42,8 @@ void setup() {
   dht.begin();
 }
 
-void loop() {
+void loop()
+{
   debugSerial.println("-- LOOP");
 
   // Read sensor values and multiply by 100 to effictively have 2 decimals

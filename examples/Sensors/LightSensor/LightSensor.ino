@@ -10,14 +10,19 @@ const char *appKey = "00000000000000000000000000000000";
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
 
-void setup() {
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
+
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   pinMode(LightPin, INPUT);
 
@@ -31,7 +36,8 @@ void setup() {
   debugSerial.println("Setup for The Things Network complete");
 }
 
-void loop() {
+void loop()
+{
 
   uint16_t light = analogRead(LightPin);
 

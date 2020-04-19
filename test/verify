@@ -1,0 +1,10 @@
+#!/bin/bash
+BOARD=$1
+INO=$2
+STD=`arduino --verify --board ${BOARD} ${INO} 2>&1`
+EXIT=$?
+echo "${STD}"
+if [[ $EXIT != 0 || $STD == *": warning: "* ]]
+then
+    exit 1;
+fi

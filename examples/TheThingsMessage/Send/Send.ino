@@ -8,16 +8,21 @@ const char *appKey = "00000000000000000000000000000000";
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
 
-sensordata_t data = api_SensorData_init_default;
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
-void setup() {
+devicedata_t data = api_DeviceData_init_default;
+
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
   // Wait a maximum of 10s for Serial Monitor
-  while (!debugSerial && millis() < 10000);
+  while (!debugSerial && millis() < 10000)
+    ;
 
   debugSerial.println("-- STATUS");
   ttn.showStatus();
@@ -33,7 +38,8 @@ void setup() {
   data.has_humidity = true;
 }
 
-void loop() {
+void loop()
+{
   debugSerial.println("-- LOOP");
 
   // Read the sensors
@@ -46,7 +52,7 @@ void loop() {
   // Encode the selected fields of the struct as bytes
   byte *buffer;
   size_t size;
-  TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+  TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
 
   ttn.sendBytes(buffer, size);
 

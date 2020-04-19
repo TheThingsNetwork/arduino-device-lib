@@ -11,8 +11,10 @@
 #define loraSerial Serial1
 #define debugSerial Serial
 
-void setup() {
-  while(!debugSerial || !loraSerial);
+void setup()
+{
+  while (!debugSerial || !loraSerial)
+    ;
 
   debugSerial.begin(115200);
   delay(1000);
@@ -20,11 +22,14 @@ void setup() {
   loraSerial.begin(57600);
 }
 
-void loop() {
-  while (debugSerial.available()) {
+void loop()
+{
+  while (debugSerial.available())
+  {
     loraSerial.write(debugSerial.read());
   }
-  while (loraSerial.available()) {
+  while (loraSerial.available())
+  {
     debugSerial.write(loraSerial.read());
   }
 }

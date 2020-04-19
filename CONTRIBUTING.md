@@ -1,6 +1,9 @@
 ## Contributing
 
-We'd ❤️ to welcome your contribution. Please make sure you:
+We'd ❤️ to welcome your contribution. Please make sure your changes include:
 
-1.  Keep [keywords.txt](../keywords.txt) up to date with your changes.
-2.  Keep [API.md](../API.md) up to date with your changes.
+1.  Examples: [examples](examples)
+2.  Syntax highlighting: [keywords.txt](keywords.txt)
+3.  Documentation: [docs](docs)
+4.  Tests: [test](test)
+5.  Verification of the examples and tests: [.travis.yml](.travis.yml)

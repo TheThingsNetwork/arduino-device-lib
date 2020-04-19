@@ -3,7 +3,10 @@
 #define loraSerial Serial1
 #define debugSerial Serial
 
-TheThingsNetwork ttn(loraSerial, debugSerial, /* TTN_FP_EU868 or TTN_FP_US915 */);
+// Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
+#define freqPlan REPLACE_ME
+
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
 void setup()
 {

@@ -12,11 +12,13 @@ const char *appSKey = "00000000000000000000000000000000";
 
 TheThingsNetwork ttn(loraSerial, debugSerial, TTN_FP_EU868);
 
-TheThingsNetwork ttn2(loraSerial, debugSerial, TTN_FP_EU868, 10);
+TheThingsNetwork ttn2(loraSerial, debugSerial, TTN_FP_US915, 10);
 
-TheThingsNetwork ttn3(loraSerial, debugSerial, TTN_FP_EU868, 10, 4);
+TheThingsNetwork ttn3(loraSerial, debugSerial, TTN_FP_AS923_925, 10, 4);
 
-void setup() {
+
+void setup()
+{
   loraSerial.begin(57600);
   debugSerial.begin(9600);
 
@@ -43,8 +45,9 @@ void setup() {
   ttn.onMessage(message);
 }
 
-void loop() {
-  byte payload[1] = { 0x00 };
+void loop()
+{
+  byte payload[1] = {0x00};
   ttn.sendBytes(payload, sizeof(payload));
 
   ttn.sendBytes(payload, sizeof(payload), 2);
@@ -58,4 +61,4 @@ void loop() {
   ttn.poll(2, true);
 }
 
-void message(const byte* payload, size_t length, port_t port) {}
+void message(const uint8_t *payload, size_t length, port_t port) {}

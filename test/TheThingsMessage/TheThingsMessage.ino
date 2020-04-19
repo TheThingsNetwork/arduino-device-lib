@@ -1,6 +1,6 @@
 #include <TheThingsMessage.h>
 
-sensordata_t data = api_SensorData_init_default;
+devicedata_t data = api_DeviceData_init_default;
 
 void setup() {
   data.has_motion = true;
@@ -20,5 +20,5 @@ void loop() {
   byte *buffer;
   size_t size;
 
-  TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+  TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
 }

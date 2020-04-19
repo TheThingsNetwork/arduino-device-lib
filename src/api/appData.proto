@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package api;
+
+message AppData {
+        optional bool light = 1;
+        optional bool activate = 2;
+}

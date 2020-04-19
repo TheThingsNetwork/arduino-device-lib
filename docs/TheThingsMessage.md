@@ -1,18 +1,18 @@
 # API Reference
-The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
 
-## Class: TheThingsMessage
+## Class: `TheThingsMessage`
+The `TheThingsMessage` class provides structs for sensor and application data you can encode and decode as bytes.
 
 ```c
 #include <TheThingsMessage.h>
 ```
 
-## Type: sensordata_t
+## Type: `devicedata_t`
 
-Create a struct of this type using `api_SensorData_init_default` as defaults.
+Create a struct of this type using `api_DeviceData_init_default` as defaults.
 
 ```c
-sensordata_t data = api_SensorData_init_default;
+devicedata_t data = api_DeviceData_init_default;
 ```
 
 Then in your `setup()` function select what fields of the struct should be included when encoding it as bytes:
@@ -41,21 +41,42 @@ You can also add other analog readings.
 
 > **TODO:** Document how this works and include in example.
 
-## Method: encodeSensorData
+## Method: `encodeDeviceData`
+
 Encode the message you want to send.
 
 ```c
-static void encodeSensorData(sensordata_t *data, byte **buffer, size_t *size);
+static void encodeDeviceData(devicedata_t *data, byte **buffer, size_t *size);
 ```
 
-- `sensordata_t *data`: Structure containing all the message we can send.
-- `const byte **buffer`: Bytes received.
-- `size_t *size`: The number of bytes.
+- `devicedata_t *data`: Structure containing typical fields that devices send.
+- `byte **buffer`: Bytes to send.
+- `size_t *size`: The number of bytes to send.
 
 Usage:
 
 ```c
 byte *buffer;
 size_t size;
-TheThingsMessage::encodeSensorData(&data, &buffer, &size);
+TheThingsMessage::encodeDeviceData(&data, &buffer, &size);
+```
+
+## Method: `decodeAppData`
+
+Decode the message you received.
+
+```c
+static bool decodeAppData(appdata_t *receiveData, const byte *payload, size_t length);
+```
+
+- `appdata_t *receiveData`: Structure containing all the message we can interpret.
+- `const byte *payload`: Bytes received.
+- `size_t *length`: The number of bytes.
+
+Usage:
+
+```c
+const byte *payload;
+size_t length;
+TheThingsMessage::decodeAppData(&receiveData, payload, length);
 ```
