@@ -23,6 +23,7 @@ script:
   - test/verify arduino:avr:leonardo examples/PassThrough/PassThrough.ino
   - test/verify arduino:avr:leonardo examples/QuickStart/QuickStart.ino
   - test/verify arduino:avr:leonardo examples/Receive/Receive.ino
+  - test/verify arduino:avr:leonardo examples/ReceiveClassC/ReceiveClassC.ino
   - test/verify arduino:avr:leonardo examples/SendOTAA/SendOTAA.ino
   - test/verify arduino:avr:leonardo examples/Sensors/DHT/DHT.ino
   - test/verify arduino:avr:leonardo examples/Sensors/LightSensor/LightSensor.ino

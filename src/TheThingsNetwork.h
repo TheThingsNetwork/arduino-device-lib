@@ -33,7 +33,8 @@ enum ttn_response_t
   TTN_ERROR_SEND_COMMAND_FAILED = (-1),
   TTN_ERROR_UNEXPECTED_RESPONSE = (-10),
   TTN_SUCCESSFUL_TRANSMISSION = 1,
-  TTN_SUCCESSFUL_RECEIVE = 2
+  TTN_SUCCESSFUL_RECEIVE = 2,
+  TTN_UNSUCESSFUL_RECEIVE = 3
 };
 
 enum ttn_fp_t
@@ -45,6 +46,13 @@ enum ttn_fp_t
   TTN_FP_AS923_925,
   TTN_FP_KR920_923,
   TTN_FP_IN865_867
+};
+
+enum lorawan_class
+{
+  CLASS_A,
+  CLASS_B,
+  CLASS_C
 };
 
 class TheThingsNetwork
@@ -59,6 +67,7 @@ private:
   char buffer[512];
   bool baudDetermined = false;
   void (*messageCallback)(const uint8_t *payload, size_t size, port_t port);
+  lorawan_class lw_class = CLASS_A;
 
   void clearReadBuffer();
   size_t readLine(char *buffer, size_t size, uint8_t attempts = 3);
@@ -99,10 +108,11 @@ public:
   uint16_t getVDD();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
-  bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
+  bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000, lorawan_class = CLASS_A);
   bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
   bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
   bool personalize();
+  bool setClass(lorawan_class p_lw_class);
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
   ttn_response_t poll(port_t port = 1, bool confirm = false);
   void sleep(uint32_t mseconds);
