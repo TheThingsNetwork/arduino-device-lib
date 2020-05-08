@@ -13,7 +13,7 @@ TheThingsNode	KEYWORD1
 ttn_port_t	KEYWORD1
 ttn_response_t	KEYWORD1
 ttn_fp_t	KEYWORD1
-lorawan_class	KEYWORD1
+lorawan_class_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

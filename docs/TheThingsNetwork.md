@@ -130,7 +130,7 @@ See the [SendABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 
 ## Method: `setClass`
 
-Change the downlink receive LoRaWAN Class. Class C is only supported in firmware version 1.0.5 and up. For other firmware versions this method will have nto affect.
+Change the downlink receive LoRaWAN Class. Class C is only supported in firmware version 1.0.5 and up. For other firmware versions this method will have no effect.
 
 ```c
 bool setClass(lorawan_class p_lw_class);

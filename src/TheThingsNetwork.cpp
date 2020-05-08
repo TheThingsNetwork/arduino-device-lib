@@ -547,23 +547,34 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
   return false;
 }
 
-bool TheThingsNetwork::setClass(lorawan_class p_lw_class)
+bool TheThingsNetwork::setClass(lorawan_class_t p_lw_class)
 {
-  if(p_lw_class == CLASS_C) {
-    bool result = sendMacSet(MAC_CLASS, "c");
-    // Only remember Class C if set was successful.
-    // Older firmware does not support class c, so keep on using Class A logic.
-    if(result) lw_class = p_lw_class;
-    return result;
-  } else if(p_lw_class == CLASS_A) {
-    lw_class = p_lw_class;
-    return sendMacSet(MAC_CLASS, "a");
-  } else {
+  switch(p_lw_class)
+  {
+
+  case CLASS_A:
+    {
+      lw_class = p_lw_class;
+      return sendMacSet(MAC_CLASS, "a");
+    }
+
+  // case CLASS_B: // Not yet supported. Use default case.
+
+  case CLASS_C:
+    {
+      bool result = sendMacSet(MAC_CLASS, "c");
+      // Older firmware does not support Class C. If setting change fails, keep on using Class A.
+      if(result) lw_class = p_lw_class;
+      return result;
+    }
+
+  default:
     return false;
+
   }
 }
 
-bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay, lorawan_class p_lw_class)
+bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay, lorawan_class_t p_lw_class)
 {
   return provision(appEui, appKey) && join(retries, retryDelay) && setClass(p_lw_class);
 }
@@ -621,42 +632,50 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
 
 ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
 {
-  if(lw_class == CLASS_C) {
-    // If class c, check rx buffer for any recevied data
+  switch(lw_class)
+  {
 
-    memset(buffer, 0, sizeof(buffer));
-
-    long timeout = this->modemStream->getTimeout();
-    this->modemStream->setTimeout(100);
-    this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
-    this->modemStream->setTimeout(timeout);
-
-    if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
+  case CLASS_A:
     {
-      port_t downlinkPort = receivedPort(buffer + 7);
-      char *data = buffer + 7 + digits(downlinkPort) + 1;
-      size_t downlinkLength = strlen(data) / 2;
-      if (downlinkLength > 0)
-      {
-        uint8_t downlink[downlinkLength];
-        for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
-        {
-          downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
-        }
-        if (messageCallback)
-        {
-          messageCallback(downlink, downlinkLength, downlinkPort);
-        }
-      }
-      return TTN_SUCCESSFUL_RECEIVE;
+      // Class A: send uplink and wait for rx windows
+      uint8_t payload[] = {0x00};
+      return sendBytes(payload, 1, port, confirm);
     }
-  }
-  else if(lw_class == CLASS_A) {
-    // If class a send uplink and wait for rx windows
-    uint8_t payload[] = {0x00};
-    return sendBytes(payload, 1, port, confirm);
-  }
-  else {
+
+  // case CLASS_B: // Not yet supported. Use default case.
+
+  case CLASS_C:
+    {
+      // Class C: check rx buffer for any recevied data
+      memset(buffer, 0, sizeof(buffer));
+
+      long timeout = this->modemStream->getTimeout();
+      this->modemStream->setTimeout(100);
+      this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+      this->modemStream->setTimeout(timeout);
+
+      if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
+      {
+        port_t downlinkPort = receivedPort(buffer + 7);
+        char *data = buffer + 7 + digits(downlinkPort) + 1;
+        size_t downlinkLength = strlen(data) / 2;
+        if (downlinkLength > 0)
+        {
+          uint8_t downlink[downlinkLength];
+          for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
+          {
+            downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
+          }
+          if (messageCallback)
+          {
+            messageCallback(downlink, downlinkLength, downlinkPort);
+          }
+        }
+        return TTN_SUCCESSFUL_RECEIVE;
+      }
+    }
+
+  default:
     return TTN_UNSUCESSFUL_RECEIVE;
   }
 }

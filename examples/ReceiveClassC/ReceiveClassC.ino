@@ -1,16 +1,14 @@
 #include <TheThingsNetwork.h>
 
 // Set your AppEUI and AppKey
-//const char *appEui = "0004A30B001A5756";
-const char *appEui = "0004A30B001EC935";
-const char *appKey = "657CBC96D7E6F3D9CD9762CFF95A18E8";
+const char *appEui = "0000000000000000";
+const char *appKey = "00000000000000000000000000000000";
 
-
-#define loraSerial Serial2
-#define debugSerial SerialUSB
+#define loraSerial Serial1
+#define debugSerial Serial
 
 // Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
-#define freqPlan TTN_FP_EU868
+#define freqPlan REPLACE_ME
 
 TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
 
@@ -41,7 +39,7 @@ void loop()
 {
   debugSerial.println("-- LOOP");
 
-  // Send single byte to poll for incoming messages
+  // Check for received data.
   ttn.poll();
 
   // When using Class C we can poll as quickly as we can, as we only check the serial buffer.
