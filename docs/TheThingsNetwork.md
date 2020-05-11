@@ -95,7 +95,7 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Activate the device via OTAA (default).
 
 ```c
-bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000);
+bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000, lorawan_class = CLASS_A);
 bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
 ```
 
@@ -103,6 +103,7 @@ bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
 - `const char *appKey`: Application Key assigned to the device.
 - `int8_t retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1` which means infinite.
 - `uint32_t retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
+- `lorawan_class = CLASS_A`: The LoRaWAN class to use for downlink message reception.
 
 Returns `true` or `false` depending on whether it received confirmation that the activation was successful before the maximum number of attempts.
 
@@ -126,6 +127,22 @@ Returns `true` or `false` depending on whether the activation was successful.
 Call the method with no arguments if the device's LoRa module comes with pre-flashed values.
 
 See the [SendABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/SendABP/SendABP.ino) example.
+
+## Method: `setClass`
+
+Change the downlink receive LoRaWAN Class. Class C is only supported in firmware version 1.0.5 and up. For other firmware versions this method will have no effect.
+
+```c
+bool setClass(lorawan_class p_lw_class);
+```
+
+- `lorawan_class p_lw_class`: The LoRaWAN class. Either `CLASS_A` or `CLASS_C`.
+
+Returns `true` if the change was successful, or `false` if not successful.
+
+The receive window only opens after a transmit. Therefore Class C receive will only start after calling `sendBytes()`.
+
+See the [ReceiveClassC](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/ReceiveClassC/ReceiveClassC.ino) example.
 
 ## Method: `sendBytes`
 

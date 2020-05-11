@@ -192,8 +192,9 @@ const char mac_rx2[] PROGMEM = "rx2";
 const char mac_ch[] PROGMEM = "ch";
 const char mac_gwnb[] PROGMEM = "gwnb";
 const char mac_mrgn[] PROGMEM = "mrgn";
+const char mac_class[] PROGMEM = "class";
 
-const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn};
+const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -215,6 +216,7 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_CH 17
 #define MAC_GWNB 18
 #define MAC_MRGN 19
+#define MAC_CLASS 20
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -545,9 +547,36 @@ bool TheThingsNetwork::join(int8_t retries, uint32_t retryDelay)
   return false;
 }
 
-bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay)
+bool TheThingsNetwork::setClass(lorawan_class_t p_lw_class)
 {
-  return provision(appEui, appKey) && join(retries, retryDelay);
+  switch(p_lw_class)
+  {
+
+  case CLASS_A:
+    {
+      lw_class = p_lw_class;
+      return sendMacSet(MAC_CLASS, "a");
+    }
+
+  // case CLASS_B: // Not yet supported. Use default case.
+
+  case CLASS_C:
+    {
+      bool result = sendMacSet(MAC_CLASS, "c");
+      // Older firmware does not support Class C. If setting change fails, keep on using Class A.
+      if(result) lw_class = p_lw_class;
+      return result;
+    }
+
+  default:
+    return false;
+
+  }
+}
+
+bool TheThingsNetwork::join(const char *appEui, const char *appKey, int8_t retries, uint32_t retryDelay, lorawan_class_t p_lw_class)
+{
+  return provision(appEui, appKey) && join(retries, retryDelay) && setClass(p_lw_class);
 }
 
 ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length, port_t port, bool confirm, uint8_t sf)
@@ -603,8 +632,52 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
 
 ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
 {
-  uint8_t payload[] = {0x00};
-  return sendBytes(payload, 1, port, confirm);
+  switch(lw_class)
+  {
+
+  case CLASS_A:
+    {
+      // Class A: send uplink and wait for rx windows
+      uint8_t payload[] = {0x00};
+      return sendBytes(payload, 1, port, confirm);
+    }
+
+  // case CLASS_B: // Not yet supported. Use default case.
+
+  case CLASS_C:
+    {
+      // Class C: check rx buffer for any recevied data
+      memset(buffer, 0, sizeof(buffer));
+
+      long timeout = this->modemStream->getTimeout();
+      this->modemStream->setTimeout(100);
+      this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+      this->modemStream->setTimeout(timeout);
+
+      if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
+      {
+        port_t downlinkPort = receivedPort(buffer + 7);
+        char *data = buffer + 7 + digits(downlinkPort) + 1;
+        size_t downlinkLength = strlen(data) / 2;
+        if (downlinkLength > 0)
+        {
+          uint8_t downlink[downlinkLength];
+          for (size_t i = 0, d = 0; i < downlinkLength; i++, d += 2)
+          {
+            downlink[i] = TTN_HEX_PAIR_TO_BYTE(data[d], data[d + 1]);
+          }
+          if (messageCallback)
+          {
+            messageCallback(downlink, downlinkLength, downlinkPort);
+          }
+        }
+        return TTN_SUCCESSFUL_RECEIVE;
+      }
+    }
+
+  default:
+    return TTN_UNSUCESSFUL_RECEIVE;
+  }
 }
 
 void TheThingsNetwork::showStatus()

@@ -13,6 +13,7 @@ TheThingsNode	KEYWORD1
 ttn_port_t	KEYWORD1
 ttn_response_t	KEYWORD1
 ttn_fp_t	KEYWORD1
+lorawan_class_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -23,6 +24,7 @@ onMessage	KEYWORD2
 provision	KEYWORD2
 join	KEYWORD2
 personalize	KEYWORD2
+setClass	KEYWORD2
 sendBytes	KEYWORD2
 poll	KEYWORD2
 
@@ -91,3 +93,7 @@ TTN_CYAN	LITERAL1
 TTN_MAGENTA	LITERAL1
 TTN_WHITE	LITERAL1
 TTN_BLACK	LITERAL1
+
+CLASS_A	LITERAL1
+CLASS_B	LITERAL1
+CLASS_C	LITERAL1
