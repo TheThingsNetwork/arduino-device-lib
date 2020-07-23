@@ -4,7 +4,7 @@
 const char *appEui = "0000000000000000";
 const char *appKey = "00000000000000000000000000000000";
 
-#define loraSerial Serial1
+#define loraSerial Serial
 #define debugSerial Serial
 
 // Replace REPLACE_ME with TTN_FP_EU868 or TTN_FP_US915
