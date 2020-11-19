@@ -999,6 +999,12 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
   sendMacSet(MAC_RETX, TTN_RETX);
 }
 
+bool TheThingsNetwork::setPowerIndex(uint8_t idx){
+  char buf[4];
+  sprintf(buf, "%u",idx);
+  return sendMacSet(MAC_PWRIDX, buf);
+}
+
 bool TheThingsNetwork::setSF(uint8_t sf)
 {
   uint8_t dr;

@@ -130,6 +130,7 @@ public:
   void linkCheck(uint16_t seconds);
   uint8_t getLinkCheckGateways();
   uint8_t getLinkCheckMargin();
+  bool setPowerIndex(uint8_t idx);
 };
 
 #endif
