@@ -593,7 +593,8 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
-  readLine(buffer, sizeof(buffer));
+  if (!readLine(buffer, sizeof(buffer)) && confirm)
+	  return TTN_UNSUCESSFUL_RECEIVE;
 
   if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)
   {
