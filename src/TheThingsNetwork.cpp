@@ -108,8 +108,14 @@ const char radio_get_prlen[] PROGMEM = "prlen";
 const char radio_get_crc[] PROGMEM = "crc";
 const char radio_get_cr[] PROGMEM = "cr";
 const char radio_get_sf[] PROGMEM = "sf";
+const char radio_get_freq[] PROGMEM = "freq";
+const char radio_get_rxbw[] PROGMEM = "rxbw";
+const char radio_get_wdt[] PROGMEM = "wdt";
+const char radio_get_pwr[] PROGMEM = "pwr";
+const char radio_get_rssi[] PROGMEM = "rssi";
+const char radio_get_snr[] PROGMEM = "snr";
 
-const char *const radio_table[] PROGMEM = {radio_prefix, radio_set, radio_get, radio_get_bw, radio_get_prlen, radio_get_crc, radio_get_cr, radio_get_sf};
+const char *const radio_table[] PROGMEM = {radio_prefix, radio_set, radio_get, radio_get_bw, radio_get_prlen, radio_get_crc, radio_get_cr, radio_get_sf, radio_get_freq, radio_get_rxbw, radio_get_wdt, radio_get_pwr, radio_get_rssi, radio_get_snr};
 
 #define RADIO_PREFIX 0
 #define RADIO_SET 1
@@ -119,6 +125,12 @@ const char *const radio_table[] PROGMEM = {radio_prefix, radio_set, radio_get, r
 #define RADIO_GET_CRC 5
 #define RADIO_GET_CR 6
 #define RADIO_GET_SF 7
+#define RADIO_GET_FREQ 8
+#define RADIO_GET_RXBW 9
+#define RADIO_GET_WDT 10
+#define RADIO_GET_PWR 11
+#define RADIO_GET_RSSI 12
+#define RADIO_GET_SNR 13
 
 const char sys_prefix[] PROGMEM = "sys";
 const char sys_sleep[] PROGMEM = "sleep";
@@ -312,6 +324,70 @@ size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
 uint16_t TheThingsNetwork::getVDD()
 {
   if (readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return 0;
+}
+
+uint8_t TheThingsNetwork::getBW()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_BW, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return 0;
+}
+
+uint8_t TheThingsNetwork::getCR()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_CR, buffer, sizeof(buffer)) > 2) {
+    return atoi(buffer+2); // skip the first two chars "4/"
+  }
+  return 0;
+}
+
+uint8_t TheThingsNetwork::getSF()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SF, buffer, sizeof(buffer)) > 2) {
+    return atoi(buffer+2); // skip the first two chars "sf"
+  }
+  return 0;
+}
+
+uint32_t TheThingsNetwork::getFrequency()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_FREQ, buffer, sizeof(buffer)) > 0) {
+    return atol(buffer);
+  }
+  return 0;
+}
+
+uint32_t TheThingsNetwork::getWatchDogTimer()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_WDT, buffer, sizeof(buffer)) > 0) {
+    return atol(buffer);
+  }
+  return 0;
+}
+
+int8_t TheThingsNetwork::getPower()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_PWR, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return 0;
+}
+
+int8_t TheThingsNetwork::getRSSI()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_RSSI, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return 0;
+}
+
+int8_t TheThingsNetwork::getSNR()
+{
+  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SNR, buffer, sizeof(buffer)) > 0) {
     return atoi(buffer);
   }
   return 0;
@@ -593,7 +669,7 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
-  if (!readLine(buffer, sizeof(buffer)) && confirm)
+   if (!readLine(buffer, sizeof(buffer)) && confirm)
 	  return TTN_UNSUCESSFUL_RECEIVE;
 
   if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)

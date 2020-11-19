@@ -107,6 +107,14 @@ public:
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
   uint16_t getVDD();
+  uint8_t getBW();
+  uint8_t getCR();
+  uint8_t getSF();
+  uint32_t getFrequency();
+  uint32_t getWatchDogTimer();
+  int8_t getPower();
+  int8_t getRSSI();
+  int8_t getSNR();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
   bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000, lorawan_class_t = CLASS_A);
