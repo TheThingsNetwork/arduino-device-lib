@@ -293,7 +293,7 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
-  this->modemStream->setTimeout(10000);
+  this->modemStream->setTimeout(TTN_DEFAULT_TOUT);
   this->fp = fp;
   this->sf = sf;
   this->fsb = fsb;
@@ -415,7 +415,7 @@ void TheThingsNetwork::autoBaud()
   }
   delay(100);
   clearReadBuffer();
-  modemStream->setTimeout(10000);
+  modemStream->setTimeout(TTN_DEFAULT_TOUT);
   baudDetermined = true;
 }
 

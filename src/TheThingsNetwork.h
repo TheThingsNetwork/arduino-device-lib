@@ -25,6 +25,7 @@
 #define TTN_PWRIDX_IN865_867 "1" // TODO: should be 0
 
 #define TTN_BUFFER_SIZE 300
+#define TTN_DEFAULT_TOUT 10000	// Default modem timeout in ms
 
 typedef uint8_t port_t;
 
