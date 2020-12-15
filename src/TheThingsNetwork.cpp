@@ -259,7 +259,7 @@ const char *const mac_tx_table[] PROGMEM = {mac_tx_type_cnf, mac_tx_type_ucnf};
 int pgmstrcmp(const char *str1, uint8_t str2Index)
 {
   char str2[128];
-  strcpy_P(str2, (char *)pgm_read_word(&(compare_table[str2Index])));
+  strcpy_P(str2, reinterpret_cast<char*>(pgm_read_word(&(compare_table[str2Index]))));
   return memcmp(str1, str2, min(strlen(str1), strlen(str2)));
 }
 
@@ -320,7 +320,7 @@ uint16_t TheThingsNetwork::getVDD()
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
 {
   char message[100];
-  strcpy_P(message, (char *)pgm_read_word(&(show_table[index])));
+  strcpy_P(message, reinterpret_cast<char*>(pgm_read_word(&(show_table[index]))));
   debugPrint(message);
   if (value)
   {
@@ -334,10 +334,10 @@ void TheThingsNetwork::debugPrintMessage(uint8_t type, uint8_t index, const char
   switch (type)
   {
   case ERR_MESSAGE:
-    strcpy_P(message, (char *)pgm_read_word(&(error_msg[index])));
+    strcpy_P(message, reinterpret_cast<char*>(pgm_read_word(&(error_msg[index]))));
     break;
   case SUCCESS_MESSAGE:
-    strcpy_P(message, (char *)pgm_read_word(&(success_msg[index])));
+    strcpy_P(message, reinterpret_cast<char*>(pgm_read_word(&(success_msg[index]))));
     break;
   }
   debugPrint(message);
@@ -951,25 +951,25 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpac
   switch (table)
   {
   case MAC_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_table[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(mac_table[index]))));
     break;
   case MAC_GET_SET_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_options[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(mac_options[index]))));
     break;
   case MAC_JOIN_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_join_mode[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(mac_join_mode[index]))));
     break;
   case MAC_CH_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_ch_options[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(mac_ch_options[index]))));
     break;
   case MAC_TX_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(mac_tx_table[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(mac_tx_table[index]))));
     break;
   case SYS_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(sys_table[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(sys_table[index]))));
     break;
   case RADIO_TABLE:
-    strcpy_P(command, (char *)pgm_read_word(&(radio_table[index])));
+    strcpy_P(command, reinterpret_cast<char*>(pgm_read_word(&(radio_table[index]))));
     break;
   default:
     return;
