@@ -924,7 +924,7 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
 
 bool TheThingsNetwork::setSF(uint8_t sf)
 {
-  uint8_t dr;
+  uint8_t dr = 0;
   switch (fp)
   {
   case TTN_FP_EU868:
