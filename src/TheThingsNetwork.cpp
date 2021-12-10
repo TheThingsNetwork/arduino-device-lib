@@ -353,6 +353,7 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
   this->fp = fp;
   this->sf = sf;
   this->fsb = fsb;
+  this->adr = false;
 }
 
 size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
