@@ -35,6 +35,38 @@ const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, m
 #define CMP_MAC_RX 5
 #define CMP_RN2483 6
 
+// CMP OK
+const char busy[] PROGMEM = "busy";
+const char fram_counter_err_rejoin_needed[] PROGMEM = "fram_counter_err_rejoin_needed";
+const char invalid_class[] PROGMEM = "invalid_class";
+const char invalid_data_len[] PROGMEM = "invalid_data_len";
+const char invalid_param[] PROGMEM = "invalid_param";
+const char keys_not_init[] PROGMEM = "keys_not_init";
+const char mac_paused[] PROGMEM = "mac_paused";
+const char multicast_keys_not_set[] PROGMEM = "multicast_keys_not_set";
+const char no_free_ch[] PROGMEM = "no_free_ch";
+const char not_joined[] PROGMEM = "not_joined";
+const char silent[] PROGMEM = "silent";
+const char err[] PROGMEM = "err";
+
+const char *const compareerr_table[] PROGMEM = {ok, busy, fram_counter_err_rejoin_needed, invalid_class, invalid_data_len, invalid_param, keys_not_init, mac_paused, multicast_keys_not_set, no_free_ch, not_joined, silent, err};
+
+#define CMPERR_OK 0
+#define CMPERR_BUSY 1
+#define CMPERR_FRMCNT 2
+#define CMPERR_INVCLS 3
+#define CMPERR_INVDLEN 4
+#define CMPERR_INVPAR 5
+#define CMPERR_NKEYINT 6
+#define CMPERR_MACPAUSE 7
+#define CMPERR_NKYMLTCST 8
+#define CMPERR_NFRCHN 9
+#define CMPERR_NJOIN 10
+#define CMPERR_SILENT 11
+#define CMPERR_ERR 12
+
+#define CMPERR_LAST CMPERR_ERR
+
 #define SENDING "Sending: "
 #define SEND_MSG "\r\n"
 
@@ -267,11 +299,23 @@ const char *const mac_tx_table[] PROGMEM = {mac_tx_type_cnf, mac_tx_type_ucnf};
 #define RADIO_TABLE 6
 #define ERR_MESSAGE 7
 #define SUCCESS_MESSAGE 8
+#define CMP_TABLE 9
+#define CMPERR_TABLE 10
 
-int pgmstrcmp(const char *str1, uint8_t str2Index)
+int pgmstrcmp(const char *str1, uint8_t str2Index, uint8_t table = CMP_TABLE)
 {
   char str2[128];
-  strcpy_P(str2, (char *)pgm_read_word(&(compare_table[str2Index])));
+
+  switch (table) {
+  case CMPERR_TABLE:
+    strcpy_P(str2, (char *)pgm_read_word(&(compareerr_table[str2Index])));
+    break;
+
+  default:
+  case CMP_TABLE:
+    strcpy_P(str2, (char *)pgm_read_word(&(compare_table[str2Index])));
+  }
+
   return memcmp(str1, str2, min(strlen(str1), strlen(str2)));
 }
 
@@ -391,6 +435,18 @@ int8_t TheThingsNetwork::getSNR()
     return atoi(buffer);
   }
   return 0;
+}
+
+ttn_response_code_t TheThingsNetwork::getLastError(){
+
+	int match, pos;
+	for (pos=0; pos <= CMPERR_LAST; pos++){
+		match = pgmstrcmp(buffer, pos, CMPERR_TABLE);
+		if (match == 0)
+			break;
+	}
+
+	return (ttn_response_code_t)(-1* pos); // code order is equal
 }
 
 void TheThingsNetwork::debugPrintIndex(uint8_t index, const char *value)
