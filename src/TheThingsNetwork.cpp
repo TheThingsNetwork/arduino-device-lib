@@ -769,12 +769,13 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
   return TTN_ERROR_UNEXPECTED_RESPONSE;
 }
 
-ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
+ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool mdmonly)
 {
   switch(lw_class)
   {
 
   case CLASS_A:
+	  if (!mdmonly)
     {
       // Class A: send uplink and wait for rx windows
       uint8_t payload[] = {0x00};
