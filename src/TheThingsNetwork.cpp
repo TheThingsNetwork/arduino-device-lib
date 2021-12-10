@@ -354,6 +354,7 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
   this->sf = sf;
   this->fsb = fsb;
   this->adr = false;
+  this->messageCallback = NULL;
 }
 
 size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
