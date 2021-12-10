@@ -669,15 +669,19 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
     return TTN_ERROR_SEND_COMMAND_FAILED;
   }
 
-   if (!readLine(buffer, sizeof(buffer)) && confirm)
+  // read modem response
+  if (!readLine(buffer, sizeof(buffer)) && confirm) // Read response
+	  // confirmed and RX timeout -> ask to poll if necessary
 	  return TTN_UNSUCESSFUL_RECEIVE;
 
+  // TX only?
   if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)
   {
     debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
     return TTN_SUCCESSFUL_TRANSMISSION;
   }
 
+  // Received downlink message?
   if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
   {
     port_t downlinkPort = receivedPort(buffer + 7);
