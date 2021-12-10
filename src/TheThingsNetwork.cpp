@@ -726,12 +726,13 @@ ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
       // Class C: check rx buffer for any recevied data
       memset(buffer, 0, sizeof(buffer));
 
-      long timeout = this->modemStream->getTimeout();
+      uint32_t timeout = this->modemStream->getTimeout();
+      size_t length = 0;
       this->modemStream->setTimeout(100);
-      this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
+      length = this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
       this->modemStream->setTimeout(timeout);
 
-      if (pgmstrcmp(buffer, CMP_MAC_RX) == 0)
+      if (length && (pgmstrcmp(buffer, CMP_MAC_RX) == 0))
       {
         port_t downlinkPort = receivedPort(buffer + 7);
         char *data = buffer + 7 + digits(downlinkPort) + 1;
@@ -750,6 +751,7 @@ ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm)
         }
         return TTN_SUCCESSFUL_RECEIVE;
       }
+      return TTN_UNSUCESSFUL_RECEIVE;
     }
 
   default:
