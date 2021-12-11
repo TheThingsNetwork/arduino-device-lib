@@ -124,11 +124,12 @@ public:
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
   uint16_t getVDD();
-  uint8_t getBW();
-  uint8_t getCR();
+  int16_t getRSSI();
   uint8_t getSF();
   uint32_t getFrequency();
   uint32_t getWatchDogTimer();
+  uint8_t getBW();
+  uint8_t getCR();
   int8_t getPower();
   int8_t getRSSI();
   int8_t getSNR();

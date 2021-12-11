@@ -426,12 +426,12 @@ int8_t TheThingsNetwork::getPower()
   return 0;
 }
 
-int8_t TheThingsNetwork::getRSSI()
+int16_t TheThingsNetwork::getRSSI()
 {
   if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_RSSI, buffer, sizeof(buffer)) > 0) {
     return atoi(buffer);
   }
-  return 0;
+  return -255;
 }
 
 int8_t TheThingsNetwork::getSNR()
@@ -439,7 +439,7 @@ int8_t TheThingsNetwork::getSNR()
   if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SNR, buffer, sizeof(buffer)) > 0) {
     return atoi(buffer);
   }
-  return 0;
+  return -128;
 }
 
 ttn_response_code_t TheThingsNetwork::getLastError(){
