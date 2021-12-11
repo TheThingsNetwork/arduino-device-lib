@@ -237,8 +237,9 @@ const char mac_ch[] PROGMEM = "ch";
 const char mac_gwnb[] PROGMEM = "gwnb";
 const char mac_mrgn[] PROGMEM = "mrgn";
 const char mac_class[] PROGMEM = "class";
+const char mac_status[] PROGMEM = "status";
 
-const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class};
+const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -261,6 +262,7 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_GWNB 18
 #define MAC_MRGN 19
 #define MAC_CLASS 20
+#define MAC_STATUS 21
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -416,6 +418,18 @@ uint32_t TheThingsNetwork::getWatchDogTimer()
     return atol(buffer);
   }
   return 0;
+}
+
+enum ttn_modem_status_t TheThingsNetwork::getStatus()
+{
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_STATUS, buffer, sizeof(buffer)) > 0) {
+	char **endptr = NULL;
+	int status = (strtol(buffer, endptr, 16) & 0x0F); // Mask out only active status
+
+	if (endptr == NULL)
+		return (enum ttn_modem_status_t)status;
+  }
+  return TTN_MDM_READERR; // unable to read status
 }
 
 int8_t TheThingsNetwork::getPower()

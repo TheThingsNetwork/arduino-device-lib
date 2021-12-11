@@ -73,6 +73,20 @@ enum ttn_response_code_t
 	TTN_ERR_ERR = (-12),
 };
 
+enum ttn_modem_status_t
+{
+	TTN_MDM_READERR = -1,
+	TTN_MDM_IDLE = 0,
+	TTN_MDM_TX,
+	TTN_MDM_BEFORE_RX,
+	TTN_MDM_RX1,
+	TTN_MDM_BEFORE_RX2,
+	TTN_MDM_RETX_DELAY,
+	TTN_MDM_APB_DELAY,
+	TTN_MDM_C_RX1,
+	TTN_MDM_C_RX2
+};
+
 class TheThingsNetwork
 {
 private:
@@ -123,6 +137,7 @@ public:
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
+  enum ttn_modem_status_t getStatus();
   uint16_t getVDD();
   int16_t getRSSI();
   uint8_t getSF();
