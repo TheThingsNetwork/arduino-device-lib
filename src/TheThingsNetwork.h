@@ -142,6 +142,8 @@ public:
   int16_t getRSSI();
   uint32_t getFrequency();
   uint32_t getWatchDogTimer();
+  uint32_t getFCU();
+  uint32_t getFCD();
   uint8_t getBW();
   uint8_t getCR();
   int8_t getPower();
@@ -168,6 +170,8 @@ public:
   bool setChannelStatus (uint8_t ch, bool status);
   bool setPowerIndex(uint8_t idx);
   bool setADR(bool adr);
+  bool setFCU(uint32_t fcu);
+  bool setFCD(uint32_t fcd);
 };
 
 #endif

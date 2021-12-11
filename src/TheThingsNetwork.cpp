@@ -242,8 +242,11 @@ const char mac_gwnb[] PROGMEM = "gwnb";
 const char mac_mrgn[] PROGMEM = "mrgn";
 const char mac_class[] PROGMEM = "class";
 const char mac_status[] PROGMEM = "status";
+const char mac_upctr[] PROGMEM = "upctr";
+const char mac_dnctr[] PROGMEM = "dnctr";
 
-const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band, mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status};
+const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band,
+			mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status, mac_upctr, mac_dnctr};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -267,6 +270,8 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_MRGN 19
 #define MAC_CLASS 20
 #define MAC_STATUS 21
+#define MAC_UPCTR 22
+#define MAC_DNCTR 23
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -404,6 +409,22 @@ uint32_t TheThingsNetwork::getFrequency()
 {
   if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_FREQ, buffer, sizeof(buffer)) > 0) {
     return atol(buffer);
+  }
+  return 0;
+}
+
+uint32_t TheThingsNetwork::getFCU()
+{
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_UPCTR, buffer, sizeof(buffer)) > 0) {
+    return strtoul(buffer, NULL, 10);
+  }
+  return 0;
+}
+
+uint32_t TheThingsNetwork::getFCD()
+{
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DNCTR, buffer, sizeof(buffer)) > 0) {
+    return strtoul(buffer, NULL, 10);
   }
   return 0;
 }
@@ -1163,6 +1184,18 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   s[0] = '0' + dr;
   s[1] = '\0';
   return sendMacSet(MAC_DR, s);
+}
+
+bool TheThingsNetwork::setFCU(uint32_t fcu){
+  char buf[10];
+  sprintf(buf, "%lu", fcu);
+  return sendMacSet(MAC_UPCTR, buf);
+}
+
+bool TheThingsNetwork::setFCD(uint32_t fcd){
+  char buf[10];
+  sprintf(buf, "%lu", fcd);
+  return sendMacSet(MAC_DNCTR, buf);
 }
 
 void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print)
