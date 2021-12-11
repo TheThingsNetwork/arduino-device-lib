@@ -1111,8 +1111,11 @@ bool TheThingsNetwork::setChannel(uint8_t ch, uint32_t freq, uint8_t drmin, uint
 	done &= sendChSet(MAC_CHANNEL_FREQ, ch, buf);
   }
 
-  if (done && (drmin > 15) && (drmax > 15))
-	done &= sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 6");
+  if (done && (drmin < 16) && (drmax < 16)){
+	char buf[11];
+	sprintf(buf, "%u %u", drmin, drmax);
+	done &= sendChSet(MAC_CHANNEL_DRRANGE, ch, buf);
+  }
   else
 	return false;
 
