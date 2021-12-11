@@ -481,6 +481,14 @@ int8_t TheThingsNetwork::getDR()
   return -1;
 }
 
+int8_t TheThingsNetwork::getPowerIndex()
+{
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_PWRIDX, buffer, sizeof(buffer)) > 0) {
+    return atoi(buffer);
+  }
+  return -1;
+}
+
 ttn_response_code_t TheThingsNetwork::getLastError(){
 
 	int match, pos;
