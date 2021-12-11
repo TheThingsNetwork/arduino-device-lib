@@ -108,8 +108,9 @@ const char personalize_not_accepted[] PROGMEM = "Personalize not accepted";
 const char response_is_not_ok[] PROGMEM = "Response is not OK: ";
 const char error_key_length[] PROGMEM = "One or more keys are of invalid length.";
 const char check_configuration[] PROGMEM = "Check your coverage, keys and backend status.";
+const char no_response[] PROGMEM =  "No response from RN module.";
 
-const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration};
+const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration, no_response};
 
 #define ERR_INVALID_SF 0
 #define ERR_INVALID_FP 1
@@ -121,6 +122,7 @@ const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_resp
 #define ERR_RESPONSE_IS_NOT_OK 7
 #define ERR_KEY_LENGTH 8
 #define ERR_CHECK_CONFIGURATION 9
+#define ERR_NO_RESPONSE 10
 
 const char personalize_accepted[] PROGMEM = "Personalize accepted. Status: ";
 const char join_accepted[] PROGMEM = "Join accepted. Status: ";
