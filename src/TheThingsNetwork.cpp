@@ -23,9 +23,10 @@ const char off[] PROGMEM = "off";
 const char accepted[] PROGMEM = "accepted";
 const char mac_tx_ok[] PROGMEM = "mac_tx_ok";
 const char mac_rx[] PROGMEM = "mac_rx";
+const char mac_err[] PROGMEM = "mac_err";
 const char rn2483[] PROGMEM = "RN2483";
 
-const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, rn2483};
+const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, mac_err, rn2483};
 
 #define CMP_OK 0
 #define CMP_ON 1
@@ -33,7 +34,8 @@ const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, m
 #define CMP_ACCEPTED 3
 #define CMP_MAC_TX_OK 4
 #define CMP_MAC_RX 5
-#define CMP_RN2483 6
+#define CMP_MAC_ERR 6
+#define CMP_RN2483 7
 
 // CMP OK
 const char busy[] PROGMEM = "busy";
