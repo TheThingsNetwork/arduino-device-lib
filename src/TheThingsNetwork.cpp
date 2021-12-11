@@ -1398,12 +1398,22 @@ void TheThingsNetwork::linkCheck(uint16_t seconds)
 
 uint8_t TheThingsNetwork::getLinkCheckGateways()
 {
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_GWNB, buffer, sizeof(buffer));
-  return strtol(buffer, NULL, 10);
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_GWNB, buffer, sizeof(buffer))){
+	  char **endptr = NULL;
+	  uint8_t gwnb = strtol(buffer, endptr, 10);
+	  if (endptr == NULL)
+		  return gwnb;
+  }
+  return 0; // Gateway number defaults to 0
 }
 
 uint8_t TheThingsNetwork::getLinkCheckMargin()
 {
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_MRGN, buffer, sizeof(buffer));
-  return strtol(buffer, NULL, 10);
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_MRGN, buffer, sizeof(buffer))){
+	  char **endptr = NULL;
+	  uint8_t mgn = strtol(buffer, endptr, 10);
+	  if (endptr == NULL)
+		  return mgn;
+  }
+  return 255; // Signal margin defaults to 255
 }
