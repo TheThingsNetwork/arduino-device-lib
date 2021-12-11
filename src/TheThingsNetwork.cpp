@@ -433,7 +433,7 @@ int8_t TheThingsNetwork::getPower()
   if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_PWR, buffer, sizeof(buffer)) > 0) {
     return atoi(buffer);
   }
-  return 0;
+  return -128;
 }
 
 int16_t TheThingsNetwork::getRSSI()
