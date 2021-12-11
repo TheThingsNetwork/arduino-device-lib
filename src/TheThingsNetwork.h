@@ -77,7 +77,7 @@ class TheThingsNetwork
 {
 private:
   Stream *modemStream;
-  Stream *debugStream;
+  Stream *debugStream = NULL;
   ttn_fp_t fp;
   uint8_t sf;
   uint8_t fsb;
