@@ -1110,7 +1110,7 @@ bool TheThingsNetwork::setRx2Channel(uint32_t freq, uint8_t dr){
 
   char buf[15];
   sprintf(buf, "%u %lu", dr, freq);
-  return sendMacSet(MAC_RX2, "3 869525000");
+  return sendMacSet(MAC_RX2, buf);
 }
 
 bool TheThingsNetwork::setChannelStatus (uint8_t ch, bool status){
