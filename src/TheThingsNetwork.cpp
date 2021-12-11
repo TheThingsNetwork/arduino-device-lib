@@ -400,14 +400,6 @@ uint8_t TheThingsNetwork::getCR()
   return 0;
 }
 
-uint8_t TheThingsNetwork::getSF()
-{
-  if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_SF, buffer, sizeof(buffer)) > 2) {
-    return atoi(buffer+2); // skip the first two chars "sf"
-  }
-  return 0;
-}
-
 uint32_t TheThingsNetwork::getFrequency()
 {
   if (readResponse(RADIO_TABLE, RADIO_TABLE, RADIO_GET_FREQ, buffer, sizeof(buffer)) > 0) {
@@ -458,6 +450,14 @@ int8_t TheThingsNetwork::getSNR()
     return atoi(buffer);
   }
   return -128;
+}
+
+int8_t TheThingsNetwork::getDR()
+{
+  if (readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DR, buffer, sizeof(buffer))){
+    return atoi(buffer);
+  }
+  return -1;
 }
 
 ttn_response_code_t TheThingsNetwork::getLastError(){
@@ -797,11 +797,11 @@ ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool mdmonly)
 
   case CLASS_A:
 	  if (!mdmonly)
-    {
-      // Class A: send uplink and wait for rx windows
-      uint8_t payload[] = {0x00};
-      return sendBytes(payload, 1, port, confirm);
-    }
+		{
+		  // Class A: send uplink and wait for rx windows
+		  uint8_t payload[] = {0x00};
+		  return sendBytes(payload, 1, port, confirm);
+		}
 
   // case CLASS_B: // Not yet supported. Use default case.
 
@@ -1127,6 +1127,12 @@ bool TheThingsNetwork::setPowerIndex(uint8_t idx){
   char buf[4];
   sprintf(buf, "%u",idx);
   return sendMacSet(MAC_PWRIDX, buf);
+}
+
+bool TheThingsNetwork::setDR(uint8_t dr){
+  char buf[4];
+  sprintf(buf, "%u",dr);
+  return sendMacSet(MAC_DR, buf);
 }
 
 bool TheThingsNetwork::setSF(uint8_t sf)

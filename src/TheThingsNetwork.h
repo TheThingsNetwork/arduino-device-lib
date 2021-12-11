@@ -140,14 +140,13 @@ public:
   enum ttn_modem_status_t getStatus();
   uint16_t getVDD();
   int16_t getRSSI();
-  uint8_t getSF();
   uint32_t getFrequency();
   uint32_t getWatchDogTimer();
   uint8_t getBW();
   uint8_t getCR();
   int8_t getPower();
-  int8_t getRSSI();
   int8_t getSNR();
+  int8_t getDR();
   ttn_response_code_t getLastError();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
