@@ -524,7 +524,7 @@ size_t TheThingsNetwork::readLine(char *buffer, size_t size, uint8_t attempts)
   if (!read)
   { // If attempts is activated return 0 and set RN state marker
     this->needsHardReset = true; // Inform the application about the radio module is not responsive.
-    debugPrintLn("No response from RN module.");
+    debugPrintMessage(ERR_MESSAGE, ERR_NO_RESPONSE);
     return 0;
   }
   buffer[read - 1] = '\0'; // set \r to \0
