@@ -1298,6 +1298,13 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpac
   }
 }
 
+bool TheThingsNetwork::sendMacSet(uint8_t index, uint8_t value1, unsigned long value2)
+{
+	char buf[15];
+	sprintf(buf, "%u %lu", value1, value2);
+	return sendMacSet(index, buf);
+}
+
 bool TheThingsNetwork::sendMacSet(uint8_t index, const char *value)
 {
   clearReadBuffer();
