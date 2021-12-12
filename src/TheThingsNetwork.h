@@ -25,7 +25,7 @@
 #define TTN_PWRIDX_IN865_867 "1" // TODO: should be 0
 
 #define TTN_BUFFER_SIZE 300
-#define TTN_DEFAULT_TOUT 10000	// Default modem timeout in ms
+#define TTN_DEFAULT_TIMEOUT 10000	// Default modem timeout in ms
 
 typedef uint8_t port_t;
 
@@ -153,7 +153,7 @@ public:
   int8_t getSNR();
   int8_t getDR();
   int8_t getPowerIndex();
-  bool getChannelStatus (uint8_t ch);
+  bool getChannelStatus (uint8_t channel);
   ttn_response_code_t getLastError();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
   bool provision(const char *appEui, const char *appKey);
@@ -170,11 +170,11 @@ public:
   void linkCheck(uint16_t seconds);
   uint8_t getLinkCheckGateways();
   uint8_t getLinkCheckMargin();
-  bool setChannel(uint8_t ch, uint32_t freq = 0l, uint8_t drmin = 255, uint8_t drmax = 255);
-  bool setRx2Channel(uint32_t freq, uint8_t dr);
-  bool setChannelDCycle (uint8_t ch, float dcycle);
-  bool setChannelStatus (uint8_t ch, bool status);
-  bool setPowerIndex(uint8_t idx);
+  bool setChannel(uint8_t channel, uint32_t frequency = 0l, uint8_t dr_min = 255, uint8_t dr_max = 255);
+  bool setRx2Channel(uint32_t frequency, uint8_t dr);
+  bool setChannelDCycle (uint8_t channel, float duty_cycle);
+  bool setChannelStatus (uint8_t channel, bool status);
+  bool setPowerIndex(uint8_t index);
   bool setDR(uint8_t dr);
   bool setADR(bool adr);
   bool setRX1Delay(uint16_t delay);

@@ -363,7 +363,7 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 {
   this->debugStream = &debugStream;
   this->modemStream = &modemStream;
-  this->modemStream->setTimeout(TTN_DEFAULT_TOUT);
+  this->modemStream->setTimeout(TTN_DEFAULT_TIMEOUT);
   this->fp = fp;
   this->sf = sf;
   this->fsb = fsb;
@@ -489,18 +489,18 @@ int8_t TheThingsNetwork::getPowerIndex()
   return -1;
 }
 
-bool TheThingsNetwork::getChannelStatus (uint8_t ch)
+bool TheThingsNetwork::getChannelStatus (uint8_t channel)
 {
   char str[5];
-  if (ch > 9)
+  if (channel > 9)
   {
-	str[0] = ((ch - (ch % 10)) / 10) + 48;
-	str[1] = (ch % 10) + 48;
+	str[0] = ((channel - (channel % 10)) / 10) + 48;
+	str[1] = (channel % 10) + 48;
 	str[2] = '\0';
   }
   else
   {
-	str[0] = ch + 48;
+	str[0] = channel + 48;
 	str[1] = '\0';
   }
   sendCommand(MAC_TABLE, MAC_PREFIX, true, false);
@@ -626,7 +626,7 @@ void TheThingsNetwork::autoBaud()
   }
   delay(100);
   clearReadBuffer();
-  modemStream->setTimeout(TTN_DEFAULT_TOUT);
+  modemStream->setTimeout(TTN_DEFAULT_TIMEOUT);
   baudDetermined = true;
 }
 
@@ -1141,23 +1141,23 @@ void TheThingsNetwork::configureChannels(uint8_t fsb)
   sendMacSet(MAC_RETX, TTN_RETX);
 }
 
-bool TheThingsNetwork::setChannel(uint8_t ch, uint32_t freq, uint8_t drmin, uint8_t drmax){
+bool TheThingsNetwork::setChannel(uint8_t channel, uint32_t frequency, uint8_t dr_min, uint8_t dr_max){
 
   bool done = true;
 
-  if (ch > 15)
+  if (channel > 15)
 	  return false;
 
-  if (freq){
+  if (frequency){
 	char buf[11];
-	sprintf(buf, "%lu", freq);
-	done &= sendChSet(MAC_CHANNEL_FREQ, ch, buf);
+	sprintf(buf, "%lu", frequency);
+	done &= sendChSet(MAC_CHANNEL_FREQ, channel, buf);
   }
 
-  if (done && (drmin < 16) && (drmax < 16)){
+  if (done && (dr_min < 16) && (dr_max < 16)){
 	char buf[11];
-	sprintf(buf, "%u %u", drmin, drmax);
-	done &= sendChSet(MAC_CHANNEL_DRRANGE, ch, buf);
+	sprintf(buf, "%u %u", dr_min, dr_max);
+	done &= sendChSet(MAC_CHANNEL_DRRANGE, channel, buf);
   }
   else
 	return false;
@@ -1165,39 +1165,39 @@ bool TheThingsNetwork::setChannel(uint8_t ch, uint32_t freq, uint8_t drmin, uint
   return done;
 }
 
-bool TheThingsNetwork::setRx2Channel(uint32_t freq, uint8_t dr){
+bool TheThingsNetwork::setRx2Channel(uint32_t frequency, uint8_t dr){
 
   char buf[15];
-  sprintf(buf, "%u %lu", dr, freq);
+  sprintf(buf, "%u %lu", dr, frequency);
   return sendMacSet(MAC_RX2, buf);
 }
 
-bool TheThingsNetwork::setChannelStatus (uint8_t ch, bool status){
-  if (ch > 15)
+bool TheThingsNetwork::setChannelStatus (uint8_t channel, bool status){
+  if (channel > 15)
 	return false;
 
   char buf[4]; // on - off
   (void)strcpy_P(buf, (char *)pgm_read_word(&(compare_table[2 - int(status)])));
 
-  return sendChSet(MAC_CHANNEL_STATUS, ch, buf);
+  return sendChSet(MAC_CHANNEL_STATUS, channel, buf);
 }
 
-bool TheThingsNetwork::setChannelDCycle (uint8_t ch, float dcycle){ // in percent
-  if (ch > 15 || dcycle > 100.0 || dcycle < 0.0)
+bool TheThingsNetwork::setChannelDCycle (uint8_t channel, float duty_cycle){ // in percent
+  if (channel > 15 || duty_cycle > 100.0 || duty_cycle < 0.0)
 	return false;
 
   char buf[6]; // number 99999
-  if (0.0 == dcycle)
+  if (0.0 == duty_cycle)
 	  (void)sprintf(buf, "%u", 65535u);
   else
-	  (void)sprintf(buf, "%u", (uint16_t)((100.0/dcycle) - 1));
+	  (void)sprintf(buf, "%u", (uint16_t)((100.0/duty_cycle) - 1));
 
-  return sendChSet(MAC_CHANNEL_DCYCLE, ch, buf);
+  return sendChSet(MAC_CHANNEL_DCYCLE, channel, buf);
 }
 
-bool TheThingsNetwork::setPowerIndex(uint8_t idx){
+bool TheThingsNetwork::setPowerIndex(uint8_t index){
   char buf[4];
-  sprintf(buf, "%u",idx);
+  sprintf(buf, "%u",index);
   return sendMacSet(MAC_PWRIDX, buf);
 }
 
