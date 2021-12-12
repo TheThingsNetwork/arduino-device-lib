@@ -1160,7 +1160,7 @@ bool TheThingsNetwork::setChannel(uint8_t channel, uint32_t frequency, uint8_t d
 	done &= sendChSet(MAC_CHANNEL_DRRANGE, channel, buf);
   }
   else
-	return false;
+	done &= (dr_min == 255) && (dr_max == 255);
 
   return done;
 }
