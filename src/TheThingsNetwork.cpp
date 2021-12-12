@@ -1309,6 +1309,13 @@ bool TheThingsNetwork::waitForOk()
   return true;
 }
 
+bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, unsigned long value)
+{
+	char buf[11];
+	sprintf(buf, "%lu", value);
+	return sendChSet(index, channel, buf);
+}
+
 bool TheThingsNetwork::sendChSet(uint8_t index, uint8_t channel, const char *value)
 {
   clearReadBuffer();
