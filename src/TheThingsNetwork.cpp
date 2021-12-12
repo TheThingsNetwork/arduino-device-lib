@@ -886,7 +886,7 @@ ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool mdmonly)
 
 		  uint32_t timeout = this->modemStream->getTimeout();
 		  this->modemStream->setTimeout(100);
-		  this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer))
+		  this->modemStream->readBytesUntil('\n', buffer, sizeof(buffer));
 		  this->modemStream->setTimeout(timeout);
 
 		  return parseBytes();
