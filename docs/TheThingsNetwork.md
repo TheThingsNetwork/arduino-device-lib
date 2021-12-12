@@ -4,7 +4,7 @@ The `TheThingsNetwork` class enables Arduino devices with supported LoRaWAN modu
 
 ## Class: `TheThingsNetwork`
 
-Include and instantiate the TheThingsNetwork class. The constructor initialize the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency plan and the frequency sub-band.
+Include and instantiate the TheThingsNetwork class. The constructor initializes the library with the Streams it should communicate with. It also sets the value of the spreading factor, the frequency plan, and the frequency sub-band.
 
 ```c
 #include <TheThingsNetwork.h>
@@ -30,7 +30,7 @@ void reset(bool adr);
 
 ## Method: `hardReset`
 
-Performs a hardware reset of the RN module. Input parameter is the pin which the reset pin from the module is connected to. This does clear saved state, e.g. provisioned keys.
+Performs a hardware reset of the RN module. Input parameter is the pin to which the reset pin from the module is connected. This does clear saved state, e.g., provisioned keys.
 
 ```c
 void hardReset(uint8_t resetPin);
@@ -78,7 +78,7 @@ See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob
 
 ## Method: `onMessage`
 
-Sets a function which will be called to process incoming messages. You'll want to do this in your `setup()` function and then define a `void (*cb)(const byte* payload, size_t length, port_t port)` function somewhere else in your sketch.
+Sets a function that will be called to process incoming messages. You'll want to do this in your `setup()` function and then define a `void (*cb)(const byte* payload, size_t length, port_t port)` function somewhere else in your sketch.
 
 ```c
 void onMessage(void (*cb)(const byte* payload, size_t length, port_t port));
@@ -101,7 +101,7 @@ bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
 
 - `const char *appEui`: Application EUI the device is registered to.
 - `const char *appKey`: Application Key assigned to the device.
-- `int8_t retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1` which means infinite.
+- `int8_t retries = -1`: Number of times to retry after failed or unconfirmed join. Defaults to `-1`, which means infinite.
 - `uint32_t retryDelay = 10000`: Delay in ms between attempts. Defaults to 10 seconds.
 - `lorawan_class = CLASS_A`: The LoRaWAN class to use for downlink message reception.
 
@@ -130,7 +130,7 @@ See the [SendABP](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 
 ## Method: `setClass`
 
-Change the downlink receive LoRaWAN Class. Class C is only supported in firmware version 1.0.5 and up. For other firmware versions this method will have no effect.
+Change the downlink receive LoRaWAN Class. Class C is only supported in firmware version 1.0.5 and up. For other firmware versions, this method will have no effect.
 
 ```c
 bool setClass(lorawan_class p_lw_class);
@@ -155,7 +155,7 @@ ttn_response_t sendBytes(const byte* payload, size_t length, port_t port = 1, bo
 - `const byte* payload `: Bytes to send.
 - `size_t length`: The number of bytes. Use `sizeof(payload)` to get it.
 - `port_t port = 1`: The port to address. Defaults to `1`.
-- `bool confirm = false`: Whether to ask for confirmation. Defaults to `false`. If confirmation fails, the method will return error code `TTN_ERROR_UNEXPECTED_RESPONSE`.
+- `bool confirm = false`: Whether to ask for confirmation—defaults to `false`. If confirmation fails, the method will return the error code `TTN_ERROR_UNEXPECTED_RESPONSE`.
 - `uint8_t sf = 0`: Override the spreading factor (SF). If the default value `0` is passed, the SF is not changed from the constructor or previous value.
 
 Returns a success or error code and logs the related error message:
@@ -163,7 +163,7 @@ Returns a success or error code and logs the related error message:
 * `TTN_ERROR_SEND_COMMAND_FAILED`: Send command failed.
 * `TTN_SUCCESSFUL_TRANSMISSION`: Successful transmission.
 * `TTN_SUCCESSFUL_RECEIVE`: Successful transmission. Received \<N> bytes
-* `TTN_UNSUCCESSFUL_RECEIVE`: if we sent a confirmed message but did not get an acknowledgement
+* `TTN_UNSUCCESSFUL_RECEIVE`: if we sent a confirmed message but did not get an acknowledgment
 * `TTN_ERROR_UNEXPECTED_RESPONSE`: Unexpected response: \<Response>
 
 See the [SendOTAA](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/SendOTAA/SendOTAA.ino) example.
@@ -178,12 +178,12 @@ int8_t poll(port_t port = 1, bool confirm = false);
 
 - `port_t port = 1`: The port to address. Defaults to `1`.
 - `bool confirm = false`: Whether to ask for confirmation.
-- `bool modem_only = false`: (only class A) Whether to avoid sending a empty frame and only listen to the modem's incoming message.
+- `bool modem_only = false`: (only class A) Whether to avoid sending an empty frame and only listen to the modem's incoming message.
 
 Returns the result of `sendBytes()`, with one difference:
-* `TTN_UNSUCCESSFUL_RECEIVE`: in case of class C or class A `modem_only` poll we (only listen) and there was no incoming message.
+* `TTN_UNSUCCESSFUL_RECEIVE`: In class C or class A `modem_only` poll, we only listened, and there was no incoming message.
 
-The `modem_only` option for poll maybe useful if the send procedure did not terminate yet, e.g., we send a confirmed message and did not get a response. In such a case, the modem will independently retry. With `modem_only` we thus just listen to the modem output to verify the status of the further attempts.
+The `modem_only` option for poll may be useful if the sending procedure did not terminate yet, e.g., we sent a confirmed message and did not get a response. In such a case, the modem will independently retry. With `modem_only` we thus just listen to the modem output to verify the status of the further attempts.
 
 See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/Receive/Receive.ino) example.
 
@@ -218,7 +218,7 @@ void wake();
 
 ## Method: `linkCheck`
 
-Sets the time interval for the link check process to be triggered. When the interval expires, the next uplink will include a Link Check Request MAC command. When using this method, it should be called after joining has completed.
+Sets the time interval for the link check process to be triggered. The next uplink will include a Link Check Request MAC command when the interval expires. This method should be called after joining has been completed.
 
 ```c
 void linkCheck(uint16_t seconds);
@@ -246,7 +246,7 @@ uint8_t getLinkCheckMargin();
 
 ## Method: `getVDD`
 
-Returns the voltage in millivolt (mV) measured by the RN2xxx LoRa module. It's for information only since we don't know how it's measured but looks like accurate.
+Returns the voltage in millivolt (mV) measured by the RN2xxx LoRa module. It's for information only since we don't know how it's calculated but looks accurate.
 
 ```c
 uint16_t getVDD();
@@ -254,7 +254,7 @@ uint16_t getVDD();
 
 ## Method: `getStatus`
 
-Returns the status of the RN2xxx modem's state machine in one of the nine possible states of `ttn_modem_status_t`. Due to a firmware bug, this does not work for RN2493 modems with firmware < 1.05. If unsuccessful, the method returns `TTN_MDM_READERR`.
+Returns the status of the RN2xxx modem's state machine in one of the nine possible states of `ttn_modem_status_t`. Unfortunately, due to a firmware bug, this does not work for RN2493 modems with firmware < 1.05. If unsuccessful, the method returns `TTN_MDM_READERR`.
 
 ```c
 enum ttn_modem_status_t getStatus()
@@ -268,14 +268,14 @@ Returns the last error code encountered by the RN2xxx modem. The error code may 
 ttn_response_code_t getLastError();
 ```
 
-For example, if you perform a send via `sendbytes` and you get a `TTN_ERROR_SEND_COMMAND_FAILED`, you can call this method and for example get a `TTN_ERR_BUSY`, which means the modem is already having a message to send in the buffer.
+For example, suppose you perform a send via `sendbytes` and get a `TTN_ERROR_SEND_COMMAND_FAILED`. In that case, you can call this method and get a `TTN_ERR_BUSY`, which means the modem already has a message to send in the buffer.
 
 Possible error codes are:
 
  - `TTN_OK` nothing actually went wrong.
  - `TTN_ERR_BUSY` busy sending a message
- - `	TTN_ERR_FRMCNT` if the frame counter rolled over
- - `	TTN_ERR_INVCLS` selected LoRaWan class is invalid
+ - `TTN_ERR_FRMCNT` if the frame counter rolled over
+ - `TTN_ERR_INVCLS` selected LoRaWan class is invalid
  - `TTN_ERR_INVDLEN` data length is not available for the current configuration
  - `TTN_ERR_INVPAR` invalid parameter specified
  - `TTN_ERR_NKEYINT` network keys not initialized
@@ -288,7 +288,7 @@ Possible error codes are:
 
 ## Method: `getFCU`
 
-Returns the next used uplink frame counter. In LoRaWan, this counter must match on both sides, server and end-node, for a transmission to be successful. Please note that although the counter is 32bit, the frame itself contains only the lowest 16bits of the message. Nonetheless, the message is encrypted using all 32bits of the FCU in the key. Therefore, it _must_ be upto date and in sync. If the readout is unsuccessful, the method returns 0. However, the first frame after a reset is also set to 0.
+Returns the next used uplink frame counter. In LoRaWan, this counter must match on both sides, server, and end-node, for a transmission to be successful. Please note that although the counter is 32bit, the frame itself contains only the lowest 16bits of the message. Nonetheless, the message is encrypted using all 32bits of the FCU in the key. Therefore, it _must_ be up to date and in sync. If the readout is unsuccessful, the method returns 0. However, the first frame after a reset is also set to 0.
 
 ```c
 uint32_t getFCU();
@@ -304,7 +304,7 @@ bool setFCU(uint32_t fcu);
 
 ## Method: `getFCD`
 
-Returns the next expected downlink frame counter. In LoRaWan, this counter must match on both sides, server and end-node, for a transmission to be successful. Please note that although the counter is 32bit, the frame itself contains only the lowest 16bits of the message. Nonetheless, the message is encrypted using all 32bits of the FCD in the key. Therefore, it _must_ be upto date and in sync. If the readout is unsuccessful, the method returns 0. However, the first frame after a reset is also sent with frame number 0.
+Returns the next expected downlink frame counter. In LoRaWan, this counter must match on both sides, server, and end-node, for a transmission to be successful. Please note that although the counter is 32bit, the frame itself contains only the lowest 16bits of the message. Nonetheless, the message is encrypted using all 32bits of the FCD in the key. Therefore, it _must_ be up to date and in sync. If the readout is unsuccessful, the method returns 0. However, the first frame after a reset is also sent with frame number 0.
 
 ```c
 uint32_t getFCD();
@@ -320,7 +320,7 @@ bool setFCD(uint32_t fcd);
 
 ## Method: `getDR`
 
-Returns the data rate that will be used for the next uplink frame. If the readout is unsuccessful, the method returns -1.
+Returns the data rate that the modem will use for the next uplink frame. If the readout is unsuccessful, the method returns -1.
 
 ```c
 int8_t getDR();
@@ -328,7 +328,7 @@ int8_t getDR();
 
 ## Method: `setDR`
 
-Sets the data rate to use for the next uplink frame, see `getDR`. This is mainly useful if you operate with adaptive data rate (ADR) in `off`, see `setADR`. If ADR is on, it will set the DR for the next uplink, but the value for the next transmissions may change according to the ADR protocol. The range of valid DR values depends on the frequency plan. The method returns true if successful.
+Sets the data rate to use for the next uplink frame; see `getDR`. This is mainly useful for operating with adaptive data rate (ADR) in `off`; see `setADR`. If ADR is on, it will set the DR for the next uplink, but the value for the successive transmissions may change according to the ADR protocol. The range of valid DR values depends on the frequency plan. The method returns true if successful.
 
 ```c
 bool setDR(uint8_t dr);
@@ -344,7 +344,7 @@ int8_t getPowerIndex();
 
 ## Method: `setPowerIndex`
 
-Sets the power index to use for the next uplink frame, see `getPowerIndex`. This is mainly useful if you operate with adaptive data rate (ADR) in `off`, see `setADR`. If ADR is on, it will set the power index for the next uplink, but the value for the next transmissions may change according to the ADR protocol. The range of valid values depends on modem hardware and the frequency plan. The method returns true if successful.
+Sets the power index to use for the next uplink frame; see `getPowerIndex`. This is mainly useful for operating with adaptive data rate (ADR) in `off`; see `setADR`. If ADR is on, it will set the power index for the next uplink. Still, the value for the following transmissions may change according to the ADR protocol. The range of valid values depends on modem hardware and the frequency plan. The method returns true if successful.
 
 ```c
 bool setPowerIndex(uint8_t index);
@@ -352,7 +352,7 @@ bool setPowerIndex(uint8_t index);
 
 ## Method: `setChannel`
 
-The TTN module can store multiple channel configurations. With this method you can configure a logical channel of the modem by defining frequency in `Hz`, minimum and maximum usable data rates for the channel. Data rates depend on the used frequency plan and must be between 0 and 15. The method returns true if configuration was successful.
+The TTN module can store multiple channel configurations. With this method, you can configure a logical channel of the modem by defining frequency in `Hz`, minimum and maximum usable data rates for the channel. Data rates depend on the used frequency plan and must be between 0 and 15. The method returns true if a configuration is successful.
 
 ```c
 bool setChannel(uint8_t channel, uint32_t frequency = 0l, uint8_t dr_min = 255, uint8_t dr_max = 255);
@@ -370,11 +370,11 @@ Or, you can only re-set the frequency for the channel by leaving (omitting) dr_*
 setChannel(2, 863500000);
 ```
 
-However, in both cases the whole configuration must have been set at least once to be successful.
+However, the whole configuration must have been set at least once to be successful in both cases.
 
 ## Method: `setRX2Channel`
 
-In some plans, the TTN module stores a common RX2 downlink channel which is used for RX2 window communication. With this method you can configure this channel by defining frequency in `Hz` and its data rates. The valid data rates depend on the used frequency plan. The method returns true if configuration was successful.
+In some plans, the TTN module stores a common RX2 downlink channel, which is used for RX2 window communication. With this method, you can configure this channel by defining frequency in `Hz` and its data rates. The valid data rates depend on the used frequency plan. The method returns true if a configuration is successful.
 
 ```c
 bool setRx2Channel(uint32_t frequency, uint8_t dr);
@@ -390,7 +390,7 @@ bool getChannelStatus (uint8_t channel);
 
 ## Method: `setChannelStatus`
 
-Sets the channel status of the selected channel number, see `getChannelStatus`. If set to true, and the channel is configured, the channel may be used for transmission. The method returns true if successful.
+Sets the channel status of the selected channel number; see `getChannelStatus`. If set to true and the channel is configured, the modem may use the channel for transmission. The method returns true if successful.
 
 ```c
 bool setChannelStatus (uint8_t channel, bool status);
@@ -398,7 +398,7 @@ bool setChannelStatus (uint8_t channel, bool status);
 
 ## Method: `setChannelDCycle`
 
-Sets the channel maximum allowed duty cycle of a selected channel number in `%`. Depending on regional regulations, the maximum frequency use may be limited to a percentage in time, the duty cycle. With this method, we set the ratio of maximum transmission time for the selected channel, e.g., `1%` with 1 second transmission time means the radio has to pause for 99 seconds on this channel before retransmitting. The method returns true if successful.
+Sets the channel maximum allowed duty cycle of a selected channel number in `%`. Depending on regional regulations, the duty cycle may limit the maximum frequency use to a percentage in time. With this method, we set the ratio of transmission time for the selected channel, e.g., `1%` with 1 second transmission time means the radio has to pause for 99 seconds on this channel before retransmitting. The method returns true if successful.
 
 ```c
 bool setChannelDCycle (uint8_t channel, float duty_cycle);
@@ -406,7 +406,7 @@ bool setChannelDCycle (uint8_t channel, float duty_cycle);
 
 ## Method: `setADR`
 
-With this method, we can manually disable or enable the adaptive data rate (ADR) algorithm on the device. If active, it independently adapts the transmission data rate (and power) in runtime. If disabled, we have to select power index and data rate manually, see `setDR` and `setPowerIndex`. The method returns true if successful.
+We can manually disable or enable the adaptive data rate (ADR) algorithm on the device with this method. It independently adapts the transmission data rate (and power) in runtime if active. If disabled, we must select power index and data rate manually, see `setDR` and `setPowerIndex`. The method returns true if successful.
 
 ```c
 bool setADR(bool adr);
@@ -414,7 +414,7 @@ bool setADR(bool adr);
 
 ## Method: `setRX1Delay`
 
-When transmitting in LoRaWan, we usually operate on three windows: a TX window and two RX windows. This setting defines how long the modem has to wait before opening the channel for listening for RX window 1. RX window 2 is hardcoded to be one second after RX1. This parameter is configurable between 1 and 15 seconds, in `ms`. By default we have a delay of 1000 ms and you should not change this if you do not change the network server accordingly. Longer window delays maybe helpful with slow, unresponsive Internet connectivity. The method returns true if successful.
+When transmitting in LoRaWan, we usually operate on a TX window and two RX windows. This setting defines how long the modem has to wait before opening the channel for listening for RX window 1. RX window two is hardcoded to be one second after RX1. This parameter is configurable between 1 and 15 seconds in `ms`. By default, we have a delay of 1000 ms, and you should not change this if you do not change the network server accordingly. Longer window delays may be helpful with slow, unresponsive Internet connectivity. The method returns true if successful.
 
 ```c
 bool setRX1Delay(uint16_t delay);
@@ -432,7 +432,7 @@ int16_t getRSSI();
 
 ## Method: `getSNR`
 
-Returns the signal to noise ratio of the last received frame in `dB`. Note that LoRa allows also negative values for SNR. Typical values are between +20dB (very clear) and -20dB (weak/sensitivity threshold). If the readout is unsuccessful, the method returns -128.
+Returns the signal to noise ratio of the last received frame in `dB`. Note that LoRa also allows negative values for SNR. Typical values are between +20dB (very clear) and -20dB (weak/sensitivity threshold). If the readout is unsuccessful, the method returns -128.
 
 ```c
 int8_t getSNR();
@@ -448,7 +448,7 @@ uint32_t getFrequency();
 
 ## Method: `getWatchDogTimer`
 
-Returns the LoRa modem's internal watch-dog timer in `ms`. If this time is exceeded, the modem resets. If, instead, the readout is unsuccessful, the method returns 0.
+Returns the LoRa modem's internal watch-dog timer in `ms`. If this time is exceeded, the modem resets. If instead, the readout is unsuccessful, the method returns 0.
 
 ```c
 uint32_t getWatchDogTimer();
@@ -477,4 +477,3 @@ Returns the power of the last incoming transmission in `dBm`. If the readout is 
 ```c
 int8_t getPower();
 ```
-
