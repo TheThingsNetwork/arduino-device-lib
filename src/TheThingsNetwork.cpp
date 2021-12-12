@@ -1245,6 +1245,12 @@ bool TheThingsNetwork::setSF(uint8_t sf)
   return sendMacSet(MAC_DR, s);
 }
 
+bool TheThingsNetwork::setRX1Delay(uint16_t delay){
+	  char buf[6];
+	  sprintf(buf, "%u",delay);
+	  return sendMacSet(MAC_RXDELAY1, buf);
+}
+
 bool TheThingsNetwork::setFCU(uint32_t fcu){
   char buf[10];
   sprintf(buf, "%lu", fcu);

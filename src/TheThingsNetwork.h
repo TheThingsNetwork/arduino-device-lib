@@ -177,6 +177,7 @@ public:
   bool setPowerIndex(uint8_t idx);
   bool setDR(uint8_t dr);
   bool setADR(bool adr);
+  bool setRX1Delay(uint16_t delay);
   bool setFCU(uint32_t fcu);
   bool setFCD(uint32_t fcd);
 };
