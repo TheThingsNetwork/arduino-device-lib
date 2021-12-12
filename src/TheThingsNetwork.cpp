@@ -919,7 +919,7 @@ void TheThingsNetwork::showStatus()
 
 void TheThingsNetwork::configureEU868()
 {
-  sendMacSet(MAC_RX2, "3 869525000");
+  sendMacSet(MAC_RX2, 3, 869525000);
   sendChSet(MAC_CHANNEL_DRRANGE, 1, "0 6");
 
   char buf[10];
@@ -927,7 +927,7 @@ void TheThingsNetwork::configureEU868()
   uint8_t ch;
   for (ch = 0; ch < 8; ch++)
   {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, 799);
     if (ch > 2)
     {
       sprintf(buf, "%lu", freq);
@@ -995,14 +995,14 @@ void TheThingsNetwork::configureAS920_923()
    * CH1 = 923.4MHz
    */
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 923200000");
+  sendMacSet(MAC_RX2, 2, 923200000);
 
   char buf[10];
   uint32_t freq = 922000000;
   uint8_t ch;
   for (ch = 0; ch < 8; ch++)
   {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, 799);
     if (ch > 1)
     {
       sprintf(buf, "%lu", freq);
@@ -1013,8 +1013,8 @@ void TheThingsNetwork::configureAS920_923()
     }
   }
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
-  //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
-  //sendChSet(MAC_CHANNEL_FREQ, 8, "922100000");
+  //sendChSet(MAC_CHANNEL_DCYCLE, 8, 799);
+  //sendChSet(MAC_CHANNEL_FREQ, 8, 922100000);
   //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
   //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
   // TODO: Add FSK channel on 921800000
@@ -1028,14 +1028,14 @@ void TheThingsNetwork::configureAS923_925()
    * CH1 = 923.4MHz
    */
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 923200000");
+  sendMacSet(MAC_RX2, 2, 923200000);
 
   char buf[10];
   uint32_t freq = 923600000;
   uint8_t ch;
   for (ch = 0; ch < 8; ch++)
   {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, 799);
     if (ch > 1)
     {
       sprintf(buf, "%lu", freq);
@@ -1046,8 +1046,8 @@ void TheThingsNetwork::configureAS923_925()
     }
   }
   // TODO: SF7BW250/DR6 channel, not properly supported by RN2903AS yet
-  //sendChSet(MAC_CHANNEL_DCYCLE, 8, "799");
-  //sendChSet(MAC_CHANNEL_FREQ, 8, "924500000");
+  //sendChSet(MAC_CHANNEL_DCYCLE, 8, 799);
+  //sendChSet(MAC_CHANNEL_FREQ, 8, 924500000);
   //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
   //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
   // TODO: Add FSK channel on 924800000
@@ -1057,7 +1057,7 @@ void TheThingsNetwork::configureAS923_925()
 void TheThingsNetwork::configureKR920_923()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "0 921900000"); // KR still uses SF12 for now. Might change to SF9 later.
+  sendMacSet(MAC_RX2, 0, 921900000); // KR still uses SF12 for now. Might change to SF9 later.
 
   //disable two default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
@@ -1068,7 +1068,7 @@ void TheThingsNetwork::configureKR920_923()
   uint8_t ch;
   for (ch = 2; ch < 9; ch++)
   {
-    sendChSet(MAC_CHANNEL_DCYCLE, ch, "799");
+    sendChSet(MAC_CHANNEL_DCYCLE, ch, 799);
     sprintf(buf, "%lu", freq);
     sendChSet(MAC_CHANNEL_FREQ, ch, buf);
     sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
@@ -1081,7 +1081,7 @@ void TheThingsNetwork::configureKR920_923()
 void TheThingsNetwork::configureIN865_867()
 {
   sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
-  sendMacSet(MAC_RX2, "2 866550000"); // SF10
+  sendMacSet(MAC_RX2, 2, 866550000); // SF10
 
   // Disable the three default LoRaWAN channels
   sendChSet(MAC_CHANNEL_STATUS, 0, "off");
@@ -1089,20 +1089,20 @@ void TheThingsNetwork::configureIN865_867()
   sendChSet(MAC_CHANNEL_STATUS, 2, "off");
 
   // Channel 3
-  sendChSet(MAC_CHANNEL_DCYCLE, 3, "299");
-  sendChSet(MAC_CHANNEL_FREQ, 3, "865062500");
+  sendChSet(MAC_CHANNEL_DCYCLE, 3, 299);
+  sendChSet(MAC_CHANNEL_FREQ, 3, 865062500);
   sendChSet(MAC_CHANNEL_DRRANGE, 3, "0 5");
   sendChSet(MAC_CHANNEL_STATUS, 3, "on");
 
   // Channel 4
-  sendChSet(MAC_CHANNEL_DCYCLE, 4, "299");
-  sendChSet(MAC_CHANNEL_FREQ, 4, "865402500");
+  sendChSet(MAC_CHANNEL_DCYCLE, 4, 299);
+  sendChSet(MAC_CHANNEL_FREQ, 4, 865402500);
   sendChSet(MAC_CHANNEL_DRRANGE, 4, "0 5");
   sendChSet(MAC_CHANNEL_STATUS, 4, "on");
 
   // Channel 5
-  sendChSet(MAC_CHANNEL_DCYCLE, 5, "299");
-  sendChSet(MAC_CHANNEL_FREQ, 5, "865985000");
+  sendChSet(MAC_CHANNEL_DCYCLE, 5, 299);
+  sendChSet(MAC_CHANNEL_FREQ, 5, 865985000);
   sendChSet(MAC_CHANNEL_DRRANGE, 5, "0 5");
   sendChSet(MAC_CHANNEL_STATUS, 5, "on");
 
