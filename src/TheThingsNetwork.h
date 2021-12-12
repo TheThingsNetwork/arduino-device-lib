@@ -35,7 +35,7 @@ enum ttn_response_t
   TTN_ERROR_UNEXPECTED_RESPONSE = (-10),
   TTN_SUCCESSFUL_TRANSMISSION = 1,
   TTN_SUCCESSFUL_RECEIVE = 2,
-  TTN_UNSUCESSFUL_RECEIVE = 3
+  TTN_UNSUCCESSFUL_RECEIVE = 3
 };
 
 enum ttn_fp_t
@@ -121,6 +121,7 @@ private:
   bool setSF(uint8_t sf);
   bool waitForOk();
 
+  ttn_response_t parseBytes();
   void sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print = true);
   bool sendMacSet(uint8_t index, const char *value);
   bool sendChSet(uint8_t index, uint8_t channel, const char *value);
