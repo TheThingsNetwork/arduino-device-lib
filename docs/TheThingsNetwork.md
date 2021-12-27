@@ -254,13 +254,27 @@ uint16_t getVDD();
 
 ## Method: `getStatus`
 
-Returns the status of the RN2xxx modem's state machine in one of the nine possible states of `ttn_modem_status_t`. Unfortunately, due to a firmware bug, this does not work for RN2493 modems with firmware < 1.05. If unsuccessful, the method returns `TTN_MDM_READERR`.
+Returns the status of the RN2xxx modem's state machine in one of the nine possible states of `ttn_modem_status_t`. Unfortunately, due to a firmware bug, this does not work for RN2493 modems with firmware < 1.05. If unsuccessful, the method returns `TTN_MODEM_READ_ERROR`.
 
 ```c
 enum ttn_modem_status_t getStatus()
 ```
 
-## Method: `getStatus`
+Possible return codes are:
+
+- `TTN_MODEM_READ_ERR` could not read out the status
+- `TTN_MODEM_IDLE` modem idle, ready for next tx
+- `TTN_MODEM_TX` modem transmitting
+- `TTN_MODEM_BEFORE_RX` waiting time between tx and rx1 windows
+- `TTN_MODEM_RX1` RX1 window open
+- `TTN_MODEM_BEFORE_RX2` waiting time between the two rx windows
+- `TTN_MODEM_RETRY_DELAY` waiting before retry again
+- `TTN_MODEM_APB_DELAY` APB join delay
+- `TTN_MODEM_C_RX1` RX1 window open in class C
+- `TTN_MODEM_C_RX2` RX2 window open in class C
+
+
+## Method: `getLastError`
 
 Returns the last error code encountered by the RN2xxx modem. The error code may be one of the twelve possible errors of `ttn_response_code_t`. Call this method after an unsuccessful execution.
 
@@ -273,18 +287,18 @@ For example, suppose you perform a send via `sendbytes` and get a `TTN_ERROR_SEN
 Possible error codes are:
 
  - `TTN_OK` nothing actually went wrong.
- - `TTN_ERR_BUSY` busy sending a message
- - `TTN_ERR_FRMCNT` if the frame counter rolled over
- - `TTN_ERR_INVCLS` selected LoRaWan class is invalid
- - `TTN_ERR_INVDLEN` data length is not available for the current configuration
- - `TTN_ERR_INVPAR` invalid parameter specified
- - `TTN_ERR_NKEYINT` network keys not initialized
- - `TTN_ERR_MACPAUSE` mac level has been paused
- - `TTN_ERR_NKYMLTCST` multicast keys not set
- - `TTN_ERR_NFRCHN` all channels exhausted their duty cycle, so we can not send
- - `TTN_ERR_NJOIN` modem did not join a network
- - `TTN_ERR_SILENT` if the module is in a Silent Immediately state
- - `TTN_ERR_ERR` other unspecified error 
+ - `TTN_ERROR_BUSY` busy sending a message
+ - `TTN_ERROR_FRAME_COUNTER_ERROR` if the frame counter rolled over
+ - `TTN_ERROR_INVALID_CLASS` selected LoRaWan class is invalid
+ - `TTN_ERROR_INVALID_LENGTH` data length is not available for the current configuration
+ - `TTN_ERROR_INVALID_PARAMETER` invalid parameter specified
+ - `TTN_ERROR_NO_KEY_INTITIALIZED` network keys not initialized
+ - `TTN_ERROR_MAC_PAUSE` mac level has been paused
+ - `TTN_ERROR_NO_KEY_MULTICAST` multicast keys not set
+ - `TTN_ERROR_NO_FREE_CHANNEL` all channels exhausted their duty cycle, so we can not send
+ - `TTN_ERROR_NOT_JOINED` modem did not join a network
+ - `TTN_ERROR_SILENT` if the module is in a Silent Immediately state
+ - `TTN_ERROR_ERR` other unspecified error 
 
 ## Method: `getFCU`
 
