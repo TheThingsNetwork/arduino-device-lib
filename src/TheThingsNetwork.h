@@ -59,32 +59,32 @@ enum lorawan_class_t
 enum ttn_response_code_t
 {
 	TTN_OK,
-	TTN_ERR_BUSY = (-1),
-	TTN_ERR_FRMCNT = (-2),
-	TTN_ERR_INVCLS = (-3),
-	TTN_ERR_INVDLEN = (-4),
-	TTN_ERR_INVPAR = (-5),
-	TTN_ERR_NKEYINT = (-6),
-	TTN_ERR_MACPAUSE = (-7),
-	TTN_ERR_NKYMLTCST = (-8),
-	TTN_ERR_NFRCHN = (-9),
-	TTN_ERR_NJOIN = (-10),
-	TTN_ERR_SILENT = (-11),
-	TTN_ERR_ERR = (-12),
+	TTN_ERROR_BUSY = (-1),
+	TTN_ERROR_FRAME_COUNTER_ERROR = (-2),
+	TTN_ERROR_INVALID_CLASS = (-3),
+	TTN_ERROR_INVALID_LENGTH = (-4),
+	TTN_ERROR_INVALID_PARAMETER = (-5),
+	TTN_ERROR_NO_KEY_INTITIALIZED = (-6),
+	TTN_ERROR_MAC_PAUSE = (-7),
+	TTN_ERROR_NO_KEY_MULTICAST = (-8),
+	TTN_ERROR_NO_FREE_CHANNEL = (-9),
+	TTN_ERROR_NOT_JOINED = (-10),
+	TTN_ERROR_SILENT = (-11),
+	TTN_ERROR_ERR = (-12),
 };
 
 enum ttn_modem_status_t
 {
-	TTN_MDM_READERR = -1,
-	TTN_MDM_IDLE = 0,
-	TTN_MDM_TX,
-	TTN_MDM_BEFORE_RX,
-	TTN_MDM_RX1,
-	TTN_MDM_BEFORE_RX2,
-	TTN_MDM_RETX_DELAY,
-	TTN_MDM_APB_DELAY,
-	TTN_MDM_C_RX1,
-	TTN_MDM_C_RX2
+	TTN_MODEM_READ_ERR = -1,
+	TTN_MODEM_IDLE = 0,
+	TTN_MODEM_TX,
+	TTN_MODEM_BEFORE_RX,
+	TTN_MODEM_RX1,
+	TTN_MODEM_BEFORE_RX2,
+	TTN_MODEM_RETX_DELAY,
+	TTN_MODEM_APB_DELAY,
+	TTN_MODEM_C_RX1,
+	TTN_MODEM_C_RX2
 };
 
 class TheThingsNetwork
@@ -163,7 +163,7 @@ public:
   bool personalize();
   bool setClass(lorawan_class_t p_lw_class);
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
-  ttn_response_t poll(port_t port = 1, bool confirm = false, bool mdmonly = false);
+  ttn_response_t poll(port_t port = 1, bool confirm = false, bool modem_only = false);
   void sleep(uint32_t mseconds);
   void wake();
   void saveState();

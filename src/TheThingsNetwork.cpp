@@ -53,21 +53,21 @@ const char err[] PROGMEM = "err";
 
 const char *const compareerr_table[] PROGMEM = {ok, busy, fram_counter_err_rejoin_needed, invalid_class, invalid_data_len, invalid_param, keys_not_init, mac_paused, multicast_keys_not_set, no_free_ch, not_joined, silent, err};
 
-#define CMPERR_OK 0
-#define CMPERR_BUSY 1
-#define CMPERR_FRMCNT 2
-#define CMPERR_INVCLS 3
-#define CMPERR_INVDLEN 4
-#define CMPERR_INVPAR 5
-#define CMPERR_NKEYINT 6
-#define CMPERR_MACPAUSE 7
-#define CMPERR_NKYMLTCST 8
-#define CMPERR_NFRCHN 9
-#define CMPERR_NJOIN 10
-#define CMPERR_SILENT 11
-#define CMPERR_ERR 12
+#define CMP_ERR_OK 0
+#define CMP_ERR_BUSY 1
+#define CMP_ERR_FRMCNT 2
+#define CMP_ERR_INVCLS 3
+#define CMP_ERR_INVDLEN 4
+#define CMP_ERR_INVPAR 5
+#define CMP_ERR_NKEYINT 6
+#define CMP_ERR_MACPAUSE 7
+#define CMP_ERR_NKYMLTCST 8
+#define CMP_ERR_NFRCHN 9
+#define CMP_ERR_NJOIN 10
+#define CMP_ERR_SILENT 11
+#define CMP_ERR_ERR 12
 
-#define CMPERR_LAST CMPERR_ERR
+#define CMP_ERR_LAST CMP_ERR_ERR
 
 #define SENDING "Sending: "
 #define SEND_MSG "\r\n"
@@ -311,7 +311,7 @@ const char *const mac_tx_table[] PROGMEM = {mac_tx_type_cnf, mac_tx_type_ucnf};
 #define ERR_MESSAGE 7
 #define SUCCESS_MESSAGE 8
 #define CMP_TABLE 9
-#define CMPERR_TABLE 10
+#define CMP_ERR_TABLE 10
 
 int pgmstrcmp(const char *str1, uint8_t str2Index, uint8_t table = CMP_TABLE)
 {
@@ -321,7 +321,7 @@ int pgmstrcmp(const char *str1, uint8_t str2Index, uint8_t table = CMP_TABLE)
   char str2[128];
 
   switch (table) {
-  case CMPERR_TABLE:
+  case CMP_ERR_TABLE:
     strcpy_P(str2, (char *)pgm_read_word(&(compareerr_table[str2Index])));
     break;
 
@@ -446,7 +446,7 @@ enum ttn_modem_status_t TheThingsNetwork::getStatus()
 	if (endptr == NULL)
 		return (enum ttn_modem_status_t)status;
   }
-  return TTN_MDM_READERR; // unable to read status
+  return TTN_MODEM_READ_ERR; // unable to read status
 }
 
 int8_t TheThingsNetwork::getPower()
@@ -519,8 +519,8 @@ bool TheThingsNetwork::getChannelStatus (uint8_t channel)
 ttn_response_code_t TheThingsNetwork::getLastError(){
 
 	int match, pos;
-	for (pos=0; pos <= CMPERR_LAST; pos++){
-		match = pgmstrcmp(buffer, pos, CMPERR_TABLE);
+	for (pos=0; pos <= CMP_ERR_LAST; pos++){
+		match = pgmstrcmp(buffer, pos, CMP_ERR_TABLE);
 		if (match == 0)
 			break;
 	}
@@ -847,13 +847,13 @@ ttn_response_t TheThingsNetwork::sendBytes(const uint8_t *payload, size_t length
   return parseBytes();
 }
 
-ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool mdmonly)
+ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool modem_only)
 {
   switch(lw_class)
   {
 
   case CLASS_A:
-	  if (!mdmonly)
+	  if (!modem_only)
 		{
 		  // Class A: send uplink and wait for rx windows
 		  uint8_t payload[] = {0x00};
@@ -865,7 +865,7 @@ ttn_response_t TheThingsNetwork::poll(port_t port, bool confirm, bool mdmonly)
 			  // confirmed and RX timeout -> ask to poll if necessary
 			  return TTN_UNSUCCESSFUL_RECEIVE;
 
-		  // TX only?
+		  // Here we can have the result of pending TX, or pending RX (for confirmed messages)
 		  if (pgmstrcmp(buffer, CMP_MAC_TX_OK) == 0)
 		  {
 		    debugPrintMessage(SUCCESS_MESSAGE, SCS_SUCCESSFUL_TRANSMISSION);
