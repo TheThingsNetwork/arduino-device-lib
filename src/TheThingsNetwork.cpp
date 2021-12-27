@@ -932,12 +932,12 @@ void TheThingsNetwork::configureEU868()
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
       sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_DCYCLE, ch, 499); // 5*0.2% ETSI band G2, total 1%
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      sendChSet(MAC_CHANNEL_DCYCLE, ch, 499); // 5*0.2% ETSI band G1, total 1%
+      setChannelStatus(ch, true);;
       freq = freq + 200000;
     }
     else
-    	sendChSet(MAC_CHANNEL_DCYCLE, ch, 299); // 3*0.33% ETSI band G1, total 1%
+    	sendChSet(MAC_CHANNEL_DCYCLE, ch, 299); // 3*0.33% ETSI band G, total 1%
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_EU868);
 }
@@ -952,7 +952,7 @@ void TheThingsNetwork::configureUS915(uint8_t fsb)
   {
     if (ch == ch500 || (ch <= chHigh && ch >= chLow))
     {
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      setChannelStatus(ch, true);
       if (ch < 63)
       {
         sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 3");
@@ -960,7 +960,7 @@ void TheThingsNetwork::configureUS915(uint8_t fsb)
     }
     else
     {
-      sendChSet(MAC_CHANNEL_STATUS, ch, "off");
+    	setChannelStatus(ch, false);
     }
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_US915);
@@ -976,7 +976,7 @@ void TheThingsNetwork::configureAU915(uint8_t fsb)
   {
     if (ch == ch500 || (ch <= chHigh && ch >= chLow))
     {
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      setChannelStatus(ch, true);
       if (ch < 63)
       {
         sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 3");
@@ -984,7 +984,7 @@ void TheThingsNetwork::configureAU915(uint8_t fsb)
     }
     else
     {
-      sendChSet(MAC_CHANNEL_STATUS, ch, "off");
+    	setChannelStatus(ch, false);
     }
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AU915);
@@ -996,7 +996,7 @@ void TheThingsNetwork::configureAS920_923()
    * CH0 = 923.2MHz
    * CH1 = 923.4MHz
    */
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  setADR(false); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, 2, 923200000);
 
   char buf[10];
@@ -1010,7 +1010,7 @@ void TheThingsNetwork::configureAS920_923()
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
       sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      setChannelStatus(ch, true);
       freq = freq + 200000;
     }
   }
@@ -1018,7 +1018,7 @@ void TheThingsNetwork::configureAS920_923()
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, 799);
   //sendChSet(MAC_CHANNEL_FREQ, 8, 922100000);
   //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
-  //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
+  //setChannelStatus(8, true);
   // TODO: Add FSK channel on 921800000
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS920_923);
 }
@@ -1029,7 +1029,7 @@ void TheThingsNetwork::configureAS923_925()
    * CH0 = 923.2MHz
    * CH1 = 923.4MHz
    */
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  setADR(false); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, 2, 923200000);
 
   char buf[10];
@@ -1043,7 +1043,7 @@ void TheThingsNetwork::configureAS923_925()
       sprintf(buf, "%lu", freq);
       sendChSet(MAC_CHANNEL_FREQ, ch, buf);
       sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-      sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+      setChannelStatus(ch, true);
       freq = freq + 200000;
     }
   }
@@ -1051,19 +1051,19 @@ void TheThingsNetwork::configureAS923_925()
   //sendChSet(MAC_CHANNEL_DCYCLE, 8, 799);
   //sendChSet(MAC_CHANNEL_FREQ, 8, 924500000);
   //sendChSet(MAC_CHANNEL_DRRANGE, 8, "6 6");
-  //sendChSet(MAC_CHANNEL_STATUS, 8, "on");
+  //setChannelStatus(8, true);
   // TODO: Add FSK channel on 924800000
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_AS923_925);
 }
 
 void TheThingsNetwork::configureKR920_923()
 {
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  setADR(false); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, 0, 921900000); // KR still uses SF12 for now. Might change to SF9 later.
 
   //disable two default LoRaWAN channels
-  sendChSet(MAC_CHANNEL_STATUS, 0, "off");
-  sendChSet(MAC_CHANNEL_STATUS, 1, "off");
+  setChannelStatus(0, false);
+  setChannelStatus(1, false);
 
   char buf[10];
   uint32_t freq = 922100000;
@@ -1074,7 +1074,7 @@ void TheThingsNetwork::configureKR920_923()
     sprintf(buf, "%lu", freq);
     sendChSet(MAC_CHANNEL_FREQ, ch, buf);
     sendChSet(MAC_CHANNEL_DRRANGE, ch, "0 5");
-    sendChSet(MAC_CHANNEL_STATUS, ch, "on");
+    setChannelStatus(ch, true);
     freq = freq + 200000;
   }
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_KR920_923);
@@ -1082,31 +1082,31 @@ void TheThingsNetwork::configureKR920_923()
 
 void TheThingsNetwork::configureIN865_867()
 {
-  sendMacSet(MAC_ADR, "off"); // TODO: remove when ADR is implemented for this plan
+  setADR(false); // TODO: remove when ADR is implemented for this plan
   sendMacSet(MAC_RX2, 2, 866550000); // SF10
 
   // Disable the three default LoRaWAN channels
-  sendChSet(MAC_CHANNEL_STATUS, 0, "off");
-  sendChSet(MAC_CHANNEL_STATUS, 1, "off");
-  sendChSet(MAC_CHANNEL_STATUS, 2, "off");
+  setChannelStatus(0, false);
+  setChannelStatus(1, false);
+  setChannelStatus(2, false);
 
   // Channel 3
   sendChSet(MAC_CHANNEL_DCYCLE, 3, 299);
   sendChSet(MAC_CHANNEL_FREQ, 3, 865062500);
   sendChSet(MAC_CHANNEL_DRRANGE, 3, "0 5");
-  sendChSet(MAC_CHANNEL_STATUS, 3, "on");
+  setChannelStatus(3, true);
 
   // Channel 4
   sendChSet(MAC_CHANNEL_DCYCLE, 4, 299);
   sendChSet(MAC_CHANNEL_FREQ, 4, 865402500);
   sendChSet(MAC_CHANNEL_DRRANGE, 4, "0 5");
-  sendChSet(MAC_CHANNEL_STATUS, 4, "on");
+  setChannelStatus(4, true);
 
   // Channel 5
   sendChSet(MAC_CHANNEL_DCYCLE, 5, 299);
   sendChSet(MAC_CHANNEL_FREQ, 5, 865985000);
   sendChSet(MAC_CHANNEL_DRRANGE, 5, "0 5");
-  sendChSet(MAC_CHANNEL_STATUS, 5, "on");
+  setChannelStatus(5, true);
 
   sendMacSet(MAC_PWRIDX, TTN_PWRIDX_IN865_867);
 }
@@ -1178,10 +1178,11 @@ bool TheThingsNetwork::setChannelStatus (uint8_t channel, bool status){
   if (channel > 15)
 	return false;
 
-  char buf[4]; // on - off
-  (void)strcpy_P(buf, (char *)pgm_read_word(&(compare_table[2 - int(status)])));
+  if (status)
+	return sendChSet(MAC_CHANNEL_STATUS, channel, "on");
+  else
+    return sendChSet(MAC_CHANNEL_STATUS, channel, "off");
 
-  return sendChSet(MAC_CHANNEL_STATUS, channel, buf);
 }
 
 bool TheThingsNetwork::setChannelDCycle (uint8_t channel, float duty_cycle){ // in percent
