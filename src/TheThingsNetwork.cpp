@@ -1175,14 +1175,10 @@ bool TheThingsNetwork::setRx2Channel(uint32_t frequency, uint8_t dr){
 }
 
 bool TheThingsNetwork::setChannelStatus (uint8_t channel, bool status){
-  if (channel > 15)
-	return false;
-
   if (status)
-	return sendChSet(MAC_CHANNEL_STATUS, channel, "on");
+    return sendChSet(MAC_CHANNEL_STATUS, channel, "on");
   else
     return sendChSet(MAC_CHANNEL_STATUS, channel, "off");
-
 }
 
 bool TheThingsNetwork::setChannelDCycle (uint8_t channel, float duty_cycle){ // in percent
