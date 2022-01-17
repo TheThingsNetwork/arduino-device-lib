@@ -25,8 +25,11 @@ const char mac_tx_ok[] PROGMEM = "mac_tx_ok";
 const char mac_rx[] PROGMEM = "mac_rx";
 const char mac_err[] PROGMEM = "mac_err";
 const char rn2483[] PROGMEM = "RN2483";
+const char rn2483a[] PROGMEM = "RN2483A";
+const char rn2903[] PROGMEM = "RN2903";
+const char rn2903as[] PROGMEM = "RN2903AS";
 
-const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, mac_err, rn2483};
+const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, mac_err, rn2483, rn2483a, rn2903, rn2903as};
 
 #define CMP_OK 0
 #define CMP_ON 1
@@ -36,6 +39,9 @@ const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, m
 #define CMP_MAC_RX 5
 #define CMP_MAC_ERR 6
 #define CMP_RN2483 7
+#define CMP_RN2483A 8
+#define CMP_RN2903 9
+#define CMP_RN2903AS 10
 
 // CMP OK
 const char busy[] PROGMEM = "busy";
@@ -109,8 +115,9 @@ const char response_is_not_ok[] PROGMEM = "Response is not OK: ";
 const char error_key_length[] PROGMEM = "One or more keys are of invalid length.";
 const char check_configuration[] PROGMEM = "Check your coverage, keys and backend status.";
 const char no_response[] PROGMEM =  "No response from RN module.";
+const char invalid_module[] PROGMEM = "Invalid module (must be RN2xx3[xx]).";
 
-const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration, no_response};
+const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration, no_response, invalid_module};
 
 #define ERR_INVALID_SF 0
 #define ERR_INVALID_FP 1
@@ -123,18 +130,21 @@ const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_resp
 #define ERR_KEY_LENGTH 8
 #define ERR_CHECK_CONFIGURATION 9
 #define ERR_NO_RESPONSE 10
+#define ERR_INVALID_MODULE 11
 
 const char personalize_accepted[] PROGMEM = "Personalize accepted. Status: ";
 const char join_accepted[] PROGMEM = "Join accepted. Status: ";
 const char successful_transmission[] PROGMEM = "Successful transmission";
 const char successful_transmission_received[] PROGMEM = "Successful transmission. Received ";
+const char valid_module[] PROGMEM = "Valid module connected.";
 
-const char *const success_msg[] PROGMEM = {personalize_accepted, join_accepted, successful_transmission, successful_transmission_received};
+const char *const success_msg[] PROGMEM = {personalize_accepted, join_accepted, successful_transmission, successful_transmission_received, valid_module};
 
 #define SCS_PERSONALIZE_ACCEPTED 0
 #define SCS_JOIN_ACCEPTED 1
 #define SCS_SUCCESSFUL_TRANSMISSION 2
 #define SCS_SUCCESSFUL_TRANSMISSION_RECEIVED 3
+#define SCS_VALID_MODULE 4
 
 const char radio_prefix[] PROGMEM = "radio";
 const char radio_set[] PROGMEM = "set";
@@ -379,6 +389,11 @@ size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
 size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
 {
   return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, size);
+}
+
+size_t TheThingsNetwork::getVersion(char *buffer, size_t size)
+{
+  return readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, size);
 }
 
 uint16_t TheThingsNetwork::getVDD()
@@ -632,11 +647,13 @@ void TheThingsNetwork::autoBaud()
 
 void TheThingsNetwork::reset(bool adr)
 {
+  // autobaud and send "sys reset"
   autoBaud();
   readResponse(SYS_TABLE, SYS_RESET, buffer, sizeof(buffer));
 
+  // autobaud (again, because baudrate was reset with "sys reset") and get HW model and SW version
   autoBaud();
-  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VER, buffer, sizeof(buffer));
+  getVersion(buffer, sizeof(buffer));
 
   // buffer contains "RN2xx3[xx] x.x.x ...", splitting model from version
   char *model = strtok(buffer, " ");
@@ -644,10 +661,11 @@ void TheThingsNetwork::reset(bool adr)
   char *version = strtok(NULL, " ");
   debugPrintIndex(SHOW_VERSION, version);
 
+  // set DEVEUI as HWEUI
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   sendMacSet(MAC_DEVEUI, buffer);
+  // set ADR
   setADR(adr);
-  this->needsHardReset = false;
 }
 
 void TheThingsNetwork::resetHard(uint8_t resetPin){
@@ -671,9 +689,11 @@ void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size,
   messageCallback = cb;
 }
 
-bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey)
+bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first)
 {
-  reset(adr);
+  if(reset_first) {
+    reset(adr);
+  }
   if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
@@ -703,9 +723,11 @@ bool TheThingsNetwork::personalize()
   return true;
 }
 
-bool TheThingsNetwork::provision(const char *appEui, const char *appKey)
+bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool reset_first)
 {
-  reset(adr);
+  if(reset_first) {
+    reset(adr);
+  }
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
   {
     debugPrintMessage(ERR_MESSAGE, ERR_KEY_LENGTH);
@@ -915,6 +937,34 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_1, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_RXDELAY2, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
+}
+
+bool TheThingsNetwork::checkValidModuleConnected(bool autobaud_first)
+{
+  // check if we want to autobaud first
+  if(autobaud_first)
+  {
+    autoBaud();
+  }
+  // send "sys get ver" to check if (and what) module is connected
+  getVersion(buffer, sizeof(buffer));
+  // check if we got a response (whatever it might be)
+  // needsHardReset flag is set by readLine() (called at some point down the line by getVersion())
+  if(this->needsHardReset)
+  {
+    return false;                                               // no response
+  }
+  // buffer contains "RN2xx3[xx] x.x.x ...", getting only model (RN2xx3[xx])
+  char *model = strtok(buffer, " ");
+  debugPrintIndex(SHOW_MODEL, model);
+  // check if module is valid (must be RN2483, RN2483A, RN2903 or RN2903AS)
+  if(pgmstrcmp(model, CMP_RN2483) == 0 || pgmstrcmp(model, CMP_RN2483A) == 0 || pgmstrcmp(model, CMP_RN2903) == 0 || pgmstrcmp(model, CMP_RN2903AS) == 0)
+  {
+    debugPrintMessage(SUCCESS_MESSAGE, SCS_VALID_MODULE);
+    return true;                                                // module responded and is valid (recognized/supported)
+  }
+  debugPrintMessage(ERR_MESSAGE, ERR_INVALID_MODULE);
+  return false;                                                 // module responded but is invalid (unrecognized/unsupported)
 }
 
 void TheThingsNetwork::configureEU868()

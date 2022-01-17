@@ -54,6 +54,14 @@ Gets the provisioned AppEUI. The AppEUI is set using `provision()` or `join()`.
 size_t getAppEui(char *buffer, size_t size);
 ```
 
+## Method: `getVersion`
+
+Gets the response from a `sys get ver` command (i.e. the hardware model, the the software version, etc.).
+
+```c
+size_t getVersion(char *buffer, size_t size);
+```
+
 ## Method: `showStatus`
 
 Writes information about the device and LoRa module to `debugStream`.
@@ -114,13 +122,14 @@ Call the method without the first two arguments if the device's LoRa module come
 Activate the device via ABP.
 
 ```c
-bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
+bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first);
 bool personalize();
 ```
 
 - `const char *devAddr`: Device Address assigned to the device.
 - `const char *nwkSKey`: Network Session Key assigned to the device for identification.
 - `const char *appSKey`: Application Session Key assigned to the device for encryption.
+- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
 
 Returns `true` or `false` depending on whether the activation was successful.
 
@@ -192,11 +201,12 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
-bool provision(const char *appEui, const char *appKey);
+bool provision(const char *appEui, const char *appKey, bool reset_first);
 ```
 
 - `const char *appEui`: Application Identifier for the device.
 - `const char *appKey`: Application Key assigned to the device.
+- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
 
 ## Method: `sleep`
 
@@ -433,6 +443,28 @@ When transmitting in LoRaWan, we usually operate on a TX window and two RX windo
 ```c
 bool setRX1Delay(uint16_t delay);
 ```
+
+## Method: `checkValidModuleConnected`
+
+Checks if a valid module is connected to the configured serial port. Useful to check for connectivity with a supported module before performing any other actions.
+
+```c
+bool checkValidModuleConnected(bool autobaud_first);
+```
+
+- `bool autobaud_first`: Perform a call to `autoBaud()` before checking connection. Default is `false`.
+
+Returns:
+
+* `false` if no response was received (i.e. `needsHardReset` is `true`)
+* `false` if the module is invalid (unsupported), i.e. **not** one of the following:
+    * `RN2483`
+    * `RN2483A`
+    * `RN2903`
+    * `RN2903AS`
+* `true` if the module responded (i.e. `needsHardReset` is `false`) and is valid (supported).
+
+See the [CheckModule](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/CheckModule/CheckModule.ino) example.
 
 # Additional for statistics 
 

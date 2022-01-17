@@ -140,6 +140,7 @@ public:
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
+  size_t getVersion(char *buffer, size_t size);
   enum ttn_modem_status_t getStatus();
   uint16_t getVDD();
   int16_t getRSSI();
@@ -156,10 +157,10 @@ public:
   bool getChannelStatus (uint8_t channel);
   ttn_response_code_t getLastError();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
-  bool provision(const char *appEui, const char *appKey);
+  bool provision(const char *appEui, const char *appKey, bool reset_first = true);
   bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000, lorawan_class_t = CLASS_A);
   bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
-  bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
+  bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first = true);
   bool personalize();
   bool setClass(lorawan_class_t p_lw_class);
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
@@ -180,6 +181,7 @@ public:
   bool setRX1Delay(uint16_t delay);
   bool setFCU(uint32_t fcu);
   bool setFCD(uint32_t fcd);
+  bool checkValidModuleConnected(bool autobaud_first = false);
 };
 
 #endif
