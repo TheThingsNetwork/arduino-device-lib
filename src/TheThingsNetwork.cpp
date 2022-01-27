@@ -689,9 +689,9 @@ void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size,
   messageCallback = cb;
 }
 
-bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first)
+bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst)
 {
-  if(reset_first) {
+  if(resetFirst) {
     reset(adr);
   }
   if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
@@ -723,9 +723,9 @@ bool TheThingsNetwork::personalize()
   return true;
 }
 
-bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool reset_first)
+bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool resetFirst)
 {
-  if(reset_first) {
+  if(resetFirst) {
     reset(adr);
   }
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
@@ -939,10 +939,10 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
 }
 
-bool TheThingsNetwork::checkValidModuleConnected(bool autobaud_first)
+bool TheThingsNetwork::checkValidModuleConnected(bool autoBaudFirst)
 {
   // check if we want to autobaud first
-  if(autobaud_first)
+  if(autoBaudFirst)
   {
     autoBaud();
   }
