@@ -87,6 +87,12 @@ enum ttn_modem_status_t
 	TTN_MODEM_C_RX2
 };
 
+enum ttn_modem_type_t
+{
+  TTN_MODEM_TYPE_RN,
+  TTN_MODEM_TYPE_SAMR34
+};
+
 class TheThingsNetwork
 {
 private:
@@ -133,8 +139,10 @@ private:
 
 public:
   bool needsHardReset = false;
+  ttn_modem_type_t modemType = TTN_MODEM_TYPE_RN; // assume RN modem, this can be changed using checkValidModuleConnected
 
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+  bool macReset();
   void reset(bool adr = true);
   void resetHard(uint8_t resetPin);
   void showStatus();
