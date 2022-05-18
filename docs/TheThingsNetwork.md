@@ -38,6 +38,16 @@ void hardReset(uint8_t resetPin);
 
 - `uint8_t resetPin`: The output pin that is connected to the module's reset pin. The output pin should be configured as output and set to high by the user.
 
+## Method: `macReset`
+
+Resets the LoRaWAN stack and initializes it with the parameters for the selected band.
+
+```c
+void macReset()
+```
+
+Note that, for `SAMR34`-based devices, where this command requires a `<band>` parameter, it will use the configured FP in the initialization of the TTN object (e.g. `TTN_FP_US915`).
+
 ## Method: `getHardwareEui`
 
 Gets the unique hardware EUI, often used as the DevEUI.
@@ -81,6 +91,8 @@ Data Rate: 5
 RX Delay 1: 1000
 RX Delay 2: 2000
 ```
+
+Note that for `SAMR34`-based boards, it will not print out the `Battery` and `AppEUI` parameters, since the `sys get vdd` and `mac get appeui` commands are not currently implemented in the RN parser firmware for these modems.
 
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
@@ -216,7 +228,9 @@ Sleep the LoRa module for a specified number of milliseconds.
 void sleep(unsigned long mseconds);
 ```
 
-- `unsigned long mseconds`: number of milliseconds to sleep.
+- `unsigned long mseconds`: number of milliseconds to sleep. Must be >= 100 ms for `RN2xx3` modems, >= 1000 ms for `SAMR34`-based boards.
+
+Note that, for `SAMR34`-based boards, this command will send `sys sleep standby <mseconds>` to the modem. For all other `RN2xx3` modems, it will only send `sys sleep <mseconds>`.
 
 ## Method: `wake`
 
@@ -449,10 +463,10 @@ bool setRX1Delay(uint16_t delay);
 Checks if a valid module is connected to the configured serial port. Useful to check for connectivity with a supported module before performing any other actions.
 
 ```c
-bool checkValidModuleConnected(bool autobaud_first);
+bool checkValidModuleConnected(bool autoBaudFirst);
 ```
 
-- `bool autobaud_first`: Perform a call to `autoBaud()` before checking connection. Default is `false`.
+- `bool autoBaudFirst`: Perform a call to `autoBaud()` before checking connection. Default is `false`.
 
 Returns:
 
@@ -462,7 +476,9 @@ Returns:
     * `RN2483A`
     * `RN2903`
     * `RN2903AS`
+    * `SAMR34` (or boards based on this device)
 * `true` if the module responded (i.e. `needsHardReset` is `false`) and is valid (supported).
+    * Also sets the `modemType` attribute to either `TTN_MODEM_TYPE_RN` (for all `RN2xx3` devices) or `TTN_MODEM_TYPE_SAMR34`, depending on the detected modem.
 
 See the [CheckModule](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/CheckModule/CheckModule.ino) example.
 
