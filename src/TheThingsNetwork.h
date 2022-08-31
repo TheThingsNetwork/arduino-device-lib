@@ -174,7 +174,7 @@ public:
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
   ttn_response_t poll(port_t port = 1, bool confirm = false, bool modem_only = false);
   void sleep(uint32_t mseconds);
-  void wake();
+  void wake(uint8_t resetPin = 3);
   void saveState();
   void linkCheck(uint16_t seconds);
   uint8_t getLinkCheckGateways();
