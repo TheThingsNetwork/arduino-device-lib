@@ -1609,14 +1609,14 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   debugPrintLn(buffer);
 }
 
-void TheThingsNetwork::wake(uint8_t resetPin)
+void TheThingsNetwork::wake(uint8_t interruptPin)
 {
   // only for SAMR34-based boards
   if(this->modemType == TTN_MODEM_TYPE_SAMR34)
   {
-    digitalWrite(resetPin, LOW);
+    digitalWrite(interruptPin, LOW);
     delay(1000);
-    digitalWrite(resetPin, HIGH);
+    digitalWrite(interruptPin, HIGH);
   }
   // for RN2XX3-based boards
   else
