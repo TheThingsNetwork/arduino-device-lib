@@ -237,8 +237,11 @@ Note that, for `SAMR34`-based boards, this command will send `sys sleep standby 
 Wake up the LoRa module from sleep before the expiration of the defined time.
 
 ```c
-void wake();
+void wake(uint8_t interruptPin);
 ```
+
+- `uint8_t interruptPin`: Only required for `SAMR34`-based boards. Will not be used for `RN2XX3` modems, as these are woken up by a call to `autoBaud()`. Default value is `3`.
+    - On `SAMR34`-based boards, this pin must be set to `OUTPUT` and `HIGH` by the user, and provided in the call to `wake(interruptPin)`. More information on how this works available [here](https://github.com/MicrochipTech/atsamr34_lorawan_rn_parser/blob/master/02_command_guide/README.md#sys-sleep-mode-length).
 
 ## Method: `linkCheck`
 
