@@ -146,6 +146,8 @@ public:
   void reset(bool adr = true);
   void resetHard(uint8_t resetPin);
   void showStatus();
+  void setModemType(ttn_modem_type_t modemType);
+  ttn_modem_type_t getModemType();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
   size_t getVersion(char *buffer, size_t size);

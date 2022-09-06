@@ -297,9 +297,11 @@ const char mac_class[] PROGMEM = "class";
 const char mac_status[] PROGMEM = "status";
 const char mac_upctr[] PROGMEM = "upctr";
 const char mac_dnctr[] PROGMEM = "dnctr";
+const char mac_joineui[] PROGMEM = "joineui";
+const char mac_edclass[] PROGMEM = "edclass";
 
 const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band,
-			mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status, mac_upctr, mac_dnctr};
+			mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status, mac_upctr, mac_dnctr, mac_joineui, mac_edclass};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -325,6 +327,8 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_STATUS 21
 #define MAC_UPCTR 22
 #define MAC_DNCTR 23
+#define MAC_JOINEUI 24
+#define MAC_EDCLASS 25
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -694,7 +698,7 @@ bool TheThingsNetwork::macReset()
   clearReadBuffer();
   sendCommand(MAC_TABLE, MAC_PREFIX, true, false);
   // only for SAMR34-based boards
-  if(this->modemType == TTN_MODEM_TYPE_SAMR34)
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
   {
     sendCommand(MAC_TABLE, MAC_RESET, true, false);
     // check which default FP will be set
@@ -779,7 +783,9 @@ void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size,
 
 bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst)
 {
-  if(resetFirst) {
+  // a sys reset before personalize should only be done in RN2xx3 modules
+  // for SAMR34, best not to do it because a mac reset would be required afterwards
+  if(resetFirst && getModemType() != TTN_MODEM_TYPE_SAMR34) {
     reset(adr);
   }
   if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
@@ -813,7 +819,9 @@ bool TheThingsNetwork::personalize()
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool resetFirst)
 {
-  if(resetFirst) {
+  // a sys reset before provision should only be done in RN2xx3 modules
+  // for SAMR34, best not to do it because a mac reset would be required afterwards
+  if(resetFirst && getModemType() != TTN_MODEM_TYPE_SAMR34) {
     reset(adr);
   }
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
@@ -823,9 +831,17 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool re
   }
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   sendMacSet(MAC_DEVEUI, buffer);
-  sendMacSet(MAC_APPEUI, appEui);
+  // send 'mac get appeui' on RN modules
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+    sendMacSet(MAC_APPEUI, appEui);
+  // send 'mac get joineui' on SAMR34-based modules
+  else
+    sendMacSet(MAC_JOINEUI, appEui);
   sendMacSet(MAC_APPKEY, appKey);
-  saveState();
+  // 'mac save' is not implemented (and reduntant) in SAMR34 RN parser firmware
+  // see: https://github.com/MicrochipTech/atsamr34_lorawan_rn_parser/blob/master/02_command_guide/README.md#limitations
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+    saveState();
   return true;
 }
 
@@ -868,14 +884,19 @@ bool TheThingsNetwork::setClass(lorawan_class_t p_lw_class)
   case CLASS_A:
     {
       lw_class = p_lw_class;
-      return sendMacSet(MAC_CLASS, "a");
+      // 'mac set class <class>' command is for RN2xx3
+      // 'mac set edclass <class>' command is for SAMR34
+      if(getModemType() == TTN_MODEM_TYPE_RN)
+        return sendMacSet(MAC_CLASS, "a");
+      else
+        return sendMacSet(MAC_EDCLASS, "a");
     }
 
   // case CLASS_B: // Not yet supported. Use default case.
 
   case CLASS_C:
     {
-      bool result = sendMacSet(MAC_CLASS, "c");
+      bool result = (getModemType() == TTN_MODEM_TYPE_RN) ? sendMacSet(MAC_CLASS, "c") : sendMacSet(MAC_EDCLASS, "c");
       // Older firmware does not support Class C. If setting change fails, keep on using Class A.
       if(result) lw_class = p_lw_class;
       return result;
@@ -1013,12 +1034,18 @@ void TheThingsNetwork::showStatus()
 {
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_EUI, buffer);
-  // these commands are not implemented for RN parser firmware for SAMR34/WLR089
-  if(this->modemType != TTN_MODEM_TYPE_SAMR34)
+  // 'sys get vdd' not implemented in RN parser firmware for SAMR34/WLR089
+  if(getModemType() == TTN_MODEM_TYPE_RN)
   {
     readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
     debugPrintIndex(SHOW_BATTERY, buffer);
     readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
+    debugPrintIndex(SHOW_APPEUI, buffer);
+  }
+  // appeui is retrieved by sending 'mac get joineui' in SAMR34
+  else
+  {
+    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_JOINEUI, buffer, sizeof(buffer));
     debugPrintIndex(SHOW_APPEUI, buffer);
   }
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DEVEUI, buffer, sizeof(buffer));
@@ -1029,6 +1056,16 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_1, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_RXDELAY2, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
+}
+
+void TheThingsNetwork::setModemType(ttn_modem_type_t modemType)
+{
+  this->modemType = modemType;
+}
+
+ttn_modem_type_t TheThingsNetwork::getModemType()
+{
+  return this->modemType;
 }
 
 bool TheThingsNetwork::checkValidModuleConnected(bool autoBaudFirst)
@@ -1052,13 +1089,13 @@ bool TheThingsNetwork::checkValidModuleConnected(bool autoBaudFirst)
   // check if module is valid (must be RN2483, RN2483A, RN2903, RN2903AS or SAMR34)
   if(pgmstrcmp(model, CMP_RN2483) == 0 || pgmstrcmp(model, CMP_RN2483A) == 0 || pgmstrcmp(model, CMP_RN2903) == 0 || pgmstrcmp(model, CMP_RN2903AS) == 0)
   {
-    this->modemType = TTN_MODEM_TYPE_RN;
+    setModemType(TTN_MODEM_TYPE_RN);
     debugPrintMessage(SUCCESS_MESSAGE, SCS_VALID_MODULE);
     return true;                                                // module responded and is valid (recognized/supported)
   }
   else if(pgmstrcmp(model, CMP_SAMR34) == 0)
   {
-    this->modemType = TTN_MODEM_TYPE_SAMR34;
+    setModemType(TTN_MODEM_TYPE_SAMR34);
     debugPrintMessage(SUCCESS_MESSAGE, SCS_VALID_MODULE);       // module responded and is valid (recognized/supported)
     return true;
   }
@@ -1588,7 +1625,7 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
 
 void TheThingsNetwork::sleep(uint32_t mseconds)
 {
-  uint16_t minSleepTime = (this->modemType == TTN_MODEM_TYPE_SAMR34) ? 1000 : 100;  // min sleep time for SAMR34 is 1000 ms
+  uint16_t minSleepTime = (getModemType() == TTN_MODEM_TYPE_SAMR34) ? 1000 : 100;  // min sleep time for SAMR34 is 1000 ms
   if (mseconds < minSleepTime)
   {
     return;
@@ -1598,7 +1635,7 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   sendCommand(SYS_TABLE, SYS_PREFIX, true);
   sendCommand(SYS_TABLE, SYS_SLEEP, true);
   // send standby for SAMR34-based boards
-  if(this->modemType == TTN_MODEM_TYPE_SAMR34)
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
   {
     sendCommand(SYS_TABLE, SYS_SLEEP_STANDBY, true);
   }
@@ -1612,7 +1649,7 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
 void TheThingsNetwork::wake(uint8_t interruptPin)
 {
   // only for SAMR34-based boards
-  if(this->modemType == TTN_MODEM_TYPE_SAMR34)
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
   {
     digitalWrite(interruptPin, LOW);
     delay(1000);
