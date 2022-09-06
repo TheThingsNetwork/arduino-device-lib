@@ -92,7 +92,7 @@ RX Delay 1: 1000
 RX Delay 2: 2000
 ```
 
-Note that for `SAMR34`-based boards, it will not print out the `Battery` and `AppEUI` parameters, since the `sys get vdd` and `mac get appeui` commands are not currently implemented in the RN parser firmware for these modems.
+Note that for `SAMR34`-based boards, it will not print out the `Battery` parameter, since `sys get vdd` is not implemented in the RN parser firmware for these modems.
 
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
@@ -134,14 +134,14 @@ Call the method without the first two arguments if the device's LoRa module come
 Activate the device via ABP.
 
 ```c
-bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first);
+bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst);
 bool personalize();
 ```
 
 - `const char *devAddr`: Device Address assigned to the device.
 - `const char *nwkSKey`: Network Session Key assigned to the device for identification.
 - `const char *appSKey`: Application Session Key assigned to the device for encryption.
-- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
+- `bool resetFirst`: Soft reset the module before performing any other action. Only performed on RN2xx3 modules. Default is `true`.
 
 Returns `true` or `false` depending on whether the activation was successful.
 
@@ -213,12 +213,12 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
-bool provision(const char *appEui, const char *appKey, bool reset_first);
+bool provision(const char *appEui, const char *appKey, bool resetFirst);
 ```
 
 - `const char *appEui`: Application Identifier for the device.
 - `const char *appKey`: Application Key assigned to the device.
-- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
+- `bool resetFirst`: Soft reset the module before performing any other action. Only performed on RN2xx3 modules. Default is `true`.
 
 ## Method: `sleep`
 
@@ -483,7 +483,27 @@ Returns:
 * `true` if the module responded (i.e. `needsHardReset` is `false`) and is valid (supported).
     * Also sets the `modemType` attribute to either `TTN_MODEM_TYPE_RN` (for all `RN2xx3` devices) or `TTN_MODEM_TYPE_SAMR34`, depending on the detected modem.
 
-See the [CheckModule](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/CheckModule/CheckModule.ino) example.
+See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
+
+## Method: `setModemType`
+
+Sets the `modemType` attribute. It is best to call `checkValidModuleConnected()`, as this automatically sets the modem type depending on the modem's response.
+
+```c
+void setModemType(ttn_modem_type_t modemType);
+```
+
+- `ttn_modem_type_t modemType`: The modem type. Can be `TTN_MODEM_TYPE_RN` (for all `RN2xx3` devices) or `TTN_MODEM_TYPE_SAMR34`.
+
+## Method: `getModemType`
+
+Returns the `modemType` attribute. Can be used to check what modem is connected (make sure to call `checkValidModuleConnected()` before to automatically set `modemType`).
+
+```c
+ttn_modem_type_t getModemType();
+```
+
+See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
 # Additional for statistics 
 
