@@ -431,7 +431,16 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 
 size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
 {
-  return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
+  // for RN2xx3
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+  {
+    return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
+  }
+  // for SAMR34
+  else
+  {
+    return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_JOINEUI, buffer, size);
+  }
 }
 
 size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
@@ -1039,15 +1048,9 @@ void TheThingsNetwork::showStatus()
   {
     readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
     debugPrintIndex(SHOW_BATTERY, buffer);
-    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
-    debugPrintIndex(SHOW_APPEUI, buffer);
   }
-  // appeui is retrieved by sending 'mac get joineui' in SAMR34
-  else
-  {
-    readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_JOINEUI, buffer, sizeof(buffer));
-    debugPrintIndex(SHOW_APPEUI, buffer);
-  }
+  getAppEui(buffer, sizeof(buffer));
+  debugPrintIndex(SHOW_APPEUI, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DEVEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_DEVEUI, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DR, buffer, sizeof(buffer));
