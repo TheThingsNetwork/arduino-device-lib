@@ -38,6 +38,16 @@ void hardReset(uint8_t resetPin);
 
 - `uint8_t resetPin`: The output pin that is connected to the module's reset pin. The output pin should be configured as output and set to high by the user.
 
+## Method: `macReset`
+
+Resets the LoRaWAN stack and initializes it with the parameters for the selected band.
+
+```c
+void macReset()
+```
+
+Note that, for `SAMR34`-based devices, where this command requires a `<band>` parameter, it will use the configured FP in the initialization of the TTN object (e.g. `TTN_FP_US915`).
+
 ## Method: `getHardwareEui`
 
 Gets the unique hardware EUI, often used as the DevEUI.
@@ -82,6 +92,8 @@ RX Delay 1: 1000
 RX Delay 2: 2000
 ```
 
+Note that for `SAMR34`-based boards, it will not print out the `Battery` parameter, since `sys get vdd` is not implemented in the RN parser firmware for these modems.
+
 See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
 ## Method: `onMessage`
@@ -122,14 +134,14 @@ Call the method without the first two arguments if the device's LoRa module come
 Activate the device via ABP.
 
 ```c
-bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool reset_first);
+bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst);
 bool personalize();
 ```
 
 - `const char *devAddr`: Device Address assigned to the device.
 - `const char *nwkSKey`: Network Session Key assigned to the device for identification.
 - `const char *appSKey`: Application Session Key assigned to the device for encryption.
-- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
+- `bool resetFirst`: Soft reset the module before performing any other action. Only performed on RN2xx3 modules. Default is `true`.
 
 Returns `true` or `false` depending on whether the activation was successful.
 
@@ -201,12 +213,12 @@ See the [Receive](https://github.com/TheThingsNetwork/arduino-device-lib/blob/ma
 Sets the information needed to activate the device via OTAA, without actually activating. Call join() without the first 2 arguments to activate.
 
 ```c
-bool provision(const char *appEui, const char *appKey, bool reset_first);
+bool provision(const char *appEui, const char *appKey, bool resetFirst);
 ```
 
 - `const char *appEui`: Application Identifier for the device.
 - `const char *appKey`: Application Key assigned to the device.
-- `bool reset_first`: Soft reset the module before performing any other action. Default is `true`.
+- `bool resetFirst`: Soft reset the module before performing any other action. Only performed on RN2xx3 modules. Default is `true`.
 
 ## Method: `sleep`
 
@@ -216,15 +228,20 @@ Sleep the LoRa module for a specified number of milliseconds.
 void sleep(unsigned long mseconds);
 ```
 
-- `unsigned long mseconds`: number of milliseconds to sleep.
+- `unsigned long mseconds`: number of milliseconds to sleep. Must be >= 100 ms for `RN2xx3` modems, >= 1000 ms for `SAMR34`-based boards.
+
+Note that, for `SAMR34`-based boards, this command will send `sys sleep standby <mseconds>` to the modem. For all other `RN2xx3` modems, it will only send `sys sleep <mseconds>`.
 
 ## Method: `wake`
 
 Wake up the LoRa module from sleep before the expiration of the defined time.
 
 ```c
-void wake();
+void wake(uint8_t interruptPin);
 ```
+
+- `uint8_t interruptPin`: Only required for `SAMR34`-based boards. Will not be used for `RN2XX3` modems, as these are woken up by a call to `autoBaud()`. Default value is `3`.
+    - On `SAMR34`-based boards, this pin must be set to `OUTPUT` and `HIGH` by the user, and provided in the call to `wake(interruptPin)`. More information on how this works available [here](https://github.com/MicrochipTech/atsamr34_lorawan_rn_parser/blob/master/02_command_guide/README.md#sys-sleep-mode-length).
 
 ## Method: `linkCheck`
 
@@ -449,10 +466,10 @@ bool setRX1Delay(uint16_t delay);
 Checks if a valid module is connected to the configured serial port. Useful to check for connectivity with a supported module before performing any other actions.
 
 ```c
-bool checkValidModuleConnected(bool autobaud_first);
+bool checkValidModuleConnected(bool autoBaudFirst);
 ```
 
-- `bool autobaud_first`: Perform a call to `autoBaud()` before checking connection. Default is `false`.
+- `bool autoBaudFirst`: Perform a call to `autoBaud()` before checking connection. Default is `false`.
 
 Returns:
 
@@ -462,9 +479,31 @@ Returns:
     * `RN2483A`
     * `RN2903`
     * `RN2903AS`
+    * `SAMR34` (or boards based on this device)
 * `true` if the module responded (i.e. `needsHardReset` is `false`) and is valid (supported).
+    * Also sets the `modemType` attribute to either `TTN_MODEM_TYPE_RN` (for all `RN2xx3` devices) or `TTN_MODEM_TYPE_SAMR34`, depending on the detected modem.
 
-See the [CheckModule](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/CheckModule/CheckModule.ino) example.
+See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
+
+## Method: `setModemType`
+
+Sets the `modemType` attribute. It is best to call `checkValidModuleConnected()`, as this automatically sets the modem type depending on the modem's response.
+
+```c
+void setModemType(ttn_modem_type_t modemType);
+```
+
+- `ttn_modem_type_t modemType`: The modem type. Can be `TTN_MODEM_TYPE_RN` (for all `RN2xx3` devices) or `TTN_MODEM_TYPE_SAMR34`.
+
+## Method: `getModemType`
+
+Returns the `modemType` attribute. Can be used to check what modem is connected (make sure to call `checkValidModuleConnected()` before to automatically set `modemType`).
+
+```c
+ttn_modem_type_t getModemType();
+```
+
+See the [DeviceInfo](https://github.com/TheThingsNetwork/arduino-device-lib/blob/master/examples/DeviceInfo/DeviceInfo.ino) example.
 
 # Additional for statistics 
 

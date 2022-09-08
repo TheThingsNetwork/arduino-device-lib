@@ -14,7 +14,8 @@
       debugStream->print(__VA_ARGS__); \
   }
 
-#define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (c - 'A' + 0x0A) : (c - '0'))
+#define TTN_HEX_CHAR_DETECT_CASE(c) ((c >= 'a') ? (c - 'a' + 0x0A) : (c - 'A' + 0x0A))
+#define TTN_HEX_CHAR_TO_NIBBLE(c) ((c >= 'A') ? (TTN_HEX_CHAR_DETECT_CASE(c)) : (c - '0'))
 #define TTN_HEX_PAIR_TO_BYTE(h, l) ((TTN_HEX_CHAR_TO_NIBBLE(h) << 4) + TTN_HEX_CHAR_TO_NIBBLE(l))
 
 const char ok[] PROGMEM = "ok";
@@ -28,8 +29,9 @@ const char rn2483[] PROGMEM = "RN2483";
 const char rn2483a[] PROGMEM = "RN2483A";
 const char rn2903[] PROGMEM = "RN2903";
 const char rn2903as[] PROGMEM = "RN2903AS";
+const char samr34[] PROGMEM = "SAMR34";
 
-const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, mac_err, rn2483, rn2483a, rn2903, rn2903as};
+const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, mac_rx, mac_err, rn2483, rn2483a, rn2903, rn2903as, samr34};
 
 #define CMP_OK 0
 #define CMP_ON 1
@@ -42,6 +44,7 @@ const char *const compare_table[] PROGMEM = {ok, on, off, accepted, mac_tx_ok, m
 #define CMP_RN2483A 8
 #define CMP_RN2903 9
 #define CMP_RN2903AS 10
+#define CMP_SAMR34 11
 
 // CMP OK
 const char busy[] PROGMEM = "busy";
@@ -115,7 +118,7 @@ const char response_is_not_ok[] PROGMEM = "Response is not OK: ";
 const char error_key_length[] PROGMEM = "One or more keys are of invalid length.";
 const char check_configuration[] PROGMEM = "Check your coverage, keys and backend status.";
 const char no_response[] PROGMEM =  "No response from RN module.";
-const char invalid_module[] PROGMEM = "Invalid module (must be RN2xx3[xx]).";
+const char invalid_module[] PROGMEM = "Invalid module (must be RN2xx3[xx]/SAMR34).";
 
 const char *const error_msg[] PROGMEM = {invalid_sf, invalid_fp, unexpected_response, send_command_failed, join_failed, join_not_accepted, personalize_not_accepted, response_is_not_ok, error_key_length, check_configuration, no_response, invalid_module};
 
@@ -190,8 +193,9 @@ const char sys_get_vdd[] PROGMEM = "vdd";
 const char sys_get_hweui[] PROGMEM = "hweui";
 const char sys_set_get_nvm[] PROGMEM = "nvm";
 const char sys_set_pindig[] PROGMEM = "pindig";
+const char sys_sleep_standby[] PROGMEM = "standby";
 
-const char *const sys_table[] PROGMEM = {sys_prefix, sys_sleep, sys_reset, sys_erase_fw, sys_factory_rst, sys_set, sys_get, sys_get_ver, sys_get_vdd, sys_get_hweui, sys_set_get_nvm, sys_set_pindig};
+const char *const sys_table[] PROGMEM = {sys_prefix, sys_sleep, sys_reset, sys_erase_fw, sys_factory_rst, sys_set, sys_get, sys_get_ver, sys_get_vdd, sys_get_hweui, sys_set_get_nvm, sys_set_pindig, sys_sleep_standby};
 
 #define SYS_PREFIX 0
 #define SYS_SLEEP 1
@@ -205,6 +209,7 @@ const char *const sys_table[] PROGMEM = {sys_prefix, sys_sleep, sys_reset, sys_e
 #define SYS_GET_HWEUI 9
 #define SYS_SET_GET_NVM 10
 #define SYS_SET_PINDIG 11
+#define SYS_SLEEP_STANDBY 12
 
 const char mac_prefix[] PROGMEM = "mac";
 const char mac_reset[] PROGMEM = "reset";
@@ -230,6 +235,44 @@ const char *const mac_table[] PROGMEM = {mac_prefix, mac_reset, mac_tx, mac_join
 #define MAC_SET 8
 #define MAC_GET 9
 
+const char mac_reset_868[] PROGMEM = "868";         // EU868
+const char mac_reset_433[] PROGMEM = "433";         // EU433
+const char mac_reset_na915[] PROGMEM = "na915";     // NA915
+const char mac_reset_au915[] PROGMEM = "au915";     // AU915
+const char mac_reset_kr920[] PROGMEM = "kr920";     // KR920
+const char mac_reset_jpn923[] PROGMEM = "jpn923";   // JPN932
+const char mac_reset_brn923[] PROGMEM = "brn923";   // AS923
+const char mac_reset_cmb923[] PROGMEM = "cmb923";   // AS923
+const char mac_reset_ins923[] PROGMEM = "ins923";   // AS923
+const char mac_reset_laos923[] PROGMEM = "laos923"; // AS923
+const char mac_reset_nz923[] PROGMEM = "nz923";     // AS923
+const char mac_reset_sp923[] PROGMEM = "sp923";     // AS923
+const char mac_reset_twn923[] PROGMEM = "twn923";   // AS923
+const char mac_reset_thai923[] PROGMEM = "thai923"; // AS923
+const char mac_reset_vtm923[] PROGMEM = "vtm923";   // AS923
+const char mac_reset_ind865[] PROGMEM = "ind865";   // IND865
+
+const char *const mac_reset_table[] PROGMEM = {mac_reset_868, mac_reset_433, mac_reset_na915, mac_reset_au915, mac_reset_kr920,
+    mac_reset_jpn923, mac_reset_brn923, mac_reset_cmb923, mac_reset_ins923, mac_reset_laos923, mac_reset_nz923, mac_reset_sp923,
+    mac_reset_twn923, mac_reset_thai923, mac_reset_vtm923, mac_reset_ind865};
+
+#define MAC_RESET_868 0
+#define MAC_RESET_433 1
+#define MAC_RESET_NA915 2
+#define MAC_RESET_AU915 3
+#define MAC_RESET_KR920 4
+#define MAC_RESET_JPN923 5
+#define MAC_RESET_BRN923 6
+#define MAC_RESET_CMB923 7
+#define MAC_RESET_INS923 8
+#define MAC_RESET_LAOS923 9
+#define MAC_RESET_NZ923 10
+#define MAC_RESET_SP923 11
+#define MAC_RESET_TWN923 12
+#define MAC_RESET_THAI923 13
+#define MAC_RESET_VTM923 14
+#define MAC_RESET_IND865 15
+
 const char mac_devaddr[] PROGMEM = "devaddr";
 const char mac_deveui[] PROGMEM = "deveui";
 const char mac_appeui[] PROGMEM = "appeui";
@@ -254,9 +297,11 @@ const char mac_class[] PROGMEM = "class";
 const char mac_status[] PROGMEM = "status";
 const char mac_upctr[] PROGMEM = "upctr";
 const char mac_dnctr[] PROGMEM = "dnctr";
+const char mac_joineui[] PROGMEM = "joineui";
+const char mac_edclass[] PROGMEM = "edclass";
 
 const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, mac_nwkskey, mac_appskey, mac_appkey, mac_pwridx, mac_dr, mac_adr, mac_bat, mac_retx, mac_linkchk, mac_rxdelay1, mac_rxdelay2, mac_band,
-			mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status, mac_upctr, mac_dnctr};
+			mac_ar, mac_rx2, mac_ch, mac_gwnb, mac_mrgn, mac_class, mac_status, mac_upctr, mac_dnctr, mac_joineui, mac_edclass};
 
 #define MAC_DEVADDR 0
 #define MAC_DEVEUI 1
@@ -282,6 +327,8 @@ const char *const mac_options[] PROGMEM = {mac_devaddr, mac_deveui, mac_appeui, 
 #define MAC_STATUS 21
 #define MAC_UPCTR 22
 #define MAC_DNCTR 23
+#define MAC_JOINEUI 24
+#define MAC_EDCLASS 25
 
 const char mac_join_mode_otaa[] PROGMEM = "otaa";
 const char mac_join_mode_abp[] PROGMEM = "abp";
@@ -322,6 +369,7 @@ const char *const mac_tx_table[] PROGMEM = {mac_tx_type_cnf, mac_tx_type_ucnf};
 #define SUCCESS_MESSAGE 8
 #define CMP_TABLE 9
 #define CMP_ERR_TABLE 10
+#define MAC_RESET_TABLE 11
 
 int pgmstrcmp(const char *str1, uint8_t str2Index, uint8_t table = CMP_TABLE)
 {
@@ -383,7 +431,16 @@ TheThingsNetwork::TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn
 
 size_t TheThingsNetwork::getAppEui(char *buffer, size_t size)
 {
-  return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
+  // for RN2xx3
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+  {
+    return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, size);
+  }
+  // for SAMR34
+  else
+  {
+    return readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_JOINEUI, buffer, size);
+  }
 }
 
 size_t TheThingsNetwork::getHardwareEui(char *buffer, size_t size)
@@ -645,6 +702,50 @@ void TheThingsNetwork::autoBaud()
   baudDetermined = true;
 }
 
+bool TheThingsNetwork::macReset() 
+{
+  clearReadBuffer();
+  sendCommand(MAC_TABLE, MAC_PREFIX, true, false);
+  // only for SAMR34-based boards
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
+  {
+    sendCommand(MAC_TABLE, MAC_RESET, true, false);
+    // check which default FP will be set
+    switch (fp)
+    {
+    case TTN_FP_EU868:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_868, false, false);
+      break;
+    case TTN_FP_US915:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_NA915, false, false);
+      break;
+    case TTN_FP_AU915:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_AU915, false, false);
+      break;
+    case TTN_FP_KR920_923:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_KR920, false, false);
+      break;
+    case TTN_FP_AS920_923:
+    case TTN_FP_AS923_925:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_BRN923, false, false); // TODO: fix, SAMR34 implements individual FPs for each AS923 country, while TTN only sets a general AS923/AS925 FP
+      break;
+    case TTN_FP_IN865_867:
+      sendCommand(MAC_RESET_TABLE, MAC_RESET_IND865, false, false);
+      break;
+    default:
+      debugPrintMessage(ERR_MESSAGE, ERR_INVALID_FP);
+      break;
+    }
+  }
+  // for RN2XX3-based boards
+  else
+  {
+    sendCommand(MAC_TABLE, MAC_RESET, false, false);
+  }
+  modemStream->write(SEND_MSG);
+  return waitForOk();
+}
+
 void TheThingsNetwork::reset(bool adr)
 {
   // autobaud and send "sys reset"
@@ -691,7 +792,9 @@ void TheThingsNetwork::onMessage(void (*cb)(const uint8_t *payload, size_t size,
 
 bool TheThingsNetwork::personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst)
 {
-  if(resetFirst) {
+  // a sys reset before personalize should only be done in RN2xx3 modules
+  // for SAMR34, best not to do it because a mac reset would be required afterwards
+  if(resetFirst && getModemType() != TTN_MODEM_TYPE_SAMR34) {
     reset(adr);
   }
   if (strlen(devAddr) != 8 || strlen(appSKey) != 32 || strlen(nwkSKey) != 32)
@@ -725,7 +828,9 @@ bool TheThingsNetwork::personalize()
 
 bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool resetFirst)
 {
-  if(resetFirst) {
+  // a sys reset before provision should only be done in RN2xx3 modules
+  // for SAMR34, best not to do it because a mac reset would be required afterwards
+  if(resetFirst && getModemType() != TTN_MODEM_TYPE_SAMR34) {
     reset(adr);
   }
   if (strlen(appEui) != 16 || strlen(appKey) != 32)
@@ -735,9 +840,17 @@ bool TheThingsNetwork::provision(const char *appEui, const char *appKey, bool re
   }
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   sendMacSet(MAC_DEVEUI, buffer);
-  sendMacSet(MAC_APPEUI, appEui);
+  // send 'mac get appeui' on RN modules
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+    sendMacSet(MAC_APPEUI, appEui);
+  // send 'mac get joineui' on SAMR34-based modules
+  else
+    sendMacSet(MAC_JOINEUI, appEui);
   sendMacSet(MAC_APPKEY, appKey);
-  saveState();
+  // 'mac save' is not implemented (and reduntant) in SAMR34 RN parser firmware
+  // see: https://github.com/MicrochipTech/atsamr34_lorawan_rn_parser/blob/master/02_command_guide/README.md#limitations
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+    saveState();
   return true;
 }
 
@@ -780,14 +893,19 @@ bool TheThingsNetwork::setClass(lorawan_class_t p_lw_class)
   case CLASS_A:
     {
       lw_class = p_lw_class;
-      return sendMacSet(MAC_CLASS, "a");
+      // 'mac set class <class>' command is for RN2xx3
+      // 'mac set edclass <class>' command is for SAMR34
+      if(getModemType() == TTN_MODEM_TYPE_RN)
+        return sendMacSet(MAC_CLASS, "a");
+      else
+        return sendMacSet(MAC_EDCLASS, "a");
     }
 
   // case CLASS_B: // Not yet supported. Use default case.
 
   case CLASS_C:
     {
-      bool result = sendMacSet(MAC_CLASS, "c");
+      bool result = (getModemType() == TTN_MODEM_TYPE_RN) ? sendMacSet(MAC_CLASS, "c") : sendMacSet(MAC_EDCLASS, "c");
       // Older firmware does not support Class C. If setting change fails, keep on using Class A.
       if(result) lw_class = p_lw_class;
       return result;
@@ -925,9 +1043,13 @@ void TheThingsNetwork::showStatus()
 {
   readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_HWEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_EUI, buffer);
-  readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
-  debugPrintIndex(SHOW_BATTERY, buffer);
-  readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_APPEUI, buffer, sizeof(buffer));
+  // 'sys get vdd' not implemented in RN parser firmware for SAMR34/WLR089
+  if(getModemType() == TTN_MODEM_TYPE_RN)
+  {
+    readResponse(SYS_TABLE, SYS_TABLE, SYS_GET_VDD, buffer, sizeof(buffer));
+    debugPrintIndex(SHOW_BATTERY, buffer);
+  }
+  getAppEui(buffer, sizeof(buffer));
   debugPrintIndex(SHOW_APPEUI, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_DEVEUI, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_DEVEUI, buffer);
@@ -937,6 +1059,16 @@ void TheThingsNetwork::showStatus()
   debugPrintIndex(SHOW_RX_DELAY_1, buffer);
   readResponse(MAC_TABLE, MAC_GET_SET_TABLE, MAC_RXDELAY2, buffer, sizeof(buffer));
   debugPrintIndex(SHOW_RX_DELAY_2, buffer);
+}
+
+void TheThingsNetwork::setModemType(ttn_modem_type_t modemType)
+{
+  this->modemType = modemType;
+}
+
+ttn_modem_type_t TheThingsNetwork::getModemType()
+{
+  return this->modemType;
 }
 
 bool TheThingsNetwork::checkValidModuleConnected(bool autoBaudFirst)
@@ -957,11 +1089,18 @@ bool TheThingsNetwork::checkValidModuleConnected(bool autoBaudFirst)
   // buffer contains "RN2xx3[xx] x.x.x ...", getting only model (RN2xx3[xx])
   char *model = strtok(buffer, " ");
   debugPrintIndex(SHOW_MODEL, model);
-  // check if module is valid (must be RN2483, RN2483A, RN2903 or RN2903AS)
+  // check if module is valid (must be RN2483, RN2483A, RN2903, RN2903AS or SAMR34)
   if(pgmstrcmp(model, CMP_RN2483) == 0 || pgmstrcmp(model, CMP_RN2483A) == 0 || pgmstrcmp(model, CMP_RN2903) == 0 || pgmstrcmp(model, CMP_RN2903AS) == 0)
   {
+    setModemType(TTN_MODEM_TYPE_RN);
     debugPrintMessage(SUCCESS_MESSAGE, SCS_VALID_MODULE);
     return true;                                                // module responded and is valid (recognized/supported)
+  }
+  else if(pgmstrcmp(model, CMP_SAMR34) == 0)
+  {
+    setModemType(TTN_MODEM_TYPE_SAMR34);
+    debugPrintMessage(SUCCESS_MESSAGE, SCS_VALID_MODULE);       // module responded and is valid (recognized/supported)
+    return true;
   }
   debugPrintMessage(ERR_MESSAGE, ERR_INVALID_MODULE);
   return false;                                                 // module responded but is invalid (unrecognized/unsupported)
@@ -1338,6 +1477,9 @@ void TheThingsNetwork::sendCommand(uint8_t table, uint8_t index, bool appendSpac
   case RADIO_TABLE:
     strcpy_P(command, (char *)pgm_read_word(&(radio_table[index])));
     break;
+  case MAC_RESET_TABLE:
+    strcpy_P(command, (char *)pgm_read_word(&(mac_reset_table[index])));
+    break;
   default:
     return;
   }
@@ -1486,7 +1628,8 @@ bool TheThingsNetwork::sendPayload(uint8_t mode, uint8_t port, uint8_t *payload,
 
 void TheThingsNetwork::sleep(uint32_t mseconds)
 {
-  if (mseconds < 100)
+  uint16_t minSleepTime = (getModemType() == TTN_MODEM_TYPE_SAMR34) ? 1000 : 100;  // min sleep time for SAMR34 is 1000 ms
+  if (mseconds < minSleepTime)
   {
     return;
   }
@@ -1494,6 +1637,11 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   debugPrint(F(SENDING));
   sendCommand(SYS_TABLE, SYS_PREFIX, true);
   sendCommand(SYS_TABLE, SYS_SLEEP, true);
+  // send standby for SAMR34-based boards
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
+  {
+    sendCommand(SYS_TABLE, SYS_SLEEP_STANDBY, true);
+  }
 
   sprintf(buffer, "%lu", mseconds);
   modemStream->write(buffer);
@@ -1501,9 +1649,20 @@ void TheThingsNetwork::sleep(uint32_t mseconds)
   debugPrintLn(buffer);
 }
 
-void TheThingsNetwork::wake()
+void TheThingsNetwork::wake(uint8_t interruptPin)
 {
-  autoBaud();
+  // only for SAMR34-based boards
+  if(getModemType() == TTN_MODEM_TYPE_SAMR34)
+  {
+    digitalWrite(interruptPin, LOW);
+    delay(1000);
+    digitalWrite(interruptPin, HIGH);
+  }
+  // for RN2XX3-based boards
+  else
+  {
+    autoBaud();
+  }
 }
 
 void TheThingsNetwork::linkCheck(uint16_t seconds)

@@ -87,6 +87,12 @@ enum ttn_modem_status_t
 	TTN_MODEM_C_RX2
 };
 
+enum ttn_modem_type_t
+{
+  TTN_MODEM_TYPE_RN,
+  TTN_MODEM_TYPE_SAMR34
+};
+
 class TheThingsNetwork
 {
 private:
@@ -133,11 +139,15 @@ private:
 
 public:
   bool needsHardReset = false;
+  ttn_modem_type_t modemType = TTN_MODEM_TYPE_RN; // assume RN modem, this can be changed using checkValidModuleConnected
 
   TheThingsNetwork(Stream &modemStream, Stream &debugStream, ttn_fp_t fp, uint8_t sf = TTN_DEFAULT_SF, uint8_t fsb = TTN_DEFAULT_FSB);
+  bool macReset();
   void reset(bool adr = true);
   void resetHard(uint8_t resetPin);
   void showStatus();
+  void setModemType(ttn_modem_type_t modemType);
+  ttn_modem_type_t getModemType();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
   size_t getVersion(char *buffer, size_t size);
@@ -166,7 +176,7 @@ public:
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
   ttn_response_t poll(port_t port = 1, bool confirm = false, bool modem_only = false);
   void sleep(uint32_t mseconds);
-  void wake();
+  void wake(uint8_t interruptPin = 3);
   void saveState();
   void linkCheck(uint16_t seconds);
   uint8_t getLinkCheckGateways();
