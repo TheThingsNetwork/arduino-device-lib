@@ -1,7 +1,7 @@
 # The Things Network Arduino Library
 [![Build Status](https://travis-ci.org/TheThingsNetwork/arduino-device-lib.svg?branch=master)](https://travis-ci.org/TheThingsNetwork/arduino-device-lib)
 
-This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Arduino devices like [The Things Uno](https://www.thethingsnetwork.org/docs/devices/uno/) and [Node](https://www.thethingsnetwork.org/docs/devices/node/) to communicate via [The Things Network](https://www.thethingsnetwork.org).
+This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Arduino devices like [The Things Uno](https://www.thethingsindustries.com/docs/devices/the-things-uno/) and [Node](https://www.thethingsindustries.com/docs/devices/the-things-node/) to communicate via [The Things Network](https://www.thethingsnetwork.org).
 
 > At the moment this library requires devices to feature a [Microchip RN2xx3 module](http://www.microchip.com/design-centers/wireless-connectivity/embedded-wireless/lora-technology).
 
@@ -12,7 +12,7 @@ This is an [Arduino Library](https://www.arduino.cc/en/Guide/Libraries) for Ardu
 
 ## Documentation
 
-* [The Things Network Documentation](https://www.thethingsnetwork.org/docs/devices/arduino/)
+* [The Things Stack Documentation](https://www.thethingsindustries.com/docs/devices/the-things-uno/)
 * API References:
     * [TheThingsNetwork](docs/TheThingsNetwork.md)
     * [TheThingsMessage](docs/TheThingsMessage.md)
