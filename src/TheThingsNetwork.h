@@ -25,6 +25,7 @@
 #define TTN_PWRIDX_IN865_867 "1" // TODO: should be 0
 
 #define TTN_BUFFER_SIZE 300
+#define TTN_DEFAULT_TIMEOUT 10000	// Default modem timeout in ms
 
 typedef uint8_t port_t;
 
@@ -34,7 +35,7 @@ enum ttn_response_t
   TTN_ERROR_UNEXPECTED_RESPONSE = (-10),
   TTN_SUCCESSFUL_TRANSMISSION = 1,
   TTN_SUCCESSFUL_RECEIVE = 2,
-  TTN_UNSUCESSFUL_RECEIVE = 3
+  TTN_UNSUCCESSFUL_RECEIVE = 3
 };
 
 enum ttn_fp_t
@@ -55,11 +56,42 @@ enum lorawan_class_t
   CLASS_C
 };
 
+enum ttn_response_code_t
+{
+	TTN_OK,
+	TTN_ERROR_BUSY = (-1),
+	TTN_ERROR_FRAME_COUNTER_ERROR = (-2),
+	TTN_ERROR_INVALID_CLASS = (-3),
+	TTN_ERROR_INVALID_LENGTH = (-4),
+	TTN_ERROR_INVALID_PARAMETER = (-5),
+	TTN_ERROR_NO_KEY_INTITIALIZED = (-6),
+	TTN_ERROR_MAC_PAUSE = (-7),
+	TTN_ERROR_NO_KEY_MULTICAST = (-8),
+	TTN_ERROR_NO_FREE_CHANNEL = (-9),
+	TTN_ERROR_NOT_JOINED = (-10),
+	TTN_ERROR_SILENT = (-11),
+	TTN_ERROR_ERR = (-12),
+};
+
+enum ttn_modem_status_t
+{
+	TTN_MODEM_READ_ERR = -1,
+	TTN_MODEM_IDLE = 0,
+	TTN_MODEM_TX,
+	TTN_MODEM_BEFORE_RX,
+	TTN_MODEM_RX1,
+	TTN_MODEM_BEFORE_RX2,
+	TTN_MODEM_RETX_DELAY,
+	TTN_MODEM_APB_DELAY,
+	TTN_MODEM_C_RX1,
+	TTN_MODEM_C_RX2
+};
+
 class TheThingsNetwork
 {
 private:
   Stream *modemStream;
-  Stream *debugStream;
+  Stream *debugStream = NULL;
   ttn_fp_t fp;
   uint8_t sf;
   uint8_t fsb;
@@ -89,8 +121,11 @@ private:
   bool setSF(uint8_t sf);
   bool waitForOk();
 
+  ttn_response_t parseBytes();
   void sendCommand(uint8_t table, uint8_t index, bool appendSpace, bool print = true);
+  bool sendMacSet(uint8_t index, uint8_t value1, unsigned long value2);
   bool sendMacSet(uint8_t index, const char *value);
+  bool sendChSet(uint8_t index, uint8_t channel, unsigned long value);
   bool sendChSet(uint8_t index, uint8_t channel, const char *value);
   bool sendJoinSet(uint8_t type);
   bool sendPayload(uint8_t mode, uint8_t port, uint8_t *payload, size_t len);
@@ -105,22 +140,48 @@ public:
   void showStatus();
   size_t getHardwareEui(char *buffer, size_t size);
   size_t getAppEui(char *buffer, size_t size);
+  size_t getVersion(char *buffer, size_t size);
+  enum ttn_modem_status_t getStatus();
   uint16_t getVDD();
+  int16_t getRSSI();
+  uint32_t getFrequency();
+  uint32_t getWatchDogTimer();
+  uint32_t getFCU();
+  uint32_t getFCD();
+  uint8_t getBW();
+  uint8_t getCR();
+  int8_t getPower();
+  int8_t getSNR();
+  int8_t getDR();
+  int8_t getPowerIndex();
+  bool getChannelStatus (uint8_t channel);
+  ttn_response_code_t getLastError();
   void onMessage(void (*cb)(const uint8_t *payload, size_t size, port_t port));
-  bool provision(const char *appEui, const char *appKey);
+  bool provision(const char *appEui, const char *appKey, bool resetFirst = true);
   bool join(const char *appEui, const char *appKey, int8_t retries = -1, uint32_t retryDelay = 10000, lorawan_class_t = CLASS_A);
   bool join(int8_t retries = -1, uint32_t retryDelay = 10000);
-  bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey);
+  bool personalize(const char *devAddr, const char *nwkSKey, const char *appSKey, bool resetFirst = true);
   bool personalize();
   bool setClass(lorawan_class_t p_lw_class);
   ttn_response_t sendBytes(const uint8_t *payload, size_t length, port_t port = 1, bool confirm = false, uint8_t sf = 0);
-  ttn_response_t poll(port_t port = 1, bool confirm = false);
+  ttn_response_t poll(port_t port = 1, bool confirm = false, bool modem_only = false);
   void sleep(uint32_t mseconds);
   void wake();
   void saveState();
   void linkCheck(uint16_t seconds);
   uint8_t getLinkCheckGateways();
   uint8_t getLinkCheckMargin();
+  bool setChannel(uint8_t channel, uint32_t frequency = 0l, uint8_t dr_min = 255, uint8_t dr_max = 255);
+  bool setRx2Channel(uint32_t frequency, uint8_t dr);
+  bool setChannelDCycle (uint8_t channel, float duty_cycle);
+  bool setChannelStatus (uint8_t channel, bool status);
+  bool setPowerIndex(uint8_t index);
+  bool setDR(uint8_t dr);
+  bool setADR(bool adr);
+  bool setRX1Delay(uint16_t delay);
+  bool setFCU(uint32_t fcu);
+  bool setFCD(uint32_t fcd);
+  bool checkValidModuleConnected(bool autoBaudFirst = false);
 };
 
 #endif
